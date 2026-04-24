@@ -76,7 +76,7 @@ si?.addEventListener('input',function(){
   },280);
 });
 document.addEventListener('click',e=>{if(!si?.contains(e.target)&&!sd?.contains(e.target)&&sd)sd.style.display='none';});
-si?.addEventListener('keydown',e=>{if(e.key==='Enter'){if(sd)sd.style.display='none';window.location.href='/products?search='+encodeURIComponent(si.value.trim());}if(e.key==='Escape'&&sd)sd.style.display='none';});
+si?.addEventListener('keydown',e=>{if(e.key==='Enter'){if(sd)sd.style.display='none';window.location.href='products?search='+encodeURIComponent(si.value.trim());}if(e.key==='Escape'&&sd)sd.style.display='none';});
 
 // Toast
 function showToast(msg,err=false){

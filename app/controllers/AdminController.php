@@ -396,7 +396,7 @@ class AdminController
 
     private function redirect(string $url): void
     {
-        header("Location: $url");
+        header('Location: ' . BASE_URL . '/' . ltrim($url, '/'));
         exit;
     }
 

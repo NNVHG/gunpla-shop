@@ -11,3 +11,4 @@ RewriteCond %{REQUEST_FILENAME} !-d
 
 # Tất cả request còn lại → index.php
 RewriteRule ^(.*)$ index.php [QSA,L]
+RewriteRule ^(.*)$ index.php [L,QSA]
