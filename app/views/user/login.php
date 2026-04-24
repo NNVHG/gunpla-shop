@@ -5,13 +5,13 @@
       <h1 style="font-family:var(--font-display);font-size:36px;letter-spacing:.1em">ĐĂNG NHẬP</h1>
       <p style="font-family:var(--font-mono);font-size:11px;color:var(--text-hint);letter-spacing:.1em;margin-top:6px">// GUNPLA SHOP ACCOUNT</p>
     </div>
-    <?php if ($error): ?>
+    <?php if (!empty($error)): ?>
       <div style="background:rgba(200,64,64,.1);border:1px solid rgba(200,64,64,.3);border-radius:5px;padding:12px 16px;margin-bottom:20px;color:#e07070;font-size:13px">
         <?= htmlspecialchars($error) ?>
       </div>
     <?php endif; ?>
     <div class="form-card">
-      <form method="POST" action="/user/loginSubmit">
+      <form method="POST" action="<?= BASE_URL ?>/user/loginSubmit">
         <input type="hidden" name="redirect" value="<?= htmlspecialchars($_GET['redirect'] ?? '/') ?>">
         <div class="form-group">
           <label class="form-label">Email</label>
@@ -27,7 +27,7 @@
       </form>
     </div>
     <p style="text-align:center;margin-top:20px;font-size:13px;color:var(--text-hint)">
-      Chưa có tài khoản? <a href="/user/register" style="color:var(--gold)">Đăng ký ngay</a>
+      Chưa có tài khoản? <a href="<?= BASE_URL ?>/user/registerForm" style="color:var(--gold)">Đăng ký ngay</a>
     </p>
   </div>
 </div>
