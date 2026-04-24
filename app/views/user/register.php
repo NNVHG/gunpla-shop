@@ -43,7 +43,7 @@
       </form>
     </div>
     <p style="text-align:center;margin-top:20px;font-size:13px;color:var(--text-hint)">
-      Đã có tài khoản? <a href="/user/login" style="color:var(--gold)">Đăng nhập</a>
+      Đã có tài khoản? <a href="<?= BASE_URL ?>/user/loginForm" style="color:var(--gold)">Đăng nhập</a>
     </p>
   </div>
 </div>

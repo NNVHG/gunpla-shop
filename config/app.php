@@ -7,6 +7,7 @@
  */
 
 // ─── Thông tin ứng dụng ──────────────────────────────
+define('URLROOT', '/gunpla-shop');
 define('APP_NAME',    'GUNPLA SHOP');
 define('APP_URL',     'http://localhost/gunpla-shop');  // Đổi khi deploy
 define('APP_DEBUG',   true);    // false khi deploy lên server thật
