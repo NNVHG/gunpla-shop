@@ -16,9 +16,7 @@ define('APP_DEBUG',   true);    // false khi deploy lên server thật
 // Bước 1: Bật 2-Step Verification trên tài khoản Gmail
 // Bước 2: Tạo App Password tại: myaccount.google.com/apppasswords
 // Bước 3: Điền App Password vào MAIL_PASS (không phải mật khẩu Gmail thật)
-define('MAIL_USER',   'royalmonsterhg@gmail.com');
-define('MAIL_PASS',   'jlqe ywfn kpwt vfqr');  // App Password từ Google
-define('MAIL_FROM_NAME', APP_NAME);
+
 
 // ─── Cấu hình session ────────────────────────────────
 ini_set('session.cookie_httponly', '1');
