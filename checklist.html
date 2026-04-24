@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<title>Kiểm thử — Gunpla Shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080909; --panel: #0f1011; --card: #141618; --border: #242729;
+  --gold: #c8a85a; --gold-b: #e8c878; --gold-d: #4a3a18;
+  --green: #3a9e6a; --red: #c84040; --blue: #3a7ac8;
+  --t1: #e0dcd4; --t2: #7a7874; --t3: #3a3835;
+  --fd: 'Bebas Neue', sans-serif;
+  --fm: 'Share Tech Mono', monospace;
+  --fb: 'Noto Sans JP', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--t1); font-family: var(--fb); font-size: 13px; padding: 40px 24px; max-width: 900px; margin: 0 auto; }
+::-webkit-scrollbar { width: 3px; } ::-webkit-scrollbar-thumb { background: var(--gold-d); }
+
+h1 { font-family: var(--fd); font-size: 42px; letter-spacing: 0.1em; margin-bottom: 4px; }
+.subtitle { font-family: var(--fm); font-size: 11px; color: var(--t2); letter-spacing: 0.15em; margin-bottom: 36px; }
+
+/* Progress header */
+.progress-bar-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 18px 20px; margin-bottom: 28px; }
+.progress-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.progress-label { font-family: var(--fm); font-size: 10px; color: var(--t2); letter-spacing: 0.12em; text-transform: uppercase; }
+.progress-pct { font-family: var(--fd); font-size: 28px; color: var(--gold); }
+.bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--gold); border-radius: 3px; transition: width 0.4s ease; }
+
+/* Section */
+.section { margin-bottom: 24px; }
+.section-header {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 6px 6px 0 0;
+  padding: 12px 18px; cursor: pointer; user-select: none;
+}
+.section-header:hover { background: var(--card); }
+.section-num { font-family: var(--fm); font-size: 10px; color: var(--gold-d); letter-spacing: 0.1em; }
+.section-title { font-family: var(--fd); font-size: 18px; letter-spacing: 0.06em; flex: 1; }
+.section-progress { font-family: var(--fm); font-size: 10px; color: var(--t2); letter-spacing: 0.08em; }
+.section-chevron { font-size: 12px; color: var(--t3); transition: transform 0.2s; }
+.section.open .section-chevron { transform: rotate(90deg); }
+
+.section-body { border: 1px solid var(--border); border-top: none; border-radius: 0 0 6px 6px; overflow: hidden; }
+
+/* Checklist item */
+.check-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 12px 18px; border-bottom: 1px solid var(--border);
+  transition: background 0.15s; cursor: pointer;
+}
+.check-item:last-child { border-bottom: none; }
+.check-item:hover { background: rgba(200,168,90,0.04); }
+.check-item.done { background: rgba(58,158,106,0.04); }
+.check-item.done .check-label { color: var(--t2); text-decoration: line-through; }
+
+.check-box {
+  width: 18px; height: 18px; border-radius: 3px;
+  border: 1px solid var(--border); flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; background: var(--panel);
+}
+.check-item.done .check-box { background: var(--green); border-color: var(--green); }
+.check-box-tick { color: #fff; font-size: 10px; opacity: 0; transition: opacity 0.15s; }
+.check-item.done .check-box-tick { opacity: 1; }
+
+.check-content { flex: 1; }
+.check-label { font-size: 13px; color: var(--t1); line-height: 1.5; margin-bottom: 3px; }
+.check-note { font-family: var(--fm); font-size: 10px; color: var(--t3); letter-spacing: 0.06em; }
+
+.severity {
+  font-family: var(--fm); font-size: 9px; letter-spacing: 0.1em;
+  padding: 2px 7px; border-radius: 2px; flex-shrink: 0; align-self: flex-start; margin-top: 2px;
+}
+.sev-must  { background: rgba(200,64,64,0.15); color: #e07070; border: 1px solid rgba(200,64,64,0.3); }
+.sev-should{ background: rgba(200,138,58,0.15); color: var(--gold); border: 1px solid rgba(200,138,58,0.3); }
+.sev-nice  { background: rgba(58,122,200,0.15); color: #6a9ae0; border: 1px solid rgba(58,122,200,0.3); }
+
+/* Summary bar ở cuối */
+.summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 28px; }
+.summary-card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 16px 18px; text-align: center; }
+.summary-val { font-family: var(--fd); font-size: 32px; }
+.summary-lbl { font-family: var(--fm); font-size: 9px; color: var(--t3); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; }
+
+.reset-btn {
+  margin-top: 20px; padding: 10px 22px;
+  background: none; border: 1px solid var(--border); border-radius: 4px;
+  color: var(--t3); font-family: var(--fm); font-size: 10px; letter-spacing: 0.1em;
+  cursor: pointer; transition: all 0.2s;
+}
+.reset-btn:hover { border-color: var(--red); color: #e07070; }
+</style>
+</head>
+<body>
+
+<h1>KIỂM THỬ HỆ THỐNG</h1>
+<p class="subtitle">// GUNPLA SHOP — Checklist đồ án PHP &amp; MySQL · Nhấn để đánh dấu hoàn thành</p>
+
+<div class="progress-bar-wrap">
+  <div class="progress-top">
+    <span class="progress-label">Tiến độ kiểm thử</span>
+    <span class="progress-pct" id="pctDisplay">0%</span>
+  </div>
+  <div class="bar-track"><div class="bar-fill" id="progressBar" style="width:0%"></div></div>
+</div>
+
+<div id="checklistRoot"></div>
+
+<div class="summary">
+  <div class="summary-card">
+    <div class="summary-val" id="sumDone" style="color:var(--green)">0</div>
+    <div class="summary-lbl">Đã hoàn thành</div>
+  </div>
+  <div class="summary-card">
+    <div class="summary-val" id="sumLeft" style="color:var(--gold)">0</div>
+    <div class="summary-lbl">Còn lại</div>
+  </div>
+  <div class="summary-card">
+    <div class="summary-val" id="sumTotal" style="color:var(--t2)">0</div>
+    <div class="summary-lbl">Tổng mục</div>
+  </div>
+</div>
+
+<button class="reset-btn" onclick="resetAll()">Đặt lại tất cả</button>
+
+<script>
+const SECTIONS = [
+  {
+    title: 'Cài đặt & Cấu hình môi trường',
+    items: [
+      { label: 'Cài XAMPP / Laragon và khởi động Apache + MySQL', note: 'http://localhost hoạt động', sev: 'must' },
+      { label: 'Import file gunpla_shop.sql vào phpMyAdmin thành công', note: 'Kiểm tra 6 bảng: categories, products, product_images, users, orders, order_items', sev: 'must' },
+      { label: 'Truy cập http://localhost/gunpla-shop — trang chủ hiển thị', note: 'Không có lỗi 404 hay 500', sev: 'must' },
+      { label: 'Cài PHPMailer: composer require phpmailer/phpmailer', note: 'Hoặc tải thủ công và đặt vào /vendor/', sev: 'should' },
+      { label: 'Điền Gmail App Password vào config/app.php', note: 'MAIL_USER và MAIL_PASS', sev: 'should' },
+    ]
+  },
+  {
+    title: 'Giai đoạn 1 — Cơ sở dữ liệu',
+    items: [
+      { label: 'Bảng categories có dữ liệu mẫu đúng cấu trúc phân cấp', note: 'Tầng 1 (scale): 1/144, 1/100, 1/60 — Tầng 2 (grade): HG, MG, RG, PG', sev: 'must' },
+      { label: 'Bảng products có ít nhất 4 sản phẩm mẫu', note: 'Mỗi sản phẩm có đủ: name, price, stock, category_id, scale, grade, series', sev: 'must' },
+      { label: 'Khóa ngoại (foreign key) hoạt động đúng', note: 'Thử xóa 1 category đang được product tham chiếu → phải báo lỗi', sev: 'should' },
+      { label: 'Bảng users có tài khoản admin mặc định', note: 'Email: admin@gunplashop.vn — Đổi password bằng password_hash()', sev: 'must' },
+    ]
+  },
+  {
+    title: 'Giai đoạn 2 — Giao diện Frontend',
+    items: [
+      { label: 'Trang chủ hiển thị đúng: navbar, hero, danh mục, sản phẩm', note: 'Kiểm tra trên Chrome, Firefox', sev: 'must' },
+      { label: 'Filter chips lọc sản phẩm theo grade hoạt động (không reload trang)', note: 'Nhấn HG → chỉ hiện sản phẩm HG', sev: 'must' },
+      { label: 'Giỏ hàng sidebar mở/đóng mượt khi nhấn nút cart', note: 'Overlay click để đóng', sev: 'must' },
+      { label: 'Nút "+ Thêm vào giỏ" cập nhật đúng badge số lượng', note: 'Badge trên navbar tăng lên', sev: 'must' },
+      { label: 'Sản phẩm hết hàng hiển thị badge "HẾT HÀNG" và disable nút thêm giỏ', note: 'stock = 0', sev: 'should' },
+      { label: 'Responsive — giao diện không vỡ ở màn hình 768px', note: 'Kiểm tra DevTools > Responsive mode', sev: 'should' },
+    ]
+  },
+  {
+    title: 'Giai đoạn 3 — Backend PHP: Sản phẩm & Giỏ hàng',
+    items: [
+      { label: 'URL /products hiển thị danh sách từ MySQL (không phải data tĩnh)', note: 'Kiểm tra bằng cách thêm sản phẩm mới vào DB rồi reload', sev: 'must' },
+      { label: 'URL /products/detail/1 (hoặc slug) hiển thị chi tiết đúng sản phẩm', note: 'Tên, giá, gallery ảnh, sản phẩm liên quan', sev: 'must' },
+      { label: 'POST /cart/add — thêm vào giỏ lưu vào $_SESSION đúng', note: 'Kiểm tra bằng var_dump($_SESSION[\'cart\'])', sev: 'must' },
+      { label: 'POST /cart/update — thay đổi số lượng hoạt động', note: 'qty = 0 → xóa khỏi giỏ', sev: 'must' },
+      { label: 'GET /cart/shipping?province=Bình+Dương → trả JSON đúng', note: 'Kiểm tra trong browser: phải thấy {shipping_fee: 15000}', sev: 'must' },
+      { label: 'Validation: không thể thêm quá số lượng tồn kho vào giỏ', note: 'Nếu stock=2 mà thêm 3 → phải báo lỗi', sev: 'must' },
+      { label: 'GET /products/search?q=rx-78 → trả về JSON kết quả tìm kiếm', note: 'Dùng cho autocomplete sau này', sev: 'should' },
+    ]
+  },
+  {
+    title: 'Giai đoạn 3 — Backend PHP: Đặt hàng & Email',
+    items: [
+      { label: 'Trang /orders/checkout hiển thị đúng sản phẩm trong giỏ', note: 'Tổng tiền, danh sách sản phẩm khớp với session', sev: 'must' },
+      { label: 'Chọn tỉnh → phí ship cập nhật realtime (AJAX không reload)', note: 'Chọn "Bình Dương" → hiện 15.000đ', sev: 'must' },
+      { label: 'Validate form: để trống Họ tên → hiện lỗi đỏ đúng field', note: 'Lỗi hiện cạnh ô input tương ứng', sev: 'must' },
+      { label: 'POST /orders/place → tạo đơn hàng trong DB thành công', note: 'Kiểm tra bảng orders và order_items có bản ghi mới', sev: 'must' },
+      { label: 'Sau khi đặt hàng, tồn kho sản phẩm giảm đúng số lượng', note: 'Đặt 2 cái → stock giảm 2', sev: 'must' },
+      { label: 'Giỏ hàng $_SESSION được xóa sau khi đặt thành công', note: 'Badge navbar về 0', sev: 'must' },
+      { label: 'Redirect đến /orders/success sau khi đặt thành công', note: 'Hiển thị mã đơn hàng và thông tin', sev: 'must' },
+      { label: 'Email xác nhận đơn hàng gửi đến Gmail của khách', note: 'Kiểm tra cả hộp thư Spam nếu không thấy', sev: 'should' },
+      { label: 'Transaction rollback khi có lỗi — tồn kho không bị trừ nếu tạo đơn thất bại', note: 'Giả lập: ngắt kết nối DB giữa chừng', sev: 'should' },
+    ]
+  },
+  {
+    title: 'Giai đoạn 4 — Admin Panel',
+    items: [
+      { label: '/admin/login — đăng nhập với admin@gunplashop.vn', note: 'Sai mật khẩu → hiện thông báo lỗi, không crash', sev: 'must' },
+      { label: '/admin — Dashboard hiển thị đúng thống kê từ DB', note: 'Số đơn, tổng doanh thu, cảnh báo kho', sev: 'must' },
+      { label: 'Biểu đồ doanh thu 7 ngày hiển thị (Chart.js)', note: 'Có thể thấy bar chart với dữ liệu thực', sev: 'should' },
+      { label: '/admin/products — danh sách sản phẩm hiển thị với phân trang', note: '15 sản phẩm / trang', sev: 'must' },
+      { label: 'Thêm sản phẩm mới → xuất hiện trên trang shop', note: 'Kiểm tra bằng cách tạo 1 sản phẩm mới rồi vào /products', sev: 'must' },
+      { label: 'Upload ảnh sản phẩm → lưu vào /public/uploads/ và hiển thị', note: 'Kiểm tra file tồn tại trong thư mục', sev: 'should' },
+      { label: 'Soft delete sản phẩm → sản phẩm ẩn khỏi shop (is_active=0)', note: 'Vẫn còn trong DB để xem lại', sev: 'must' },
+      { label: '/admin/orders — danh sách đơn với filter theo trạng thái', note: 'Filter tab "Chờ xác nhận" hoạt động', sev: 'must' },
+      { label: 'Nhấn "Xác nhận" → trạng thái đơn đổi realtime (AJAX)', note: 'Badge đổi màu ngay không cần reload', sev: 'must' },
+      { label: '/admin/inventory — thanh tiến độ tồn kho hiển thị đúng màu', note: 'Đỏ = hết hàng, vàng = sắp hết, xanh = OK', sev: 'must' },
+      { label: 'Điều chỉnh kho +20 → tồn kho tăng đúng trong DB', note: 'Kiểm tra realtime trong bảng products', sev: 'must' },
+      { label: 'Truy cập /admin khi chưa đăng nhập → redirect về /admin/login', note: 'Middleware bảo vệ route admin', sev: 'must' },
+    ]
+  },
+  {
+    title: 'Bảo mật cơ bản',
+    items: [
+      { label: 'Mật khẩu lưu bằng password_hash() không phải plaintext', note: 'Kiểm tra cột password trong bảng users', sev: 'must' },
+      { label: 'Tất cả query dùng PDO Prepared Statements (không ghép chuỗi SQL)', note: 'Không có dòng nào như: "SELECT * WHERE id=$id"', sev: 'must' },
+      { label: 'Output HTML dùng htmlspecialchars() để chống XSS', note: 'Kiểm tra các vị trí hiển thị tên sản phẩm, tên user', sev: 'must' },
+      { label: 'File config/app.php (chứa App Password) được thêm vào .gitignore', note: 'Nếu đẩy lên GitHub', sev: 'should' },
+      { label: 'Thư mục /public/uploads/ chỉ nhận ảnh (jpg, png, webp), giới hạn 5MB', note: 'Kiểm tra trong Product::uploadImage()', sev: 'should' },
+    ]
+  },
+  {
+    title: 'Chuẩn bị báo cáo đồ án',
+    items: [
+      { label: 'Chụp screenshot tất cả trang: chủ, danh sách, chi tiết, checkout, success, admin', note: 'Cần ít nhất 8 ảnh màn hình', sev: 'must' },
+      { label: 'Xuất file SQL final có đủ seed data (dữ liệu mẫu đẹp)', note: 'Ít nhất 10 sản phẩm, 3 đơn hàng mẫu', sev: 'must' },
+      { label: 'Vẽ sơ đồ ERD (đã có ở Giai đoạn 1)', note: 'In ra hoặc chèn vào báo cáo Word', sev: 'must' },
+      { label: 'Giải thích logic tính phí ship trong báo cáo', note: 'Bảng SHIP_ZONES, cách tính phụ phí trọng lượng', sev: 'should' },
+      { label: 'Ghi rõ tính năng PHPMailer và Gmail SMTP trong phần triển khai', note: 'Tham khảo đoạn code OrderController::sendConfirmationEmail()', sev: 'should' },
+      { label: 'Hướng dẫn cài đặt (README.md) viết đầy đủ', note: 'Ai đọc cũng tự cài được trong 10 phút', sev: 'nice' },
+    ]
+  },
+];
+
+const STORAGE_KEY = 'gunpla_checklist_v1';
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+}
+function saveState(state) { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+let state = loadState();
+
+function getItemKey(si, ii) { return `${si}_${ii}`; }
+
+function getTotalAndDone() {
+  let total = 0, done = 0;
+  SECTIONS.forEach((sec, si) => sec.items.forEach((_, ii) => {
+    total++;
+    if (state[getItemKey(si, ii)]) done++;
+  }));
+  return { total, done };
+}
+
+function updateProgress() {
+  const { total, done } = getTotalAndDone();
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('pctDisplay').textContent = pct + '%';
+  document.getElementById('sumDone').textContent = done;
+  document.getElementById('sumLeft').textContent = total - done;
+  document.getElementById('sumTotal').textContent = total;
+}
+
+function render() {
+  const root = document.getElementById('checklistRoot');
+  root.innerHTML = '';
+
+  SECTIONS.forEach((sec, si) => {
+    const doneCount = sec.items.filter((_, ii) => state[getItemKey(si, ii)]).length;
+    const isOpen    = !localStorage.getItem('closed_' + si);
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'section' + (isOpen ? ' open' : '');
+
+    wrapper.innerHTML = `
+      <div class="section-header" onclick="toggleSection(${si}, this.parentElement)">
+        <span class="section-num">0${si + 1}</span>
+        <span class="section-title">${sec.title}</span>
+        <span class="section-progress">${doneCount} / ${sec.items.length}</span>
+        <span class="section-chevron">▶</span>
+      </div>
+      <div class="section-body" style="${isOpen ? '' : 'display:none'}">
+        ${sec.items.map((item, ii) => {
+          const key  = getItemKey(si, ii);
+          const done = !!state[key];
+          return `
+            <div class="check-item${done ? ' done' : ''}" onclick="toggle('${key}', this)">
+              <div class="check-box"><span class="check-box-tick">✓</span></div>
+              <div class="check-content">
+                <div class="check-label">${item.label}</div>
+                <div class="check-note">${item.note}</div>
+              </div>
+              <span class="severity sev-${item.sev}">
+                ${item.sev === 'must' ? 'PHẢI CÓ' : item.sev === 'should' ? 'NÊN CÓ' : 'THÊM'}
+              </span>
+            </div>`;
+        }).join('')}
+      </div>
+    `;
+    root.appendChild(wrapper);
+  });
+  updateProgress();
+}
+
+function toggle(key, el) {
+  state[key] = !state[key];
+  el.classList.toggle('done', state[key]);
+  saveState(state);
+  updateProgress();
+}
+
+function toggleSection(si, wrapper) {
+  const body = wrapper.querySelector('.section-body');
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : '';
+  wrapper.classList.toggle('open', !open);
+  if (open) localStorage.setItem('closed_' + si, '1');
+  else localStorage.removeItem('closed_' + si);
+}
+
+function resetAll() {
+  if (!confirm('Đặt lại toàn bộ tiến độ kiểm thử?')) return;
+  state = {};
+  saveState(state);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
