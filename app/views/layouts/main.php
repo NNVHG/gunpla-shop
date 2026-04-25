@@ -44,14 +44,15 @@ include APP_PATH . '/views/layouts/partials/footer.php';
       <span class="cart-total-label">Tạm tính</span>
       <span class="cart-total-val" id="cartTotal">0đ</span>
     </div>
-    <a href="/orders/checkout" class="btn-checkout">THANH TOÁN</a>
+    <a href="<?= BASE_URL ?>/orders/checkout" class="btn-checkout">THANH TOÁN</a>
   </div>
 </div>
 
 <script>
-// Dữ liệu giỏ từ PHP session — khởi tạo cho JS
+// BASE_URL inject từ PHP — shop.js dùng biến này cho mọi fetch/redirect
+window.BASE_URL = '<?= BASE_URL ?>';
 window.__CART__ = <?= json_encode(array_values($_SESSION['cart'] ?? [])) ?>;
 </script>
-<script src="/public/js/shop.js"></script>
+<script src="<?= BASE_URL ?>/public/js/shop.js"></script>
 </body>
 </html>

@@ -22,6 +22,27 @@ class UserController
         $this->userModel = new User();
     }
 
+
+    // ── DISPATCHER — /user/login → GET: loginForm | POST: loginSubmit ──
+    public function login(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->loginSubmit();
+        } else {
+            $this->loginForm();
+        }
+    }
+
+    // ── DISPATCHER — /user/register → GET: registerForm | POST: registerSubmit
+    public function register(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->registerSubmit();
+        } else {
+            $this->registerForm();
+        }
+    }
+
     // ── ĐĂNG NHẬP ──────────────────────────────
     public function loginForm(): void
     {
@@ -141,7 +162,7 @@ class UserController
     private function isLoggedIn(): bool   { return !empty($_SESSION['user']); }
     private function requireLogin(): void { if (!$this->isLoggedIn()) $this->redirect('/user/login'); }
     private function requirePost(): void  { if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); exit; } }
-    private function redirect(string $url): void { header('Location: ' . BASE_URL . '/'); exit; }
+    private function redirect(string $url): void { header("Location: $url"); exit; }
     private function render(string $view, array $data = []): void
     {
         extract($data);
