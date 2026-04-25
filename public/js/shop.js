@@ -131,3 +131,46 @@ document.querySelector('.sort-select')?.addEventListener('change',function(){
   p.set('sort',this.value);p.delete('page');
   window.location.href=B+'/products?'+p.toString();
 });
+
+// ==============================
+// PRODUCT DETAIL
+// ==============================
+let detailQty = 1;
+function changeQty(d, maxStock){
+  detailQty = Math.max(1, Math.min(maxStock, detailQty + d));
+  const display = document.getElementById('qtyDisplay');
+  if(display) display.textContent = detailQty;
+}
+function addToCartDetail(id){ addToCart(id, detailQty); }
+function switchImg(src, el){
+  const mainImg = document.getElementById('mainImg');
+  if(mainImg) mainImg.src = src;
+  document.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ==============================
+// CHECKOUT
+// ==============================
+async function updateShipping() {
+  const province = document.getElementById('provinceSelect').value;
+  if (!province) return;
+  try {
+    const res  = await fetch(B + '/cart/shipping?province=' + encodeURIComponent(province));
+    const data = await res.json();
+    document.getElementById('shippingFeeDisplay').textContent = data.shipping_fee.toLocaleString('vi-VN') + 'đ';
+    document.getElementById('totalDisplay').textContent = data.total.toLocaleString('vi-VN') + 'đ';
+  } catch(e) {}
+}
+
+const checkoutForm = document.getElementById('checkoutForm');
+if(checkoutForm){
+  checkoutForm.addEventListener('submit', function(e) {
+    const prov = document.getElementById('provinceSelect');
+    if (!prov.value) {
+      e.preventDefault();
+      prov.classList.add('error');
+      prov.focus();
+    }
+  });
+}

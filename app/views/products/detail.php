@@ -11,12 +11,11 @@ $stockText  = $stock===0?'Hết hàng':($stock<=5?"Còn $stock sản phẩm":"C�
 ?>
 <div class="container">
   <div class="breadcrumb">
-    <a href="/">Trang chủ</a><span>/</span>
-    <a href="/products">Sản phẩm</a><span>/</span>
+    <a href="<?= BASE_URL ?>/">Trang chủ</a><span>/</span>
+    <a href="<?= BASE_URL ?>/products">Sản phẩm</a><span>/</span>
     <?=htmlspecialchars($p['name'])?>
   </div>
   <div class="product-detail-grid">
-    <!-- ẢNH -->
     <div class="detail-images">
       <div class="main-img" id="mainImgWrap">
         <?php if(!empty($images)): ?>
@@ -35,7 +34,6 @@ $stockText  = $stock===0?'Hết hàng':($stock<=5?"Còn $stock sản phẩm":"C�
         </div>
       <?php endif; ?>
     </div>
-    <!-- THÔNG TIN -->
     <div class="detail-info">
       <div class="detail-series"><?=htmlspecialchars($p['series']??'')?></div>
       <h1 class="detail-name"><?=htmlspecialchars($p['name'])?></h1>
@@ -49,9 +47,9 @@ $stockText  = $stock===0?'Hết hàng':($stock<=5?"Còn $stock sản phẩm":"C�
       <?php if($stock>0): ?>
         <div class="qty-row">
           <div class="qty-control">
-            <button onclick="changeQty(-1)">−</button>
+            <button onclick="changeQty(-1, <?=$stock?>)">−</button>
             <span id="qtyDisplay">1</span>
-            <button onclick="changeQty(1)">+</button>
+            <button onclick="changeQty(1, <?=$stock?>)">+</button>
           </div>
           <button class="btn-add-large" onclick="addToCartDetail(<?=$p['id']?>)">+ THÊM VÀO GIỎ</button>
         </div>
@@ -64,13 +62,12 @@ $stockText  = $stock===0?'Hết hàng':($stock<=5?"Còn $stock sản phẩm":"C�
     </div>
   </div>
 
-  <!-- SẢN PHẨM LIÊN QUAN -->
   <?php if(!empty($related)): ?>
     <div style="padding-bottom:48px">
       <div class="section-head"><h2 class="section-title">Liên quan</h2></div>
       <div class="product-grid">
         <?php foreach($related as $r): ?>
-          <div class="product-card" onclick="window.location='/products/detail/<?=$r['id']?>'">
+          <div class="product-card" onclick="window.location='<?= BASE_URL ?>/products/detail/<?=$r['id']?>'">
             <div class="product-img-wrap">
               <?php if(!empty($r['thumbnail_path'])): ?>
                 <img src="<?=htmlspecialchars($r['thumbnail_path'])?>" alt="<?=htmlspecialchars($r['name'])?>" loading="lazy">
@@ -90,18 +87,3 @@ $stockText  = $stock===0?'Hết hàng':($stock<=5?"Còn $stock sản phẩm":"C�
     </div>
   <?php endif; ?>
 </div>
-
-<script>
-let qty = 1;
-const maxStock = <?=$stock?>;
-function changeQty(d){
-  qty = Math.max(1, Math.min(maxStock, qty+d));
-  document.getElementById('qtyDisplay').textContent = qty;
-}
-function addToCartDetail(id){ addToCart(id, qty); }
-function switchImg(src, el){
-  document.getElementById('mainImg').src = src;
-  document.querySelectorAll('.thumb-item').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-}
-</script>

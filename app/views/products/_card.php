@@ -25,7 +25,7 @@ $delay      = ($i % 8) * 0.05;
       <button class="btn-wish" title="Yêu thích">♡</button>
     </div>
   </div>
-  <a href="/products/detail/<?= $p['id'] ?>" style="display:contents">
+  <a href="<?= BASE_URL ?>/products/detail/<?= $p['id'] ?>" style="display:contents">
     <div class="product-info">
       <div class="product-series"><?= htmlspecialchars($p['series'] ?? '') ?></div>
       <div class="product-name"><?= htmlspecialchars($p['name']) ?></div>

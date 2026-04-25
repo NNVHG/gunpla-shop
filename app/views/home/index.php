@@ -13,7 +13,7 @@ function pCard(array $p): string {
     <h1 class="hero-title">BUILD YOUR<span class="accent-line">LEGEND</span></h1>
     <p class="hero-sub">// Mô Hình Lắp Ráp Chính Hãng Bandai</p>
     <p class="hero-desc">Khám phá hàng trăm mô hình Gunpla chính hãng — từ HG 1/144 đến PG Unleashed cho collector đẳng cấp.</p>
-    <div class="hero-actions"><a href="/products" class="btn-hero">Xem sản phẩm</a><a href="/products?grade=PG" class="btn-ghost">Perfect Grade</a></div>
+    <div class="hero-actions"><a href="<?= BASE_URL ?>/products" class="btn-hero">Xem sản phẩm</a><a href="/products?grade=PG" class="btn-ghost">Perfect Grade</a></div>
   </div></div>
   <div class="hero-stats"><div class="container"><div class="hero-stats-inner">
     <?php foreach(['HG'=>'High Grade / 1/144','MG'=>'Master Grade / 1/100','RG'=>'Real Grade / 1/144','PG'=>'Perfect Grade / 1/60'] as $g=>$lbl): ?>
