@@ -31,6 +31,21 @@ $currentSort  = $sort ?? 'newest';
             <?=$l?>
           </a>
         <?php endforeach; ?>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:18px 0 14px">// Dòng thời gian</div>
+        <?php foreach([''=>'Tất cả', 'uc-timeline'=>'Universal Century', 'ce-timeline'=>'Cosmic Era (SEED)', 'pd-timeline'=>'Post Disaster (IBO)', 'as-timeline'=>'Ad Stella (WFM)'] as $v=>$l): ?>
+          <a href="<?= BASE_URL ?>/products?<?=http_build_query(array_merge($filters??[],['category_slug'=>$v,'page'=>1]))?>"
+            style="display:block;padding:7px 10px;font-family:var(--font-mono);font-size:11px;border-radius:4px;margin-bottom:3px;letter-spacing:.06em;transition:all .15s;<?=($filters['category_slug']??'')===$v?'background:rgba(200,168,90,.1);color:var(--gold);':'color:var(--text-secondary);' ?>">
+            <?=$l?>
+          </a>
+        <?php endforeach; ?>
+
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:18px 0 14px">// Hãng sản xuất</div>
+        <?php foreach([''=>'Tất cả', 'bandai'=>'Bandai Namco', 'third-party-mecha'=>'Third-Party / Bootleg'] as $v=>$l): ?>
+          <a href="<?= BASE_URL ?>/products?<?=http_build_query(array_merge($filters??[],['category_slug'=>$v,'page'=>1]))?>"
+            style="display:block;padding:7px 10px;font-family:var(--font-mono);font-size:11px;border-radius:4px;margin-bottom:3px;letter-spacing:.06em;transition:all .15s;<?=($filters['category_slug']??'')===$v?'background:rgba(200,168,90,.1);color:var(--gold);':'color:var(--text-secondary);' ?>">
+            <?=$l?>
+          </a>
+        <?php endforeach; ?>
       </div>
     </aside>
     <div>
