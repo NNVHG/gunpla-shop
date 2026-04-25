@@ -44,20 +44,21 @@ class ProductController
 
     public function index(): void
     {
-        // Lấy tham số lọc từ URL (GET parameters)
+        // Lấy tham số lọc từ URL
         $filters = [];
         if (!empty($_GET['grade']))       $filters['grade']       = htmlspecialchars($_GET['grade']);
         if (!empty($_GET['scale']))       $filters['scale']       = htmlspecialchars($_GET['scale']);
         if (!empty($_GET['series']))      $filters['series']      = htmlspecialchars($_GET['series']);
         if (!empty($_GET['category_id'])) $filters['category_id'] = (int) $_GET['category_id'];
         if (!empty($_GET['search']))      $filters['search']      = htmlspecialchars($_GET['search']);
-
-        $sort    = in_array($_GET['sort'] ?? '', ['newest','price_asc','price_desc','bestseller'])
-                   ? $_GET['sort'] : 'newest';
-        $page    = max(1, (int) ($_GET['page'] ?? 1));
+        
+        $sort = in_array($_GET['sort'] ?? '', ['newest','price_asc','price_desc','bestseller']) ? $_GET['sort'] : 'newest';
+        $page = max(1, (int) ($_GET['page'] ?? 1));
 
         $result  = $this->productModel->getAll($filters, $sort, $page, 12);
+        
         $categories = $this->categoryModel->getTopLevel();
+        $groupedCategories = $this->categoryModel->getGroupedByType(); // MỚI THÊM: Lấy danh mục nhóm theo type
 
         $data = [
             'title'      => 'Danh sách sản phẩm — GUNPLA SHOP',
@@ -68,9 +69,9 @@ class ProductController
             'filters'    => $filters,
             'sort'       => $sort,
             'categories' => $categories,
+            'groupedCategories' => $groupedCategories, // MỚI THÊM: Đẩy sang View
         ];
 
-        // Nếu là AJAX request → trả về JSON (dùng cho filter không reload trang)
         if ($this->isAjax()) {
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode($result);

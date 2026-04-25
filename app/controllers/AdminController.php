@@ -142,9 +142,10 @@ class AdminController
     {
         $this->requireAdmin();
         $this->renderAdmin('admin/products/form', [
-            'title'      => 'Thêm sản phẩm mới',
-            'categories' => $this->categoryModel->getAll(),
-            'product'    => null,
+            'title'       => 'Thêm sản phẩm mới',
+            'categories'  => $this->categoryModel->getTree(), // Dùng getTree để hiển thị danh mục phân cấp
+            'groupedCats' => $this->categoryModel->cloneGroupedByType(), // Dữ liệu cho các dropdown khác
+            'product'     => null,
         ]);
     }
 
@@ -190,9 +191,10 @@ class AdminController
         if (!$product) { $this->redirect('/admin/products'); return; }
 
         $this->renderAdmin('admin/products/form', [
-            'title'      => 'Chỉnh sửa sản phẩm',
-            'categories' => $this->categoryModel->getAll(),
-            'product'    => $product,
+            'title'       => 'Chỉnh sửa sản phẩm',
+            'categories'  => $this->categoryModel->getTree(),
+            'groupedCats' => $this->categoryModel->cloneGroupedByType(),
+            'product'     => $product,
         ]);
     }
 
@@ -423,4 +425,5 @@ class AdminController
             echo $content;
         }
     }
+    
 }

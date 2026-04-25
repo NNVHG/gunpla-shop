@@ -15,37 +15,61 @@ $currentSort  = $sort ?? 'newest';
 <div class="container" style="padding-top:32px;padding-bottom:48px">
   <div class="breadcrumb"><a href="<?= BASE_URL ?>/">Trang chủ</a><span>/</span>Sản phẩm</div>
   <div style="display:grid;grid-template-columns:220px 1fr;gap:32px;margin-top:28px">
-    <aside>
-      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:7px;padding:20px">
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin-bottom:14px">// Lọc theo dòng</div>
-        <?php foreach([''=>'Tất cả','HG'=>'High Grade','MG'=>'Master Grade','RG'=>'Real Grade','PG'=>'Perfect Grade'] as $v=>$l): ?>
-          <a href="<?= BASE_URL ?>/products?grade=<?=$v?>&sort=<?=$currentSort?>"
-             style="display:block;padding:7px 10px;font-family:var(--font-mono);font-size:11px;border-radius:4px;margin-bottom:3px;letter-spacing:.06em;transition:all .15s;<?=$currentGrade===$v?'background:rgba(200,168,90,.1);color:var(--gold);':'color:var(--text-secondary);' ?>">
-            <?=$l?>
-          </a>
-        <?php endforeach; ?>
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:18px 0 14px">// Tỷ lệ</div>
-        <?php foreach([''=>'Tất cả','1/144'=>'1/144 Scale','1/100'=>'1/100 Scale','1/60'=>'1/60 Scale'] as $v=>$l): ?>
-          <a href="<?= BASE_URL ?>/products?<?=http_build_query(array_merge($filters??[],['scale'=>$v,'page'=>1]))?>"
-             style="display:block;padding:7px 10px;font-family:var(--font-mono);font-size:11px;border-radius:4px;margin-bottom:3px;letter-spacing:.06em;transition:all .15s;<?=$currentScale===$v?'background:rgba(200,168,90,.1);color:var(--gold);':'color:var(--text-secondary);' ?>">
-            <?=$l?>
-          </a>
-        <?php endforeach; ?>
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:18px 0 14px">// Dòng thời gian</div>
-        <?php foreach([''=>'Tất cả', 'uc-timeline'=>'Universal Century', 'ce-timeline'=>'Cosmic Era (SEED)', 'pd-timeline'=>'Post Disaster (IBO)', 'as-timeline'=>'Ad Stella (WFM)'] as $v=>$l): ?>
-          <a href="<?= BASE_URL ?>/products?<?=http_build_query(array_merge($filters??[],['category_slug'=>$v,'page'=>1]))?>"
-            style="display:block;padding:7px 10px;font-family:var(--font-mono);font-size:11px;border-radius:4px;margin-bottom:3px;letter-spacing:.06em;transition:all .15s;<?=($filters['category_slug']??'')===$v?'background:rgba(200,168,90,.1);color:var(--gold);':'color:var(--text-secondary);' ?>">
-            <?=$l?>
-          </a>
+<aside>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:7px;padding:20px;max-height:85vh;overflow-y:auto;">
+        
+        <style>
+          .filter-link { display:block; padding:7px 10px; font-family:var(--font-mono); font-size:11px; border-radius:4px; margin-bottom:3px; letter-spacing:.06em; transition:all .15s; color:var(--text-secondary); }
+          .filter-link:hover { color:var(--text-primary); background:var(--bg-hover); }
+          .filter-link.active { background:rgba(200,168,90,.1); color:var(--gold); font-weight:bold; border-left: 2px solid var(--gold); }
+        </style>
+
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px">// Cấp độ (Grade)</div>
+        <a href="<?= BASE_URL ?>/products?<?=http_build_query(array_merge($filters??[],['grade'=>'','page'=>1]))?>"
+           class="filter-link <?= empty($filters['grade']) ? 'active' : '' ?>">Tất cả Grade</a>
+        <?php foreach(['SD'=>'SD (Super Deformed)','EG'=>'EG (Entry Grade)','HG'=>'HG (High Grade)','RG'=>'RG (Real Grade)','MG'=>'MG (Master Grade)','MGSD'=>'MGSD','PG'=>'PG (Perfect Grade)'] as $v=>$l): ?>
+          <a href="<?= BASE_URL ?>/products?<?=http_build_query(array_merge($filters??[],['grade'=>$v,'page'=>1]))?>"
+             class="filter-link <?= ($filters['grade']??'')===$v ? 'active' : '' ?>"><?=$l?></a>
         <?php endforeach; ?>
 
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:18px 0 14px">// Hãng sản xuất</div>
-        <?php foreach([''=>'Tất cả', 'bandai'=>'Bandai Namco', 'third-party-mecha'=>'Third-Party / Bootleg'] as $v=>$l): ?>
-          <a href="<?= BASE_URL ?>/products?<?=http_build_query(array_merge($filters??[],['category_slug'=>$v,'page'=>1]))?>"
-            style="display:block;padding:7px 10px;font-family:var(--font-mono);font-size:11px;border-radius:4px;margin-bottom:3px;letter-spacing:.06em;transition:all .15s;<?=($filters['category_slug']??'')===$v?'background:rgba(200,168,90,.1);color:var(--gold);':'color:var(--text-secondary);' ?>">
-            <?=$l?>
-          </a>
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:20px 0 10px">// Tỷ lệ (Scale)</div>
+        <a href="<?= BASE_URL ?>/products?<?=http_build_query(array_merge($filters??[],['scale'=>'','page'=>1]))?>"
+           class="filter-link <?= empty($filters['scale']) ? 'active' : '' ?>">Tất cả Tỷ lệ</a>
+        <?php foreach(['1/144'=>'1/144 Scale','1/100'=>'1/100 Scale','1/60'=>'1/60 Scale','1/48'=>'1/48 Scale','Non-scale'=>'Không tỷ lệ'] as $v=>$l): ?>
+          <a href="<?= BASE_URL ?>/products?<?=http_build_query(array_merge($filters??[],['scale'=>$v,'page'=>1]))?>"
+             class="filter-link <?= ($filters['scale']??'')===$v ? 'active' : '' ?>"><?=$l?></a>
         <?php endforeach; ?>
+
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:20px 0 10px">// Vũ trụ phim</div>
+        <a href="<?= BASE_URL ?>/products?<?=http_build_query(array_merge($filters??[],['series'=>'','page'=>1]))?>"
+           class="filter-link <?= empty($filters['series']) ? 'active' : '' ?>">Tất cả Vũ trụ</a>
+        <?php foreach(['Gundam'=>'Gundam Gốc (UC)','SEED'=>'Gundam SEED (CE)','00'=>'Gundam 00 (AD)','Orphans'=>'Iron-Blooded (PD)','Mercury'=>'Witch from Mercury (AS)'] as $v=>$l): ?>
+          <a href="<?= BASE_URL ?>/products?<?=http_build_query(array_merge($filters??[],['series'=>$v,'page'=>1]))?>"
+             class="filter-link <?= ($filters['series']??'')===$v ? 'active' : '' ?>"><?=$l?></a>
+        <?php endforeach; ?>
+
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:20px 0 10px">// Dụng cụ & Phụ kiện</div>
+        <a href="<?= BASE_URL ?>/products?<?=http_build_query(array_merge($filters??[],['category_id'=>'','page'=>1]))?>"
+           class="filter-link <?= empty($filters['category_id']) ? 'active' : '' ?>">Tất cả Phụ kiện</a>
+        
+        <?php 
+        // Gộp Tools, Chemicals, Accessories, Combos để render
+        $equipments = array_merge(
+            $groupedCategories['tool'] ?? [],
+            $groupedCategories['chemical'] ?? [],
+            $groupedCategories['accessory'] ?? [],
+            $groupedCategories['combo'] ?? []
+        );
+        ?>
+        <?php foreach($equipments as $c): ?>
+          <?php if($c['parent_id'] !== null || $c['type'] === 'combo'): // Chỉ hiển thị danh mục con và combo ?>
+          <a href="<?= BASE_URL ?>/products?<?=http_build_query(array_merge($filters??[],['category_id'=>$c['id'],'page'=>1]))?>"
+             class="filter-link <?= ((int)($filters['category_id']??0))===$c['id'] ? 'active' : '' ?>">
+             <?= htmlspecialchars($c['name']) ?>
+          </a>
+          <?php endif; ?>
+        <?php endforeach; ?>
+
       </div>
     </aside>
     <div>

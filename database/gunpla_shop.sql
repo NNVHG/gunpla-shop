@@ -12,15 +12,12 @@ CREATE DATABASE IF NOT EXISTS gunpla_shop
 USE gunpla_shop;
 
 -- ── 1. CATEGORIES (phân cấp tự tham chiếu) ────────────────────────
--- Tầng 1 (parent_id IS NULL) : Tỷ lệ  → 1/144, 1/100, 1/60
--- Tầng 2 (parent_id = ID T1) : Dòng   → HG, MG, RG, PG
--- ─────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS categories (
     id         INT UNSIGNED     AUTO_INCREMENT PRIMARY KEY,
     name       VARCHAR(100)     NOT NULL,
     slug       VARCHAR(100)     NOT NULL UNIQUE,
     parent_id  INT UNSIGNED     NULL DEFAULT NULL,
-    type       ENUM('scale','grade','tool','accessory') NOT NULL DEFAULT 'scale',
+    type       ENUM('scale','grade','series','manufacturer','tool','accessory','chemical','combo') NOT NULL DEFAULT 'scale',
     sort_order TINYINT UNSIGNED NOT NULL DEFAULT 0,
     FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -100,25 +97,77 @@ CREATE TABLE IF NOT EXISTS order_items (
 -- DỮ LIỆU MẪU (SEED DATA)
 -- ============================================================
 
--- Tầng 1: Tỷ lệ
-INSERT INTO categories (name, slug, parent_id, type, sort_order) VALUES
-('1/144 Scale', '1-144', NULL, 'scale', 1),
-('1/100 Scale', '1-100', NULL, 'scale', 2),
-('1/60 Scale',  '1-60',  NULL, 'scale', 3),
-('Dụng cụ',     'tools', NULL, 'tool',  4),
-('Phụ kiện',    'accessories', NULL, 'accessory', 5);
+-- ── PHẦN 1: MÔ HÌNH (Gắn ID cứng từ 1-11 để giữ liên kết với Sản phẩm cũ) ──
+INSERT INTO categories (id, name, slug, parent_id, type, sort_order) VALUES
+(1, 'Tỉ lệ 1/144', 'scale-1-144', NULL, 'scale', 1),
+(2, 'Tỉ lệ 1/100', 'scale-1-100', NULL, 'scale', 2),
+(3, 'Tỉ lệ 1/60', 'scale-1-60', NULL, 'scale', 3),
+(4, 'Tỉ lệ 1/48', 'scale-1-48', NULL, 'scale', 4),
+(5, 'Không tỉ lệ (Non-scale)', 'scale-non-scale', NULL, 'scale', 5),
 
--- Tầng 2: Dòng (grade) — con của tỷ lệ
-INSERT INTO categories (name, slug, parent_id, type, sort_order) VALUES
-('HG (High Grade)',     'hg',            1, 'grade', 1),
-('RG (Real Grade)',     'rg',            1, 'grade', 2),
-('Entry Grade',         'entry-grade',   1, 'grade', 3),
-('MG (Master Grade)',   'mg',            2, 'grade', 1),
-('MG Ver.Ka',           'mg-verka',      2, 'grade', 2),
-('PG (Perfect Grade)',  'pg',            3, 'grade', 1),
-('PG Unleashed',        'pg-unleashed',  3, 'grade', 2);
+(6, 'HG (High Grade)', 'grade-hg', NULL, 'grade', 3),
+(7, 'RG (Real Grade)', 'grade-rg', NULL, 'grade', 4),
+(8, 'EG (Entry Grade)', 'grade-eg', NULL, 'grade', 2),
+(9, 'MG (Master Grade)', 'grade-mg', NULL, 'grade', 5),
+(10, 'MG Ver.Ka', 'grade-mg-verka', NULL, 'grade', 6),
+(11, 'PG (Perfect Grade)', 'grade-pg', NULL, 'grade', 7);
 
--- Sản phẩm mẫu (10 sản phẩm)
+-- ── PHẦN 1.2: Các phân loại Mô hình bổ sung ──
+INSERT INTO categories (name, slug, parent_id, type, sort_order) VALUES
+('SD (Super Deformed)', 'grade-sd', NULL, 'grade', 1),
+('MGSD', 'grade-mgsd', NULL, 'grade', 8),
+('PG Unleashed', 'grade-pg-unleashed', NULL, 'grade', 9),
+
+('Universal Century [UC]', 'series-uc', NULL, 'series', 1),
+('Cosmic Era [CE]', 'series-ce', NULL, 'series', 2),
+('Anno Domini [AD]', 'series-ad', NULL, 'series', 3),
+('Post Disaster [PD]', 'series-pd', NULL, 'series', 4),
+('Ad Stella [AS]', 'series-as', NULL, 'series', 5),
+
+('Bandai Namco', 'brand-bandai', NULL, 'manufacturer', 1),
+('Hãng thiết kế riêng (Third-party)', 'brand-third-party', NULL, 'manufacturer', 2),
+('Hãng sao chép (Bootleg)', 'brand-bootleg', NULL, 'manufacturer', 3);
+
+-- ── PHẦN 2: DỤNG CỤ, HÓA CHẤT, PHỤ KIỆN ──
+-- 2.1 Nhóm cơ bản
+INSERT INTO categories (id, name, slug, parent_id, type, sort_order) VALUES
+(40, 'Dụng cụ cơ bản', 'tool-basic', NULL, 'tool', 1),
+(41, 'Kềm cắt chuyên dụng', 'tool-nipper', 40, 'tool', 1),
+(42, 'Dao trổ (Hobby Knife)', 'tool-knife', 40, 'tool', 2),
+(43, 'Nhíp gắp (Tweezers)', 'tool-tweezers', 40, 'tool', 3),
+(44, 'Dụng cụ mài nhám', 'tool-sanding', 40, 'tool', 4);
+
+-- 2.2 Nhóm chi tiết
+INSERT INTO categories (id, name, slug, parent_id, type, sort_order) VALUES
+(50, 'Dụng cụ làm chi tiết', 'tool-detailing', NULL, 'tool', 2),
+(51, 'Bút kẻ viền (Panel Line)', 'tool-panel-line', 50, 'tool', 1),
+(52, 'Bút sơn (Gundam Marker)', 'tool-marker', 50, 'tool', 2),
+(53, 'Dụng cụ dán đề can', 'tool-decal-acc', 50, 'tool', 3),
+(54, 'Dụng cụ tách mảnh', 'tool-separator', 50, 'tool', 4);
+
+-- 2.3 Nhóm hoàn thiện (Hóa chất)
+INSERT INTO categories (id, name, slug, parent_id, type, sort_order) VALUES
+(60, 'Dụng cụ hoàn thiện', 'chem-finishing', NULL, 'chemical', 3),
+(61, 'Sơn phủ bảo vệ (Topcoat)', 'chem-topcoat', 60, 'chemical', 1),
+(62, 'Keo dán mô hình', 'chem-cement', 60, 'chemical', 2);
+
+-- 2.4 Nhóm nâng cao
+INSERT INTO categories (id, name, slug, parent_id, type, sort_order) VALUES
+(70, 'Dụng cụ nâng cao', 'tool-advanced', NULL, 'tool', 4),
+(71, 'Dao khắc (Scriber)', 'tool-scriber', 70, 'tool', 1),
+(72, 'Máy mài cầm tay', 'tool-electric-sander', 70, 'tool', 2),
+(73, 'Bộ máy phun sơn (Airbrush)', 'tool-airbrush', 70, 'tool', 3);
+
+-- 2.5 Phụ kiện
+INSERT INTO categories (id, name, slug, parent_id, type, sort_order) VALUES
+(80, 'Phụ kiện hỗ trợ', 'accessory-support', NULL, 'accessory', 5),
+(81, 'Thảm cắt (Cutting Mat)', 'acc-cutting-mat', 80, 'accessory', 1),
+(82, 'Giá đỡ (Action Base)', 'acc-action-base', 80, 'accessory', 2),
+(83, 'Khay đựng linh kiện', 'acc-parts-tray', 80, 'accessory', 3),
+(90, 'Combo khởi đầu (Starter Kit)', 'combo-starter', NULL, 'combo', 6);
+
+-- ── 3. SẢN PHẨM MẪU ──
+-- Giữ nguyên 10 sản phẩm mẫu (vẫn map đúng ID 6, 7, 9, 10, 11)
 INSERT INTO products (name, slug, price, stock, category_id, scale, grade, series, description, weight_gram) VALUES
 ('HG 1/144 RX-78-2 Gundam (Revive Edition)',
  'hg-rx78-2-revive', 250000, 15, 6, '1/144', 'HG',

@@ -49,4 +49,16 @@ class Category
         $stmt->execute([':slug' => $slug]);
         return $stmt->fetch();
     }
+/**
+     * Lấy toàn bộ danh mục và nhóm lại theo cột 'type'
+     */
+    public function getGroupedByType(): array
+    {
+        $all = $this->getAll();
+        $grouped = [];
+        foreach ($all as $cat) {
+            $grouped[$cat['type']][] = $cat;
+        }
+        return $grouped;
+    }
 }
