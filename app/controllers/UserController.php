@@ -49,7 +49,9 @@ class UserController
         if ($this->isLoggedIn()) { $this->redirect('/'); return; }
         $error = $_SESSION['login_error'] ?? null;
         unset($_SESSION['login_error']);
-        $this->render('user/login', ['title' => 'Đăng nhập', 'error' => $error]);
+        
+        // Thêm tham số false ở cuối dòng này:
+        $this->render('user/login', ['title' => 'Đăng nhập', 'error' => $error], false);
     }
 
     public function loginSubmit(): void
@@ -82,7 +84,9 @@ class UserController
         $errors = $_SESSION['register_errors'] ?? [];
         $old    = $_SESSION['register_form']   ?? [];
         unset($_SESSION['register_errors'], $_SESSION['register_form']);
-        $this->render('user/register', compact('errors', 'old') + ['title' => 'Đăng ký tài khoản']);
+        
+        // Thêm tham số false ở cuối dòng này:
+        $this->render('user/register', compact('errors', 'old') + ['title' => 'Đăng ký tài khoản'], false);
     }
 
     public function registerSubmit(): void
@@ -162,14 +166,24 @@ class UserController
     private function isLoggedIn(): bool   { return !empty($_SESSION['user']); }
     private function requireLogin(): void { if (!$this->isLoggedIn()) $this->redirect('/user/login'); }
     private function requirePost(): void  { if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); exit; } }
-    private function redirect(string $url): void { header("Location: $url"); exit; }
-    private function render(string $view, array $data = []): void
+    private function redirect(string $url): void { 
+    header('Location: ' . BASE_URL . '/' . ltrim($url, '/')); 
+    exit; 
+}
+    private function render(string $view, array $data = [], bool $withLayout = true): void
     {
         extract($data);
         ob_start();
         $f = APP_PATH . '/views/' . $view . '.php';
         if (file_exists($f)) include $f; else echo "<p>View not found: $f</p>";
         $content = ob_get_clean();
-        include APP_PATH . '/views/layouts/main.php';
+        
+        // Nếu $withLayout là true thì nạp main.php, nếu false thì in thẳng giao diện Auth
+        if ($withLayout) {
+            include APP_PATH . '/views/layouts/main.php';
+        } else {
+            echo $content;
+        }
     }
+
 }

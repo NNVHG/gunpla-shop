@@ -7,12 +7,8 @@
         <span class="logo-sub">SHOP</span>
       </a>
       <ul class="nav-links">
-        <li><a href="<?= BASE_URL ?>/"
-          <?= rtrim(parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH),'/')==rtrim(BASE_URL,'/') ? 'class="active"':'' ?>
-          >Trang chủ</a></li>
-        <li><a href="<?= BASE_URL ?>/products"
-          <?= str_contains($_SERVER['REQUEST_URI'], BASE_URL.'/products') ? 'class="active"':'' ?>
-          >Sản phẩm</a></li>
+        <li><a href="<?= BASE_URL ?>/" <?= $_SERVER['REQUEST_URI']==='/' ?'class="active"':'' ?>>Trang chủ</a></li>
+        <li><a href="<?= BASE_URL ?>/products" <?= str_starts_with($_SERVER['REQUEST_URI'],'/products')?'class="active"':'' ?>>Sản phẩm</a></li>
         <li><a href="<?= BASE_URL ?>/products?type=tool">Dụng cụ</a></li>
         <li><a href="#">Tin tức</a></li>
       </ul>

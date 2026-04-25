@@ -6,9 +6,7 @@
 <title><?= htmlspecialchars($title ?? 'GUNPLA SHOP') ?></title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= BASE_URL ?>/public/css/shop.css">
-</head>
-<body>
+<link rel="stylesheet" href="<?= BASE_URL ?>/public/css/shop.css?v=<?= time() ?>"><body>
 
 <div class="topbar">
   <div class="container">
@@ -53,6 +51,5 @@ include APP_PATH . '/views/layouts/partials/footer.php';
 window.BASE_URL = '<?= BASE_URL ?>';
 window.__CART__ = <?= json_encode(array_values($_SESSION['cart'] ?? [])) ?>;
 </script>
-<script src="<?= BASE_URL ?>/public/js/shop.js"></script>
-</body>
+<script src="<?= BASE_URL ?>/public/js/shop.js?v=<?= time() ?>"></script>
 </html>

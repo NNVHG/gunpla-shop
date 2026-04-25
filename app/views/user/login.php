@@ -1,33 +1,48 @@
-<?php /* app/views/user/login.php */ ?>
-<div style="min-height:70vh;display:flex;align-items:center;justify-content:center;padding:40px 24px">
-  <div style="width:100%;max-width:400px">
-    <div style="text-align:center;margin-bottom:32px">
-      <h1 style="font-family:var(--font-display);font-size:36px;letter-spacing:.1em">ĐĂNG NHẬP</h1>
-      <p style="font-family:var(--font-mono);font-size:11px;color:var(--text-hint);letter-spacing:.1em;margin-top:6px">// GUNPLA SHOP ACCOUNT</p>
-    </div>
-    <?php if (!empty($error)): ?>
-      <div style="background:rgba(200,64,64,.1);border:1px solid rgba(200,64,64,.3);border-radius:5px;padding:12px 16px;margin-bottom:20px;color:#e07070;font-size:13px">
-        <?= htmlspecialchars($error) ?>
-      </div>
-    <?php endif; ?>
-    <div class="form-card">
-      <form method="POST" action="<?= BASE_URL ?>/user/loginSubmit">
-        <input type="hidden" name="redirect" value="<?= htmlspecialchars($_GET['redirect'] ?? '/') ?>">
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input type="email" name="email" class="form-input" placeholder="your@email.com" required autofocus>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($title ?? 'Đăng nhập') ?> — GUNPLA SHOP</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/auth.css?v=<?= time() ?>">
+</head>
+<body class="auth-page">
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <a href="<?= BASE_URL ?>/" class="auth-logo">GUNPLA<span>SHOP</span></a>
+            <div class="auth-subtitle">// ĐĂNG NHẬP HỆ THỐNG</div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Mật khẩu</label>
-          <input type="password" name="password" class="form-input" placeholder="••••••••" required>
+
+        <?php if (!empty($error)): ?>
+            <div class="alert"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
+
+        <form method="POST" action="<?= BASE_URL ?>/user/loginSubmit">
+            <input type="hidden" name="redirect" value="<?= htmlspecialchars($_GET['redirect'] ?? '/') ?>">
+
+            <div class="form-group">
+                <label class="form-label">Email / Tài khoản</label>
+                <input type="email" name="email" class="form-control" placeholder="pilot@gunplashop.vn" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Mật khẩu</label>
+                <input type="password" name="password" id="loginPass" class="form-control" placeholder="••••••••" required>
+                <button type="button" class="btn-toggle-pass" data-target="loginPass" title="Hiện mật khẩu">👁️</button>
+            </div>
+
+            <button type="submit" class="btn-submit">BẮT ĐẦU KẾT NỐI</button>
+        </form>
+
+        <div class="auth-footer">
+            Chưa có tài khoản? <a href="<?= BASE_URL ?>/user/register">Đăng ký ngay</a><br><br>
+            <a href="<?= BASE_URL ?>/" style="color: var(--text-muted); font-family: 'Share Tech Mono';">← Trở về căn cứ (Trang chủ)</a>
         </div>
-        <button type="submit" style="width:100%;padding:13px;background:var(--gold);color:var(--bg-void);border:none;border-radius:4px;font-family:var(--font-display);font-size:22px;letter-spacing:.1em;cursor:pointer;margin-top:8px">
-          ĐĂNG NHẬP
-        </button>
-      </form>
     </div>
-    <p style="text-align:center;margin-top:20px;font-size:13px;color:var(--text-hint)">
-      Chưa có tài khoản? <a href="<?= BASE_URL ?>/user/registerForm" style="color:var(--gold)">Đăng ký ngay</a>
-    </p>
-  </div>
 </div>
+
+<script src="<?= BASE_URL ?>/public/js/auth.js?v=<?= time() ?>"></script>
+</body>
+</html>

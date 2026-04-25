@@ -1,14 +1,10 @@
-Options -Indexes
+Options -Indexes +FollowSymLinks
 RewriteEngine On
-
-# BẮT BUỘC khi chạy trong subfolder XAMPP
-# Đổi /gunpla-shop/ nếu tên thư mục của bạn khác
 RewriteBase /gunpla-shop/
 
-# Cho phép truy cập thẳng file tĩnh (CSS, JS, ảnh)
+# Bỏ qua thư mục public để nhận CSS/JS
+RewriteRule ^public/ - [L]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-
-# Tất cả request còn lại → index.php
 RewriteRule ^(.*)$ index.php [QSA,L]
-RewriteRule ^(.*)$ index.php [L,QSA]
