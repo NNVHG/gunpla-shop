@@ -90,7 +90,6 @@ class UserController
         $this->redirect('/');
     }
 
-    // ── HÀM PROFILE ĐƯỢC CHUẨN HÓA LẠI ĐỂ KHÔNG BỊ TRÙNG ──
     public function profile(): void {
         $this->requireLogin();
         $userId = (int) $_SESSION['user']['id'];
@@ -103,7 +102,8 @@ class UserController
         $favoriteModel = new Favorite(getDB());
         $favorites = $favoriteModel->getUserFavorites($userId);
 
-        $this->render('user/profile', [
+        // Đã sửa 'user/profile' thành 'profile/profile' để khớp với thư mục của bạn
+        $this->render('profile/profile', [
             'title'     => 'Trung tâm điều khiển Pilot — GUNPLA SHOP',
             'user'      => $user,
             'orders'    => $orders,

@@ -14,15 +14,21 @@ define('BASE_URL', '/gunpla-shop');
 
 require_once BASE_PATH . '/config/database.php';
 require_once BASE_PATH . '/config/app.php';
+
+// -- NẠP CÁC MODEL --
 require_once APP_PATH  . '/models/Category.php';
 require_once APP_PATH  . '/models/Product.php';
 require_once APP_PATH  . '/models/Order.php';
 require_once APP_PATH  . '/models/User.php';
+require_once APP_PATH  . '/models/Favorite.php'; // Đã thêm Model Yêu thích
+
+// -- NẠP CÁC CONTROLLER --
 require_once APP_PATH  . '/controllers/ProductController.php';
 require_once APP_PATH  . '/controllers/CartController.php';
 require_once APP_PATH  . '/controllers/OrderController.php';
 require_once APP_PATH  . '/controllers/AdminController.php';
 require_once APP_PATH  . '/controllers/UserController.php';
+require_once APP_PATH  . '/controllers/FavoriteController.php'; // Đã thêm Controller Yêu thích
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -57,6 +63,7 @@ $routes = [
     'orders'   => OrderController::class,
     'admin'    => AdminController::class,
     'user'     => UserController::class,
+    'favorite' => FavoriteController::class, // Khai báo Route Yêu thích
 ];
 
 if (!isset($routes[$controllerName])) {
