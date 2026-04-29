@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
+
 class FavoriteController
 {
     private Favorite $favoriteModel;
 
     public function __construct() {
-        $this->favoriteModel = new Favorite(getDB()); // Chuẩn hóa getDB()
+        $this->favoriteModel = new Favorite(getDB());
     }
 
     public function toggle(): void {
@@ -24,24 +26,5 @@ class FavoriteController
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Sản phẩm không hợp lệ.']);
         }
-    }
-
-    public function index(): void {
-        if (!isset($_SESSION['user']['id'])) {
-            header("Location: " . BASE_URL . "/user/login");
-            exit;
-        }
-
-        $userId = (int) $_SESSION['user']['id'];
-        $favorites = $this->favoriteModel->getUserFavorites($userId);
-
-        // Sử dụng view layouts/main (Giống với ProductController)
-        $data = ['title' => 'Sản phẩm yêu thích — GUNPLA SHOP', 'favorites' => $favorites];
-        
-        extract($data);
-        ob_start();
-        include APP_PATH . '/views/user/favorites.php'; // Bạn cần tạo view này nếu chưa có
-        $content = ob_get_clean();
-        include APP_PATH . '/views/layouts/main.php';
     }
 }

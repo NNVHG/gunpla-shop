@@ -25,6 +25,9 @@
           <a href="<?= BASE_URL ?>/user/logout"
              class="btn-icon" title="Đăng xuất"
              style="font-size:13px;text-decoration:none;display:flex;align-items:center;justify-content:center">⏏</a>
+             
+          <a href="<?= BASE_URL ?>/user/profile?tab=wishlist" class="btn-icon" title="Sản phẩm yêu thích">♥</a>
+          
         <?php else: ?>
           <a href="<?= BASE_URL ?>/user/login" class="btn-primary" style="text-decoration:none">Đăng nhập</a>
         <?php endif; ?>
