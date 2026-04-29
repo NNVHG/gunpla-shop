@@ -1,7 +1,7 @@
 <?php
 /**
  * Danh sách sản phẩm — có filter, sort, phân trang
- * Biến: $products, $total, $pages, $page, $filters, $sort, $categories
+ * Biến: $products, $total, $pages, $page, $filters, $sort, $categories, $favoriteIds
  */
 function stockBadge(int $s): string {
     if($s===0) return '<span class="stock-badge out-stock">HẾT</span>';
@@ -15,7 +15,8 @@ $currentSort  = $sort ?? 'newest';
 <div class="container" style="padding-top:32px;padding-bottom:48px">
   <div class="breadcrumb"><a href="<?= BASE_URL ?>/">Trang chủ</a><span>/</span>Sản phẩm</div>
   <div style="display:grid;grid-template-columns:220px 1fr;gap:32px;margin-top:28px">
-<aside>
+    
+    <aside>
       <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:7px;padding:20px;max-height:85vh;overflow-y:auto;">
         
         <style>
@@ -72,6 +73,7 @@ $currentSort  = $sort ?? 'newest';
 
       </div>
     </aside>
+
     <div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-hint)">
@@ -83,6 +85,7 @@ $currentSort  = $sort ?? 'newest';
           <?php endforeach; ?>
         </select>
       </div>
+      
       <?php if(empty($products)): ?>
         <div style="text-align:center;padding:80px 0;color:var(--text-hint);font-family:var(--font-mono);font-size:12px">
           Không tìm thấy sản phẩm nào
@@ -97,14 +100,23 @@ $currentSort  = $sort ?? 'newest';
                 <?php else: ?>
                   <div class="img-placeholder"><?=htmlspecialchars($p['grade']??'?')?></div>
                 <?php endif; ?>
+                
                 <?=stockBadge((int)$p['stock'])?>
                 <span class="grade-badge"><?=htmlspecialchars($p['grade']??'')?></span>
+                
                 <div class="quick-add">
                   <button class="btn-add" onclick="event.stopPropagation();addToCart(<?=$p['id']?>)"<?=$p['stock']==0?' disabled':''?>>
                     <?=$p['stock']==0?'HẾT HÀNG':'+ GIỎ HÀNG'?>
                   </button>
-                  <button class="btn-wish" onclick="event.stopPropagation()">♡</button>
+                  
+                  <?php $isFav = in_array($p['id'], $favoriteIds ?? []); ?>
+                  <button class="btn-wish <?= $isFav ? 'active' : '' ?>" 
+                          onclick="event.stopPropagation(); toggleFavorite(<?= $p['id'] ?>, this)"
+                          title="<?= $isFav ? 'Bỏ yêu thích' : 'Thêm vào yêu thích' ?>">
+                    <?= $isFav ? '♥' : '♡' ?>
+                  </button>
                 </div>
+
               </div>
               <div class="product-info">
                 <div class="product-series"><?=htmlspecialchars($p['series']??'')?></div>
@@ -117,6 +129,7 @@ $currentSort  = $sort ?? 'newest';
             </div>
           <?php endforeach; ?>
         </div>
+        
         <?php if($pages>1): ?>
           <div class="pagination">
             <?php if($page>1): ?><a href="?<?=http_build_query(array_merge($filters??[],['sort'=>$sort,'page'=>$page-1]))?>" class="page-btn">&laquo;</a><?php endif; ?>

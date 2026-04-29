@@ -1,10 +1,15 @@
 <?php
 /** Trang chủ. Biến: $featured, $categories, $newArrivals */
-function pCard(array $p): string {
+function pCard(array $p, array $favIds = []): string {
+    $isFav = in_array($p['id'], $favIds);
+    $heart = $isFav ? '♥' : '♡';
+    $act = $isFav ? 'active' : '';
+
     $t=!empty($p['thumbnail_path'])?"<img src='".htmlspecialchars($p['thumbnail_path'])."' alt='".htmlspecialchars($p['name'])."' loading='lazy'>":"<div class='img-placeholder'>".htmlspecialchars($p['grade']??'?')."</div>";
     $s=(int)$p['stock'];$d=$s===0?'disabled':'';$l=$s===0?'HẾT HÀNG':'+ GIỎ HÀNG';
     $sb=$s===0?"<span class='stock-badge out-stock'>HẾT</span>":($s<=5?"<span class='stock-badge low-stock'>CÒN $s</span>":"<span class='stock-badge in-stock'>CÒN HÀNG</span>");
-    return "<div class='product-card'><div class='product-img-wrap'>$t$sb<span class='grade-badge'>".htmlspecialchars($p['grade']??'')." · ".htmlspecialchars($p['scale']??'')."</span><div class='quick-add'><button class='btn-add' onclick='addToCart({$p['id']})' $d>$l</button><button class='btn-wish'>♡</button></div></div><div class='product-info'><div class='product-series'>".htmlspecialchars($p['series']??'')."</div><div class='product-name'>".htmlspecialchars($p['name'])."</div><div class='product-price-row'><span class='product-price'>".number_format($p['price'],0,',','.')."đ</span></div></div></div>";
+    
+    return "<div class='product-card'><div class='product-img-wrap'>$t$sb<span class='grade-badge'>".htmlspecialchars($p['grade']??'')." · ".htmlspecialchars($p['scale']??'')."</span><div class='quick-add'><button class='btn-add' onclick='addToCart({$p['id']})' $d>$l</button><button class='btn-wish $act' onclick='event.stopPropagation(); toggleFavorite({$p['id']}, this)'>$heart</button></div></div><div class='product-info'><div class='product-series'>".htmlspecialchars($p['series']??'')."</div><div class='product-name'>".htmlspecialchars($p['name'])."</div><div class='product-price-row'><span class='product-price'>".number_format($p['price'],0,',','.')."đ</span></div></div></div>";
 }
 ?>
 <section class="hero"><div class="hero-grid"></div>
@@ -41,6 +46,6 @@ function pCard(array $p): string {
 <?php if(!empty($newArrivals)): ?>
 <section class="products-section"><div class="container">
   <div class="section-head"><h2 class="section-title">Mới nhất</h2><a href="/products" class="section-link">Xem tất cả &rarr;</a></div>
-  <div class="product-grid"><?php foreach($newArrivals as $p): echo pCard($p); endforeach; ?></div>
+  <div class="product-grid"><?php foreach($newArrivals as $p): echo pCard($p, $favoriteIds); endforeach; ?></div>
 </div></section>
 <?php endif; ?>

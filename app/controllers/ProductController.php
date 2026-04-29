@@ -34,6 +34,7 @@ class ProductController
             'featured'   => $this->productModel->getFeatured(8),
             'categories' => $this->categoryModel->getTopLevel(),
             'newArrivals'=> $this->productModel->getAll([], 'newest', 1, 8)['items'],
+            'favoriteIds' => $this->getFavoriteIds(),
         ];
         $this->render('home/index', $data);
     }
@@ -58,7 +59,7 @@ class ProductController
         $result  = $this->productModel->getAll($filters, $sort, $page, 12);
         
         $categories = $this->categoryModel->getTopLevel();
-        $groupedCategories = $this->categoryModel->getGroupedByType(); // MỚI THÊM: Lấy danh mục nhóm theo type
+        $groupedCategories = $this->categoryModel->getGroupedByType();
 
         $data = [
             'title'      => 'Danh sách sản phẩm — GUNPLA SHOP',
@@ -69,7 +70,8 @@ class ProductController
             'filters'    => $filters,
             'sort'       => $sort,
             'categories' => $categories,
-            'groupedCategories' => $groupedCategories, // MỚI THÊM: Đẩy sang View
+            'groupedCategories' => $groupedCategories,
+            'favoriteIds' => $this->getFavoriteIds(),
         ];
 
         if ($this->isAjax()) {
@@ -178,5 +180,15 @@ class ProductController
     {
         header("Location: $url");
         exit;
+    }
+
+    // Hàm Helper lấy mảng ID sản phẩm yêu thích
+    private function getFavoriteIds(): array {
+        if (isset($_SESSION['user']['id'])) {
+            require_once APP_PATH . '/models/Favorite.php';
+            $favModel = new Favorite(getDB());
+            return $favModel->getUserFavoriteIds($_SESSION['user']['id']);
+        }
+        return [];
     }
 }

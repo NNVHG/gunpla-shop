@@ -186,4 +186,29 @@ class UserController
         }
     }
 
+    public function profile(): void
+{
+    $this->requireLogin();
+    $userId = (int) $_SESSION['user']['id'];
+    
+    $user = $this->userModel->findById($userId);
+    
+    // Lấy lịch sử đơn hàng
+    $orderModel = new Order();
+    $orders = $orderModel->getByUser($userId); [cite: 373]
+    
+    // Lấy danh sách yêu thích
+    $favoriteModel = new Favorite(getDB());
+    $favorites = $favoriteModel->getUserFavorites($userId); [cite: 333]
+
+    $this->render('user/profile', [
+        'title'     => 'Trung tâm điều khiển Pilot — GUNPLA SHOP',
+        'user'      => $user,
+        'orders'    => $orders,
+        'favorites' => $favorites,
+        'errors'    => $_SESSION['profile_errors'] ?? []
+    ]);
+    unset($_SESSION['profile_errors']);
+}
+
 }

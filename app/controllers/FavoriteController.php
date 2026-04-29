@@ -1,23 +1,21 @@
 <?php
-class FavoriteController extends BaseController { // Thay BaseController bằng class cha của bạn nếu có
-    private $favoriteModel;
+class FavoriteController
+{
+    private Favorite $favoriteModel;
 
     public function __construct() {
-        global $pdo; // Thay đổi tùy theo cách gọi DB của bạn
-        $this->favoriteModel = new Favorite($pdo);
+        $this->favoriteModel = new Favorite(getDB()); // Chuẩn hóa getDB()
     }
 
-    // Xử lý AJAX thêm/bỏ yêu thích
-    public function toggle() {
+    public function toggle(): void {
         header('Content-Type: application/json');
         
-        // Kiểm tra đăng nhập
-        if (!isset($_SESSION['user_id'])) {
-            echo json_encode(['status' => 'unauthorized', 'message' => 'Vui lòng đăng nhập để sử dụng tính năng này.']);
+        if (!isset($_SESSION['user']['id'])) {
+            echo json_encode(['status' => 'unauthorized', 'message' => 'Vui lòng đăng nhập để lưu sản phẩm.']);
             exit;
         }
 
-        $userId = $_SESSION['user_id'];
+        $userId = (int) $_SESSION['user']['id'];
         $productId = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 0;
 
         if ($productId > 0) {
@@ -28,19 +26,22 @@ class FavoriteController extends BaseController { // Thay BaseController bằng 
         }
     }
 
-    // Trang hiển thị danh sách yêu thích
-    public function index() {
-        if (!isset($_SESSION['user_id'])) {
-            header("Location: " . BASE_URL . "/login");
+    public function index(): void {
+        if (!isset($_SESSION['user']['id'])) {
+            header("Location: " . BASE_URL . "/user/login");
             exit;
         }
 
-        $userId = $_SESSION['user_id'];
+        $userId = (int) $_SESSION['user']['id'];
         $favorites = $this->favoriteModel->getUserFavorites($userId);
 
-        $this->render('users/favorites', [
-            'title' => 'Sản phẩm yêu thích — GUNPLA SHOP',
-            'favorites' => $favorites
-        ]);
+        // Sử dụng view layouts/main (Giống với ProductController)
+        $data = ['title' => 'Sản phẩm yêu thích — GUNPLA SHOP', 'favorites' => $favorites];
+        
+        extract($data);
+        ob_start();
+        include APP_PATH . '/views/user/favorites.php'; // Bạn cần tạo view này nếu chưa có
+        $content = ob_get_clean();
+        include APP_PATH . '/views/layouts/main.php';
     }
 }

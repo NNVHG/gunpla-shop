@@ -174,3 +174,33 @@ if(checkoutForm){
     }
   });
 }
+// ==============================
+// FAVORITE (WISHLIST) SYSTEM
+// ==============================
+async function toggleFavorite(productId, buttonElement) {
+    try {
+        const formData = new FormData();
+        formData.append('product_id', productId);
+
+        const res = await fetch(BASE_URL + '/favorite/toggle', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === 'unauthorized') {
+            alert(data.message); // Có thể thay bằng Modal/Toast UI của bạn
+            window.location.href = BASE_URL + '/login';
+        } else if (data.status === 'added') {
+            buttonElement.classList.add('active');
+            buttonElement.innerHTML = '♥'; // Tim đặc
+        } else if (data.status === 'removed') {
+            buttonElement.classList.remove('active');
+            buttonElement.innerHTML = '♡'; // Tim rỗng
+        }
+    } catch (error) {
+        console.error("Lỗi khi xử lý yêu thích: ", error);
+    }
+    
+}
