@@ -42,8 +42,16 @@ class OrderController
     {
         $items = $this->cartCtrl->getItems();
 
+        // 1. Kiểm tra giỏ hàng có trống không
         if (empty($items)) {
-            $this->redirect('/cart');
+            $this->redirect('/');
+            return;
+        }
+
+        // 2. YÊU CẦU ĐĂNG NHẬP: Nếu chưa có session user, chuyển hướng đến trang Login
+        // Đồng thời truyền theo tham số ?redirect=/orders/checkout để Login xong quay lại đúng đây
+        if (!isset($_SESSION['user']['id'])) {
+            $this->redirect('/user/login?redirect=/orders/checkout');
             return;
         }
 
@@ -54,7 +62,7 @@ class OrderController
             'items'         => $items,
             'subtotal'      => $subtotal,
             'shippingZones' => $this->orderModel->getShippingZones(),
-            // Điền sẵn thông tin nếu đã đăng nhập
+            // Điền sẵn thông tin user vào form
             'user'          => $_SESSION['user'] ?? null,
         ];
 
@@ -413,7 +421,7 @@ class OrderController
 
     private function redirect(string $url): void
     {
-        header("Location: $url");
+        header('Location: ' . BASE_URL . '/' . ltrim($url, '/'));
         exit;
     }
 }
