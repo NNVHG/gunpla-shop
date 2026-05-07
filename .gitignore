@@ -1,3 +1,24 @@
-config/app.php
+# 1. Thư mục chứa thư viện (Composer sẽ tự tải lại khi cần)
 /vendor/
+composer.phar
+
+# 2. File chứa cấu hình bảo mật cực kỳ quan trọng
 .env
+.env.backup
+.env.production
+
+# 3. Thư mục chứa ảnh người dùng tải lên (Tránh đẩy ảnh test lên server thật)
+/public/uploads/
+
+# 4. Các file cấu hình của Hệ điều hành (Windows/Mac)
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# 5. Các file cấu hình của Trình soạn thảo code (VS Code, PHPStorm)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
