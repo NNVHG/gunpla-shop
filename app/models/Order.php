@@ -6,6 +6,11 @@
 
 declare(strict_types=1);
 
+namespace App\Models; // Thêm dòng này
+
+use PDO;            // Thêm dòng này
+use PDOException;
+
 class Order
 {
     private PDO $db;

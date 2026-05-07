@@ -6,6 +6,10 @@
 
 declare(strict_types=1);
 
+namespace App\Models; // Thêm dòng này
+
+use PDO;            // Thêm dòng này
+
 class Product
 {
     private PDO $db;
@@ -66,6 +70,11 @@ class Product
         if (!empty($filters['category_id'])) {
             $where[]               = 'p.category_id = :category_id';
             $params[':category_id'] = $filters['category_id'];
+        }
+
+        if (!empty($filters['type'])) {
+            $where[] = 'p.category_id IN (SELECT id FROM categories WHERE type = :type)';
+            $params[':type'] = $filters['type'];
         }
 
         $whereSQL = 'WHERE ' . implode(' AND ', $where);

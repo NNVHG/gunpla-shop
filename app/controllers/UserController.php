@@ -1,6 +1,14 @@
 <?php
 declare(strict_types=1);
 
+namespace App\Controllers; // Thêm dòng này
+
+use App\Models\Product;    // Gọi Model Product
+use App\Models\Category;  // Gọi Model Category
+use App\Models\User;      // Gọi Model User
+use App\Models\Order;     // Gọi Model Order
+use App\Models\Favorite;  // Gọi Model Favorite
+
 class UserController
 {
     private User $userModel;

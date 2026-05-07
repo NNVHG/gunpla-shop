@@ -12,6 +12,12 @@
 
 declare(strict_types=1);
 
+namespace App\Controllers; // Thêm dòng này
+
+use App\Models\Product;    // Gọi Model Product
+use App\Models\Category;
+use App\Models\Favorite;
+
 class ProductController
 {
     private Product  $productModel;
@@ -52,10 +58,12 @@ class ProductController
         if (!empty($_GET['series']))      $filters['series']      = htmlspecialchars($_GET['series']);
         if (!empty($_GET['category_id'])) $filters['category_id'] = (int) $_GET['category_id'];
         if (!empty($_GET['search']))      $filters['search']      = htmlspecialchars($_GET['search']);
-        
-        $sort = in_array($_GET['sort'] ?? '', ['newest','price_asc','price_desc','bestseller']) ? $_GET['sort'] : 'newest';
-        $page = max(1, (int) ($_GET['page'] ?? 1));
+        if (!empty($_GET['type']))        $filters['type']        = htmlspecialchars($_GET['type']);
 
+        $sort    = in_array($_GET['sort'] ?? '', ['newest','price_asc','price_desc','bestseller'])
+                   ? $_GET['sort'] : 'newest';
+        $page    = max(1, (int) ($_GET['page'] ?? 1));
+        
         $result  = $this->productModel->getAll($filters, $sort, $page, 12);
         
         $categories = $this->categoryModel->getTopLevel();

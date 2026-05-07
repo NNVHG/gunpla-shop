@@ -29,6 +29,12 @@
 
 declare(strict_types=1);
 
+namespace App\Controllers; // Thêm dòng này
+
+use App\Models\Product;    // Gọi Model Product
+use App\Models\Category;  // Gọi Model Category
+use App\Models\Order;     // Gọi Model Order
+
 class CartController
 {
     private Product $productModel;

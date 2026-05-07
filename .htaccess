@@ -1,10 +1,8 @@
-Options -Indexes +FollowSymLinks
-RewriteEngine On
-RewriteBase /gunpla-shop/
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /gunpla-shop/
 
-# Bỏ qua thư mục public để nhận CSS/JS
-RewriteRule ^public/ - [L]
-
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php [QSA,L]
+    # Chuyển hướng vào thư mục public
+    RewriteRule ^$ public/index.php [L]
+    RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
+</IfModule>

@@ -1,0 +1,12 @@
+<IfModule mod_rewrite.c>
+    Options -Indexes
+    RewriteEngine On
+    RewriteBase /gunpla-shop/public/
+
+    # Bỏ qua nếu là file tĩnh (css, js, ảnh)
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+
+    # Đẩy về index.php
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>

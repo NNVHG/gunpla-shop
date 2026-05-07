@@ -1,48 +1,35 @@
 <?php
 /**
- * index.php — Front Controller
- * Chạy trong subfolder XAMPP: http://localhost/gunpla-shop/
+ * index.php — Front Controller (Nằm trong thư mục public)
  */
-
 declare(strict_types=1);
 
-define('BASE_PATH', __DIR__);
+// 1. ĐỊNH NGHĨA ĐƯỜNG DẪN (dirname(__DIR__) để lùi ra thư mục gunpla-shop)
+define('BASE_PATH', dirname(__DIR__));
 define('APP_PATH',  BASE_PATH . '/app');
-
-// Tên subfolder — đổi nếu thư mục của bạn khác tên
 define('BASE_URL', '/gunpla-shop');
 
+// 2. NẠP AUTOLOAD CỦA COMPOSER (BẮT BUỘC PHẢI NẰM Ở ĐÂY, TRÊN DOTENV)
+require_once BASE_PATH . '/vendor/autoload.php';
+
+// 3. KÍCH HOẠT DOTENV 
+$dotenv = Dotenv\Dotenv::createImmutable(BASE_PATH);
+$dotenv->load();
+
+// 4. NẠP CẤU HÌNH HỆ THỐNG
 require_once BASE_PATH . '/config/database.php';
 require_once BASE_PATH . '/config/app.php';
-
-// -- NẠP CÁC MODEL --
-require_once APP_PATH  . '/models/Category.php';
-require_once APP_PATH  . '/models/Product.php';
-require_once APP_PATH  . '/models/Order.php';
-require_once APP_PATH  . '/models/User.php';
-require_once APP_PATH  . '/models/Favorite.php'; // Đã thêm Model Yêu thích
-
-// -- NẠP CÁC CONTROLLER --
-require_once APP_PATH  . '/controllers/ProductController.php';
-require_once APP_PATH  . '/controllers/CartController.php';
-require_once APP_PATH  . '/controllers/OrderController.php';
-require_once APP_PATH  . '/controllers/AdminController.php';
-require_once APP_PATH  . '/controllers/UserController.php';
-require_once APP_PATH  . '/controllers/FavoriteController.php'; // Đã thêm Controller Yêu thích
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ── Parse URL ── loại bỏ prefix subfolder ──────────────────────────
+// ── Parse URL ──────────────────────────────────────────────────────
 $rawUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
-// Xóa /gunpla-shop khỏi đầu URI
 $base = rtrim(BASE_URL, '/');
 if ($base !== '' && str_starts_with($rawUri, $base)) {
     $rawUri = substr($rawUri, strlen($base));
 }
-
 $uri   = trim($rawUri, '/');
 $parts = $uri !== '' ? explode('/', $uri) : [];
 
@@ -50,7 +37,6 @@ $controllerName = !empty($parts[0]) ? strtolower($parts[0]) : '';
 $action         = !empty($parts[1]) ? strtolower($parts[1]) : 'index';
 $param          = $parts[2] ?? null;
 
-// Trang chủ
 if ($controllerName === '' || $controllerName === 'index.php') {
     $controllerName = 'products';
     $action         = 'home';
@@ -58,18 +44,18 @@ if ($controllerName === '' || $controllerName === 'index.php') {
 
 // ── Routing ────────────────────────────────────────────────────────
 $routes = [
-    'products' => ProductController::class,
-    'cart'     => CartController::class,
-    'orders'   => OrderController::class,
-    'admin'    => AdminController::class,
-    'user'     => UserController::class,
-    'favorite' => FavoriteController::class, // Khai báo Route Yêu thích
+    'products' => \App\Controllers\ProductController::class,
+    'cart'     => \App\Controllers\CartController::class,
+    'orders'   => \App\Controllers\OrderController::class,    // Quản lý Checkout (thanh toán)
+    'admin'    => \App\Controllers\AdminController::class,
+    'user'     => \App\Controllers\UserController::class,     // Quản lý Profile (hồ sơ)
+    'favorite' => \App\Controllers\FavoriteController::class, // Quản lý Yêu thích
 ];
 
 if (!isset($routes[$controllerName])) {
     http_response_code(404);
     $content = '<div class="error-wrap"><div class="error-code">404</div><div class="error-msg">Không tìm thấy trang</div><a href="' . BASE_URL . '/" class="btn-hero">VỀ TRANG CHỦ</a></div>';
-    @include APP_PATH . '/views/layouts/main.php';
+    @include APP_PATH . '/Views/layouts/main.php';
     exit;
 }
 
@@ -78,7 +64,7 @@ $controller = new $routes[$controllerName]();
 if (!method_exists($controller, $action)) {
     http_response_code(404);
     $content = '<div class="error-wrap"><div class="error-code">404</div><div class="error-msg">Không tìm thấy trang</div><a href="' . BASE_URL . '/" class="btn-hero">VỀ TRANG CHỦ</a></div>';
-    @include APP_PATH . '/views/layouts/main.php';
+    @include APP_PATH . '/Views/layouts/main.php';
     exit;
 }
 

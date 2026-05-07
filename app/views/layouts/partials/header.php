@@ -7,9 +7,14 @@
         <span class="logo-sub">SHOP</span>
       </a>
       <ul class="nav-links">
-        <li><a href="<?= BASE_URL ?>/" <?= $_SERVER['REQUEST_URI']==='/' ?'class="active"':'' ?>>Trang chủ</a></li>
-        <li><a href="<?= BASE_URL ?>/products" <?= str_starts_with($_SERVER['REQUEST_URI'],'/products')?'class="active"':'' ?>>Sản phẩm</a></li>
-        <li><a href="<?= BASE_URL ?>/products?category_slug=dung-cu-co-ban">Dụng cụ</a></li>
+        <?php
+          $uri = $_SERVER['REQUEST_URI'];
+          $isTool = isset($_GET['type']) && $_GET['type'] === 'tool';
+          $isProduct = str_contains($uri, '/products') && !$isTool;
+        ?>
+        <li><a href="<?= BASE_URL ?>/" <?= $uri==='/' || $uri==='/gunpla-shop/' ?'class="active"':'' ?>>Trang chủ</a></li>
+        <li><a href="<?= BASE_URL ?>/products" <?= $isProduct ? 'class="active"' : '' ?>>Sản phẩm</a></li>
+        <li><a href="<?= BASE_URL ?>/products?type=tool" <?= $isTool ? 'class="active"' : '' ?>>Dụng cụ</a></li>
         <li><a href="#">Tin tức</a></li>
       </ul>
       <div class="search-wrap" style="position:relative;flex:1;max-width:340px">

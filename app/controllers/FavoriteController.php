@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+namespace App\Controllers; // Thêm dòng này
+
+use App\Models\Product;    // Gọi Model Product
+use App\Models\Category;  // Gọi Model Category
+
 class FavoriteController
 {
     private Favorite $favoriteModel;

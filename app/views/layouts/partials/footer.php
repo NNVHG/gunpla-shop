@@ -39,7 +39,7 @@
     </div>
     <div class="footer-bottom">
       <span class="footer-copy">© 2026 GUNPLA SHOP — Đồ án CNTT — Đại học Thủ Dầu Một</span>
-      <span class="footer-copy">Nguyễn Ngô Vũ Hoàng Gia</span>
+      <span class="footer-copy">Nguyễn Ngô Vũ Hoàng Gia - Nguyễn Huỳnh Dương Dũ</span>
     </div>
   </div>
 </footer>

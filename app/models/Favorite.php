@@ -1,4 +1,10 @@
 <?php
+declare(strict_types=1);
+
+namespace App\Models; // Thêm dòng này
+
+use PDO;
+
 class Favorite {
     private $db;
 

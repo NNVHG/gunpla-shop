@@ -21,6 +21,13 @@
 
 declare(strict_types=1);
 
+namespace App\Controllers; // Thêm dòng này
+
+use App\Models\Product;    // Gọi Model Product
+use App\Models\Category;  // Gọi Model Category
+use App\Models\User;      // Gọi Model User
+use App\Models\Order;     // Gọi Model Order
+
 class AdminController
 {
     private Product  $productModel;
@@ -144,7 +151,7 @@ class AdminController
         $this->renderAdmin('admin/products/form', [
             'title'       => 'Thêm sản phẩm mới',
             'categories'  => $this->categoryModel->getTree(), // Dùng getTree để hiển thị danh mục phân cấp
-            'groupedCats' => $this->categoryModel->cloneGroupedByType(), // Dữ liệu cho các dropdown khác
+            'groupedCats' => $this->categoryModel->getGroupedByType(), // Dữ liệu cho các dropdown khác
             'product'     => null,
         ]);
     }
@@ -193,7 +200,7 @@ class AdminController
         $this->renderAdmin('admin/products/form', [
             'title'       => 'Chỉnh sửa sản phẩm',
             'categories'  => $this->categoryModel->getTree(),
-            'groupedCats' => $this->categoryModel->cloneGroupedByType(),
+            'groupedCats' => $this->categoryModel->getGroupedByType(),
             'product'     => $product,
         ]);
     }
