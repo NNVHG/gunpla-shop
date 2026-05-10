@@ -34,12 +34,33 @@ $uri   = trim($rawUri, '/');
 $parts = $uri !== '' ? explode('/', $uri) : [];
 
 $controllerName = !empty($parts[0]) ? strtolower($parts[0]) : '';
-$action         = !empty($parts[1]) ? strtolower($parts[1]) : 'index';
-$param          = $parts[2] ?? null;
+$param          = null;
 
 if ($controllerName === '' || $controllerName === 'index.php') {
     $controllerName = 'products';
     $action         = 'home';
+} else {
+    // ── Compound action resolution ──────────────────────────────────
+    // URL: /admin/products/store  → action = productStore,  param = null
+    // URL: /admin/orders/detail/5 → action = orderDetail,   param = 5
+    // URL: /admin/orders          → action = orders,         param = null
+    // URL: /products/detail/42    → action = detail,         param = 42
+    // URL: /products/submitreview → action = submitReview,   param = null
+    // ────────────────────────────────────────────────────────────────
+    $seg1 = !empty($parts[1]) ? strtolower($parts[1]) : 'index';  // "products"
+    $seg2 = $parts[2] ?? null;                                      // "store" | "42" | null
+    $seg3 = $parts[3] ?? null;                                      // "42" | null (4th segment)
+
+    if ($seg2 !== null && !is_numeric($seg2)) {
+        // seg2 is a sub-action word (e.g. "store", "detail", "create")
+        // Combine seg1 + seg2 into camelCase action: products + store → productStore
+        $action = $seg1 . ucfirst($seg2);
+        $param  = $seg3; // optional numeric param after sub-action
+    } else {
+        // seg2 is numeric (a param ID) or missing
+        $action = $seg1;
+        $param  = $seg2;
+    }
 }
 
 // ── Routing ────────────────────────────────────────────────────────
@@ -68,4 +89,4 @@ if (!method_exists($controller, $action)) {
     exit;
 }
 
-$controller->$action($param);
+$controller->$action($param);

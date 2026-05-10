@@ -17,16 +17,19 @@ namespace App\Controllers; // Thêm dòng này
 use App\Models\Product;    // Gọi Model Product
 use App\Models\Category;
 use App\Models\Favorite;
+use App\Models\Review;     // Gọi Model Review
 
 class ProductController
 {
     private Product  $productModel;
     private Category $categoryModel;
+    private Review   $reviewModel;
 
     public function __construct()
     {
         $this->productModel  = new Product();
         $this->categoryModel = new Category();
+        $this->reviewModel   = new Review();
     }
 
     // ─────────────────────────────────────────────
@@ -124,13 +127,73 @@ class ProductController
         // Loại bỏ sản phẩm hiện tại khỏi danh sách liên quan
         $related = array_filter($related, fn($p) => $p['id'] !== $product['id']);
 
+        // Reviews
+        $reviews    = $this->reviewModel->getByProduct($product['id']);
+        $ratingInfo = $this->reviewModel->getAvgRating($product['id']);
+        $hasReviewed = !empty($_SESSION['user']['id'])
+                       && $this->reviewModel->hasReviewed($product['id'], (int) $_SESSION['user']['id']);
+
         $data = [
-            'title'   => $product['name'] . ' — GUNPLA SHOP',
-            'product' => $product,
-            'related' => array_values($related),
+            'title'       => $product['name'] . ' — GUNPLA SHOP',
+            'product'     => $product,
+            'related'     => array_values($related),
+            'reviews'     => $reviews,
+            'avgRating'   => $ratingInfo['avg'],
+            'totalReviews'=> $ratingInfo['total'],
+            'hasReviewed' => $hasReviewed,
         ];
 
         $this->render('products/detail', $data);
+    }
+
+    // ─────────────────────────────────────────────
+    //  GỬI ĐÁNH GIÁ SẢN PHẨM
+    // ─────────────────────────────────────────────
+
+    /**
+     * POST /products/submitreview
+     * Xử lý form đánh giá. Yêu cầu đăng nhập.
+     */
+    public function submitReview(): void
+    {
+        // 1. Phải là POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect(BASE_URL . '/products');
+            return;
+        }
+
+        // 2. Yêu cầu đăng nhập
+        if (empty($_SESSION['user']['id'])) {
+            $this->redirect(BASE_URL . '/user/login');
+            return;
+        }
+
+        $productId = (int) ($_POST['product_id'] ?? 0);
+        $rating    = (int) ($_POST['rating']     ?? 0);
+        $comment   = trim($_POST['comment']      ?? '');
+        $userId    = (int) $_SESSION['user']['id'];
+
+        // 3. Validate cơ bản
+        $errors = [];
+        if ($productId <= 0)               $errors[] = 'Sản phẩm không hợp lệ.';
+        if ($rating < 1 || $rating > 5)    $errors[] = 'Vui lòng chọn số sao (1–5).';
+        if (strlen($comment) < 10)         $errors[] = 'Nội dung đánh giá phải từ 10 ký tự.';
+        if ($this->reviewModel->hasReviewed($productId, $userId)) {
+            $errors[] = 'Bạn đã đánh giá sản phẩm này rồi.';
+        }
+
+        $redirectUrl = BASE_URL . '/products/detail/' . $productId;
+
+        if ($errors) {
+            $_SESSION['review_errors'] = $errors;
+            $this->redirect($redirectUrl . '#reviews');
+            return;
+        }
+
+        // 4. Lưu vào DB
+        $this->reviewModel->create($productId, $userId, $rating, $comment);
+        $_SESSION['review_success'] = 'Cảm ơn bạn đã đánh giá sản phẩm!';
+        $this->redirect($redirectUrl . '#reviews');
     }
 
     // ─────────────────────────────────────────────
