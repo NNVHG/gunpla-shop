@@ -1,4 +1,5 @@
 <?php
+
 /**
  * app/controllers/AdminController.php
  *
@@ -44,12 +45,33 @@ class AdminController
     }
 
     // ────────────────────────────────────────────
+    //  ĐIỀU HƯỚNG MẶC ĐỊNH KHI VÀO /ADMIN
+    // ────────────────────────────────────────────
+    public function index(): void
+    {
+        // Tự động chuyển hướng vào trang dashboard
+        $this->redirect('/admin/dashboard');
+    }
+
+    // ────────────────────────────────────────────
     //  AUTH — Đăng nhập / Đăng xuất Admin
     // ────────────────────────────────────────────
 
+    public function login(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->loginSubmit();
+        } else {
+            $this->loginForm();
+        }
+    }
+
     public function loginForm(): void
     {
-        if ($this->isAdmin()) { $this->redirect('/admin'); return; }
+        if ($this->isAdmin()) {
+            $this->redirect('/admin');
+            return;
+        }
         $this->renderAdmin('admin/login', ['title' => 'Admin Login — GUNPLA SHOP'], false);
     }
 
@@ -119,7 +141,10 @@ class AdminController
         ")->fetchAll();
 
         $this->renderAdmin('admin/dashboard', compact(
-            'stats', 'revenueChart', 'latestOrders', 'lowStockProducts'
+            'stats',
+            'revenueChart',
+            'latestOrders',
+            'lowStockProducts'
         ));
     }
 
@@ -195,7 +220,10 @@ class AdminController
     {
         $this->requireAdmin();
         $product = $this->productModel->getById((int) $id);
-        if (!$product) { $this->redirect('/admin/products'); return; }
+        if (!$product) {
+            $this->redirect('/admin/products');
+            return;
+        }
 
         $this->renderAdmin('admin/products/form', [
             'title'       => 'Chỉnh sửa sản phẩm',
@@ -249,6 +277,119 @@ class AdminController
     }
 
     // ────────────────────────────────────────────
+    //  QUẢN LÝ DANH MỤC (CATEGORY)
+    // ────────────────────────────────────────────
+
+    public function categories(): void
+    {
+        $this->requireAdmin();
+        $db = getDB();
+        $categories = $db->query("SELECT c.*, p.name AS parent_name FROM categories c LEFT JOIN categories p ON c.parent_id = p.id ORDER BY c.type ASC, c.name ASC")->fetchAll();
+
+        $this->renderAdmin('admin/categories/index', [
+            'title'      => 'Quản lý danh mục',
+            'categories' => $categories
+        ]);
+    }
+
+    public function categoryCreate(): void
+    {
+        $this->requireAdmin();
+        $db = getDB();
+        $parents = $db->query("SELECT id, name, type FROM categories WHERE parent_id IS NULL ORDER BY name ASC")->fetchAll();
+
+        $this->renderAdmin('admin/categories/form', [
+            'title'    => 'Thêm danh mục mới',
+            'category' => null,
+            'parents'  => $parents
+        ]);
+    }
+
+    public function categoryStore(): void
+    {
+        $this->requireAdmin();
+        $this->requirePost();
+
+        $name = trim($_POST['name'] ?? '');
+        $type = trim($_POST['type'] ?? '');
+        $parentId = !empty($_POST['parent_id']) ? (int) $_POST['parent_id'] : null;
+
+        if (!$name || !$type) {
+            $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Vui lòng nhập tên và chọn loại danh mục.'];
+            $this->redirect('/admin/categories/create');
+            return;
+        }
+
+        $this->categoryModel->create([
+            'name'      => $name,
+            'type'      => $type,
+            'parent_id' => $parentId
+        ]);
+
+        $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Thêm danh mục thành công!'];
+        $this->redirect('/admin/categories');
+    }
+
+    public function categoryEdit(?string $id): void
+    {
+        $this->requireAdmin();
+        $db = getDB();
+        $catId = (int) $id;
+        $category = $db->query("SELECT * FROM categories WHERE id = $catId")->fetch();
+
+        if (!$category) {
+            $this->redirect('/admin/categories');
+            return;
+        }
+
+        $parents = $db->query("SELECT id, name, type FROM categories WHERE parent_id IS NULL AND id != $catId ORDER BY name ASC")->fetchAll();
+
+        $this->renderAdmin('admin/categories/form', [
+            'title'    => 'Sửa danh mục',
+            'category' => $category,
+            'parents'  => $parents
+        ]);
+    }
+
+    public function categoryUpdate(?string $id): void
+    {
+        $this->requireAdmin();
+        $this->requirePost();
+        $catId = (int) $id;
+
+        $name = trim($_POST['name'] ?? '');
+        $type = trim($_POST['type'] ?? '');
+        $parentId = !empty($_POST['parent_id']) ? (int) $_POST['parent_id'] : null;
+
+        if (!$name || !$type) {
+            $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Vui lòng nhập tên và chọn loại danh mục.'];
+            $this->redirect("/admin/categories/edit/$catId");
+            return;
+        }
+
+        $this->categoryModel->update($catId, [
+            'name'      => $name,
+            'type'      => $type,
+            'parent_id' => $parentId
+        ]);
+
+        $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Cập nhật danh mục thành công!'];
+        $this->redirect('/admin/categories');
+    }
+
+    public function categoryDelete(?string $id): void
+    {
+        $this->requireAdmin();
+        $this->requirePost();
+        $catId = (int) $id;
+
+        $this->categoryModel->delete($catId);
+
+        $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Đã xóa danh mục!'];
+        $this->redirect('/admin/categories');
+    }
+
+    // ────────────────────────────────────────────
     //  QUẢN LÝ ĐƠN HÀNG
     // ────────────────────────────────────────────
 
@@ -262,7 +403,7 @@ class AdminController
         // Đếm theo từng trạng thái (cho filter tabs)
         $db         = getDB();
         $statusCounts = [];
-        foreach (['pending','confirmed','shipping','delivered','cancelled'] as $s) {
+        foreach (['pending', 'confirmed', 'shipping', 'delivered', 'cancelled'] as $s) {
             $statusCounts[$s] = (int) $db->query("SELECT COUNT(*) FROM orders WHERE status='$s'")->fetchColumn();
         }
 
@@ -271,9 +412,27 @@ class AdminController
             'orders'       => $result['items'],
             'total'        => $result['total'],
             'pages'        => $result['pages'],
-            'page'         => $result['page'],
-            'currentStatus'=> $status,
+            'page'         => $page,
+            'currentStatus' => $status,
             'statusCounts' => $statusCounts,
+        ]);
+    }
+
+    public function orderDetail(?string $id): void
+    {
+        $this->requireAdmin();
+        $orderId = (int) $id;
+        $order = $this->orderModel->getById($orderId);
+
+        if (!$order) {
+            $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Không tìm thấy đơn hàng.'];
+            $this->redirect('/admin/orders');
+            return;
+        }
+
+        $this->renderAdmin('admin/orders/detail', [
+            'title' => 'Chi tiết Đơn hàng #' . $orderId,
+            'order' => $order
         ]);
     }
 
@@ -318,7 +477,8 @@ class AdminController
         try {
             $db->query("SELECT 1 FROM inventory_logs LIMIT 1");
             $hasLogTable = true;
-        } catch (\PDOException $e) {}
+        } catch (\PDOException $e) {
+        }
 
         $this->renderAdmin('admin/inventory/index', [
             'title'       => 'Quản lý kho hàng',
@@ -375,7 +535,7 @@ class AdminController
         $errors = [];
         if (empty(trim($post['name']        ?? ''))) $errors['name']        = 'Vui lòng nhập tên sản phẩm';
         if (empty($post['price']) || $post['price'] < 0) $errors['price']   = 'Giá không hợp lệ';
-        if (empty($post['category_id']))               $errors['category_id']= 'Vui lòng chọn danh mục';
+        if (empty($post['category_id']))               $errors['category_id'] = 'Vui lòng chọn danh mục';
         return $errors;
     }
 
@@ -432,5 +592,4 @@ class AdminController
             echo $content;
         }
     }
-    
 }

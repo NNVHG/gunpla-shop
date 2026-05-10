@@ -1,17 +1,21 @@
 <?php
 /**
  * Danh sách sản phẩm — Admin
- * Biến: $products, $total, $pages, $page, $search
+ * @var array $products
+ * @var int $total
+ * @var int $pages
+ * @var int $page
+ * @var string $search
  */
 ?>
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-  <form method="GET" action="/admin/products" style="display:flex;gap:8px;align-items:center">
+  <form method="GET" action="<?= BASE_URL ?>/admin/products" style="display:flex;gap:8px;align-items:center">
     <input type="text" name="search" value="<?=htmlspecialchars($search??'')?>"
            placeholder="Tìm sản phẩm..." style="padding:6px 12px;font-size:11px;width:240px">
     <button type="submit" class="btn btn-sm">Tìm</button>
-    <?php if($search): ?><a href="/admin/products" class="btn btn-sm">Xóa lọc</a><?php endif; ?>
+    <?php if($search): ?><a href="<?= BASE_URL ?>/admin/products" class="btn btn-sm">Xóa lọc</a><?php endif; ?>
   </form>
-  <a href="/admin/products/create" class="btn btn-gold">+ Thêm sản phẩm</a>
+  <a href="<?= BASE_URL ?>/admin/products/create" class="btn btn-gold">+ Thêm sản phẩm</a>
 </div>
 
 <div class="admin-table-wrap">
@@ -65,8 +69,8 @@
           <td>
             <div style="display:flex;gap:6px">
               <a href="/products/detail/<?=$p['id']?>" target="_blank" class="btn btn-sm" title="Xem trên shop">↗</a>
-              <a href="/admin/products/edit/<?=$p['id']?>" class="btn btn-sm">Sửa</a>
-              <form method="POST" action="/admin/products/delete/<?=$p['id']?>" style="display:inline"
+              <a href="<?= BASE_URL ?>/admin/products/edit/<?=$p['id']?>" class="btn btn-sm">Sửa</a>
+              <form method="POST" action="<?= BASE_URL ?>/admin/products/delete/<?=$p['id']?>" style="display:inline"
                     onsubmit="return confirm('Ẩn sản phẩm này?')">
                 <button type="submit" class="btn btn-sm btn-danger">Ẩn</button>
               </form>
@@ -84,7 +88,7 @@
   <?php if($pages>1): ?>
     <div class="pagination" style="padding:14px 18px;justify-content:flex-start;border-top:1px solid var(--border)">
       <?php for($i=1;$i<=$pages;$i++): ?>
-        <a href="/admin/products?search=<?=urlencode($search??'')?>&page=<?=$i?>"
+        <a href="<?= BASE_URL ?>/admin/products?search=<?=urlencode($search??'')?>&page=<?=$i?>"
            class="page-btn<?=$i===$page?' active':''?>"><?=$i?></a>
       <?php endfor; ?>
     </div>

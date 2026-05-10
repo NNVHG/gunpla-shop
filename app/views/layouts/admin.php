@@ -6,7 +6,7 @@
 <title><?= htmlspecialchars($title ?? 'Admin') ?> — GUNPLA SHOP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= BASE_URL ?>/assets/admin.css">
+<link rel="stylesheet" href="<?= BASE_URL ?>/public/css/admin.css?v=<?= time() ?>">
 </head>
 <body>
 
@@ -23,6 +23,9 @@
     <div class="sidebar-label">Cửa hàng</div>
     <a href="<?= BASE_URL ?>/admin/products" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'],'/admin/products') ? 'active' : '' ?>">
       <span class="nav-icon">◈</span> Sản phẩm
+    </a>
+    <a href="<?= BASE_URL ?>/admin/categories" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'],'/admin/categories') ? 'active' : '' ?>">
+      <span class="nav-icon">▤</span> Danh mục
     </a>
     <a href="<?= BASE_URL ?>/admin/orders" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'],'/admin/orders') ? 'active' : '' ?>">
       <span class="nav-icon">◎</span> Đơn hàng
@@ -63,5 +66,6 @@
 </main>
 
 </body>
+<script>const BASE_URL = '<?= BASE_URL ?>';</script>
 <script src="<?= BASE_URL ?>/public/js/admin.js?v=<?= time() ?>"></script>
 </html>

@@ -11,7 +11,7 @@
       Quản lý tồn kho — click vào số lượng để điều chỉnh nhanh
     </div>
   </div>
-  <a href="/admin/products/create" class="btn btn-gold">+ Thêm sản phẩm mới</a>
+  <a href="<?= BASE_URL ?>/admin/products/create" class="btn btn-gold">+ Thêm sản phẩm mới</a>
 </div>
 
 <div class="admin-table-wrap">

@@ -1,11 +1,11 @@
 <?php
 /**
  * Form thêm / sửa sản phẩm
- * Biến: $product (null = tạo mới), $categories
- * Nếu sửa: $product là array đầy đủ từ Product::getById()
+ * @var array|null $product
+ * @var array $categories
  */
 $isEdit  = !empty($product);
-$action  = $isEdit ? "/admin/products/update/{$product['id']}" : '/admin/products/store';
+$action  = $isEdit ? BASE_URL . "/admin/products/update/{$product['id']}" : BASE_URL . '/admin/products/store';
 $errors  = $_SESSION['form_errors'] ?? [];
 $saved   = $_SESSION['form_data']   ?? $product ?? [];
 unset($_SESSION['form_errors'], $_SESSION['form_data']);
@@ -140,7 +140,7 @@ function ferr(array $e, string $k): string {
       <button type="submit" class="btn btn-gold" style="width:100%;padding:13px;font-size:18px;border-radius:5px">
         <?=$isEdit?'CẬP NHẬT SẢN PHẨM':'THÊM SẢN PHẨM'?>
       </button>
-      <a href="/admin/products" style="display:block;text-align:center;margin-top:10px;font-family:var(--font-m);font-size:10px;color:var(--text-3);letter-spacing:.08em">
+      <a href="<?= BASE_URL ?>/admin/products" style="display:block;text-align:center;margin-top:10px;font-family:var(--font-m);font-size:10px;color:var(--text-3);letter-spacing:.08em">
         &larr; Quay lại danh sách
       </a>
 
@@ -154,7 +154,7 @@ function ferr(array $e, string $k): string {
             Tạo lúc: <?=date('d/m/Y H:i', strtotime($product['created_at']??'now'))?>
           </div>
           <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
-            <form method="POST" action="/admin/products/delete/<?=$product['id']?>"
+            <form method="POST" action="<?= BASE_URL ?>/admin/products/delete/<?=$product['id']?>"
                   onsubmit="return confirm('Ẩn sản phẩm này khỏi cửa hàng?')">
               <button type="submit" class="btn btn-danger btn-sm" style="width:100%">Ẩn sản phẩm này</button>
             </form>

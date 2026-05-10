@@ -13,7 +13,7 @@ function filterTable(q) {
 async function adjustStock(productId, delta, btn) {
   btn.disabled = true;
   try {
-    const res  = await fetch('/gunpla-shop/admin/inventory/adjust', {
+    const res  = await fetch(`${BASE_URL}/admin/inventoryadjust`, {
       method: 'POST',
       headers: {'Content-Type':'application/x-www-form-urlencoded'},
       body: `product_id=${productId}&delta=${delta}&reason=Điều chỉnh nhanh`
@@ -59,7 +59,7 @@ async function submitAdjust() {
   if (!delta || isNaN(delta)) { alert('Vui lòng nhập số lượng'); return; }
 
   try {
-    const res  = await fetch('/gunpla-shop/admin/inventory/adjust', {
+    const res  = await fetch(`${BASE_URL}/admin/inventoryadjust`, {
       method: 'POST',
       headers: {'Content-Type':'application/x-www-form-urlencoded'},
       body: `product_id=${modalProductId}&delta=${delta}&reason=${encodeURIComponent(reason)}`
@@ -92,7 +92,7 @@ async function updateStatus(orderId, status, btn) {
   btn.disabled = true; btn.textContent = '...';
 
   try {
-    const res = await fetch('/gunpla-shop/admin/orders/status', {
+    const res = await fetch(`${BASE_URL}/admin/orderstatus`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `order_id=${orderId}&status=${status}`

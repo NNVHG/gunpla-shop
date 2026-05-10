@@ -67,7 +67,7 @@ $statusLabels = [
   <div class="admin-table-wrap">
     <div class="admin-table-head">
       <span class="admin-table-title">Cảnh báo tồn kho</span>
-      <a href="/admin/inventory" class="btn btn-sm">Xem kho</a>
+      <a href="<?= BASE_URL ?>/admin/inventory" class="btn btn-sm">Xem kho</a>
     </div>
     <div style="padding:8px 0">
       <?php foreach ($lowStockProducts as $p): ?>
@@ -102,7 +102,7 @@ $statusLabels = [
 <div class="admin-table-wrap">
   <div class="admin-table-head">
     <span class="admin-table-title">Đơn hàng gần nhất</span>
-    <a href="/admin/orders" class="btn btn-sm">Xem tất cả</a>
+    <a href="<?= BASE_URL ?>/admin/orders" class="btn btn-sm">Xem tất cả</a>
   </div>
   <table>
     <thead>
@@ -131,7 +131,7 @@ $statusLabels = [
           <td><span class="badge badge-<?= $order['status'] ?>"><?= $statusLabels[$order['status']] ?? $order['status'] ?></span></td>
           <td style="font-family:var(--font-m);font-size:10px;color:var(--text-2)"><?= date('d/m H:i', strtotime($order['created_at'])) ?></td>
           <td>
-            <a href="/admin/orders?highlight=<?= $order['id'] ?>" class="btn btn-sm">Chi tiết</a>
+            <a href="<?= BASE_URL ?>/admin/orders/detail/<?= $order['id'] ?>" class="btn btn-sm">Chi tiết</a>
           </td>
         </tr>
       <?php endforeach; ?>

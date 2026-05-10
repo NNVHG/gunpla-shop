@@ -29,11 +29,11 @@ $nextLabel = [
 
 <!-- Filter tabs -->
 <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:20px;width:fit-content">
-  <a href="/admin/orders" class="tab <?= $currentStatus==='' ? 'active' : '' ?>">
+  <a href="<?= BASE_URL ?>/admin/orders" class="tab <?= $currentStatus==='' ? 'active' : '' ?>">
     Tất cả <span class="tab-count"><?= array_sum($statusCounts) ?></span>
   </a>
   <?php foreach ($statusLabels as $key => $label): ?>
-    <a href="/admin/orders?status=<?= $key ?>" class="tab <?= $currentStatus===$key ? 'active' : '' ?>">
+    <a href="<?= BASE_URL ?>/admin/orders?status=<?= $key ?>" class="tab <?= $currentStatus===$key ? 'active' : '' ?>">
       <?= $label ?> <span class="tab-count"><?= $statusCounts[$key] ?? 0 ?></span>
     </a>
   <?php endforeach; ?>

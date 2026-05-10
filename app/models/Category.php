@@ -1,15 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Models; // Thêm dòng này
+namespace App\Models;
 
-use PDO;            // Thêm dòng này
+use PDO;
 
 class Category
 {
     private PDO $db;
     public function __construct() { $this->db = getDB(); }
 
+    // ─── CÁC HÀM CŨ ĐỂ ĐỌC DỮ LIỆU (KHÔNG ĐƯỢC XÓA) ──────────
     public function getAll(): array
     {
         return $this->db->query("SELECT c.*, p.name AS parent_name FROM categories c LEFT JOIN categories p ON p.id = c.parent_id ORDER BY c.sort_order ASC, c.id ASC")->fetchAll();
@@ -62,5 +63,51 @@ class Category
             $grouped[$cat['type']][] = $cat;
         }
         return $grouped;
+    }
+    
+    public function cloneGroupedByType(): array
+    {
+        return $this->getGroupedByType();
+    }
+
+    // ─── CÁC HÀM MỚI ĐỂ ADMIN THÊM/SỬA/XÓA ──────────
+    public function create(array $data): bool
+    {
+        $stmt = $this->db->prepare("INSERT INTO categories (name, slug, parent_id, type) VALUES (:name, :slug, :parent_id, :type)");
+        return $stmt->execute([
+            ':name' => trim($data['name']),
+            ':slug' => $this->makeSlug($data['name']),
+            ':parent_id' => !empty($data['parent_id']) ? (int)$data['parent_id'] : null,
+            ':type' => $data['type']
+        ]);
+    }
+
+    public function update(int $id, array $data): bool
+    {
+        $stmt = $this->db->prepare("UPDATE categories SET name = :name, slug = :slug, parent_id = :parent_id, type = :type WHERE id = :id");
+        return $stmt->execute([
+            ':name' => trim($data['name']),
+            ':slug' => $this->makeSlug($data['name']),
+            ':parent_id' => !empty($data['parent_id']) ? (int)$data['parent_id'] : null,
+            ':type' => $data['type'],
+            ':id' => $id
+        ]);
+    }
+
+    public function delete(int $id): bool
+    {
+        // Chuyển các danh mục con lên cấp cha trước khi xóa để tránh lỗi khóa ngoại
+        $this->db->prepare("UPDATE categories SET parent_id = NULL WHERE parent_id = :id")->execute([':id' => $id]);
+        $stmt = $this->db->prepare("DELETE FROM categories WHERE id = :id");
+        return $stmt->execute([':id' => $id]);
+    }
+
+    private function makeSlug(string $name): string
+    {
+        $slug = mb_strtolower($name, 'UTF-8');
+        $slug = preg_replace('/[^\p{L}\p{N}\s-]/u', '', $slug);
+        $slug = preg_replace('/\s+/', '-', trim($slug));
+        $slug = preg_replace('/-+/', '-', $slug);
+        return $slug;
     }
 }

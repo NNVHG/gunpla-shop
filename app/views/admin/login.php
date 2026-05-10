@@ -19,7 +19,7 @@
       <div class="error"><?=htmlspecialchars($_SESSION['login_error'])?></div>
       <?php unset($_SESSION['login_error']); ?>
     <?php endif; ?>
-    <form method="POST" action="/admin/loginSubmit">
+    <form method="POST" action="<?= BASE_URL ?>/admin/loginSubmit">
       <div>
         <label>Email</label>
         <input type="email" name="email" placeholder="admin@gunplashop.vn" required autofocus>
@@ -31,7 +31,7 @@
       <button type="submit" class="btn-login">ĐĂNG NHẬP</button>
     </form>
   </div>
-  <a href="/" class="back">&larr; Về trang cửa hàng</a>
+  <a href="<?= BASE_URL ?>/" class="back">&larr; Về trang cửa hàng</a>
 </div>
 </body>
 </html>
