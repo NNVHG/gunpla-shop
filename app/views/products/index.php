@@ -1,13 +1,23 @@
 <?php
-/**
- * Danh sách sản phẩm — có filter, sort, phân trang
- * Biến: $products, $total, $pages, $page, $filters, $sort, $categories, $favoriteIds
- */
 function stockBadge(int $s): string {
     if($s===0) return '<span class="stock-badge out-stock">HẾT</span>';
     if($s<=5)  return "<span class='stock-badge low-stock'>CÒN $s</span>";
     return '<span class="stock-badge in-stock">CÒN HÀNG</span>';
 }
+
+/**
+ * Danh sách sản phẩm — có filter, sort, phân trang
+ *
+ * @var array $products
+ * @var int $total
+ * @var int $pages
+ * @var int $page
+ * @var array $filters
+ * @var string $sort
+ * @var array $categories
+ * @var array $favoriteIds
+ * @var array $groupedCategories
+ */
 $currentGrade = $filters['grade']  ?? '';
 $currentScale = $filters['scale']  ?? '';
 $currentSort  = $sort ?? 'newest';

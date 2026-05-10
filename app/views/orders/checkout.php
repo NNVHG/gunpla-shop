@@ -4,10 +4,10 @@
  * Trang thanh toán — tích hợp tính phí ship AJAX realtime
  *
  * Biến nhận từ OrderController:
- *   $items         — sản phẩm trong giỏ
- *   $subtotal      — tổng tiền hàng
- *   $shippingZones — mảng tỉnh => phí
- *   $user          — thông tin user đã đăng nhập (hoặc null)
+ * @var array $items         sản phẩm trong giỏ
+ * @var float|int $subtotal  tổng tiền hàng
+ * @var array $shippingZones mảng tỉnh => phí
+ * @var array|null $user     thông tin user đã đăng nhập (hoặc null)
  */
 ?>
 <div style="max-width:1100px;margin:0 auto;padding:40px 24px">
@@ -32,7 +32,7 @@
     </div>
   <?php endif; ?>
 
-  <form method="POST" action="/orders/place" id="checkoutForm">
+  <form method="POST" action="<?= BASE_URL ?>/orders/place" id="checkoutForm">
     <div style="display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start">
 
       <!-- ── CỘT TRÁI: Form thông tin ─────────── -->
@@ -104,10 +104,19 @@
           </div>
 
           <!-- Ghi chú -->
-          <div>
+          <div style="margin-bottom:24px">
             <label class="form-label">Ghi chú đơn hàng <span style="color:var(--text-hint)">(tùy chọn)</span></label>
             <textarea name="note" class="form-input" rows="2"
                       placeholder="Giao giờ hành chính, để ở bảo vệ..."><?= htmlspecialchars($_SESSION['checkout_form']['note'] ?? '') ?></textarea>
+          </div>
+
+          <!-- Phương thức thanh toán -->
+          <div style="margin-bottom:16px">
+            <label class="form-label">Phương thức thanh toán *</label>
+            <div style="display: flex; gap: 20px; color: var(--text-primary); font-size: 14px;">
+                <label style="cursor:pointer;"><input type="radio" name="payment_method" value="cod" checked style="accent-color:var(--gold);"> Thanh toán khi nhận hàng (COD)</label>
+                <label style="cursor:pointer;"><input type="radio" name="payment_method" value="vnpay" style="accent-color:var(--gold);"> Thanh toán qua VNPAY</label>
+            </div>
           </div>
 
         </div>
@@ -203,6 +212,67 @@
 .form-input::placeholder { color: var(--text-hint); }
 .form-error { font-size: 11px; color: #e87070; margin-top: 4px; }
 select.form-input option { background: var(--bg-surface); }
+
+/* Custom Radio Buttons for Payment Method */
+.payment-method-option {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px;
+  background: var(--bg-void);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.payment-method-option:hover {
+  border-color: var(--border-mid);
+}
+.payment-method-option input[type="radio"] {
+  display: none;
+}
+.payment-method-option .radio-custom {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-mid);
+  border-radius: 50%;
+  margin-right: 14px;
+  margin-top: 2px;
+  position: relative;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+.payment-method-option input[type="radio"]:checked + .radio-custom {
+  border-color: var(--gold);
+}
+.payment-method-option input[type="radio"]:checked + .radio-custom::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background: var(--gold);
+  border-radius: 50%;
+}
+.payment-method-option input[type="radio"]:checked ~ .payment-info .payment-title {
+  color: var(--gold);
+}
+.payment-info {
+  display: flex;
+  flex-direction: column;
+}
+.payment-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  transition: color 0.2s ease;
+}
+.payment-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
 </style>
 
 <script>

@@ -112,21 +112,24 @@ class Order
             $shippingFee = $this->calcShipping($info['province'], $totalGrams);
             $total       = $subtotal + $shippingFee;
 
+            $paymentMethod = $info['payment_method'] ?? 'cod';
+
             // Tạo đơn hàng
             $stmt = $this->db->prepare("
-                INSERT INTO orders (user_id, full_name, phone, province, address, note, subtotal, shipping_fee, total, status)
-                VALUES (:user_id, :full_name, :phone, :province, :address, :note, :subtotal, :shipping_fee, :total, 'pending')
+                INSERT INTO orders (user_id, full_name, phone, province, address, note, subtotal, shipping_fee, total, status, payment_method)
+                VALUES (:user_id, :full_name, :phone, :province, :address, :note, :subtotal, :shipping_fee, :total, 'pending', :payment_method)
             ");
             $stmt->execute([
-                ':user_id'      => $userId,
-                ':full_name'    => $info['full_name'],
-                ':phone'        => $info['phone'],
-                ':province'     => $info['province'],
-                ':address'      => $info['address'],
-                ':note'         => $info['note'] ?? null,
-                ':subtotal'     => $subtotal,
-                ':shipping_fee' => $shippingFee,
-                ':total'        => $total,
+                ':user_id'        => $userId,
+                ':full_name'      => $info['full_name'],
+                ':phone'          => $info['phone'],
+                ':province'       => $info['province'],
+                ':address'        => $info['address'],
+                ':note'           => $info['note'] ?? null,
+                ':subtotal'       => $subtotal,
+                ':shipping_fee'   => $shippingFee,
+                ':total'          => $total,
+                ':payment_method' => $paymentMethod,
             ]);
             $orderId = (int) $this->db->lastInsertId();
 
@@ -250,6 +253,22 @@ class Order
 
         $stmt = $this->db->prepare("UPDATE orders SET status = :status WHERE id = :id");
         return $stmt->execute([':status' => $status, ':id' => $id]);
+    }
+
+    /**
+     * Cập nhật trạng thái thanh toán (đặc biệt cho cổng trực tuyến)
+     */
+    public function updatePaymentStatus(int $id, string $status, ?string $transactionId = null): bool
+    {
+        $allowed = ['unpaid', 'paid', 'failed'];
+        if (!in_array($status, $allowed)) return false;
+
+        $stmt = $this->db->prepare("UPDATE orders SET payment_status = :status, transaction_id = :txn_id WHERE id = :id");
+        return $stmt->execute([
+            ':status' => $status,
+            ':txn_id' => $transactionId,
+            ':id'     => $id
+        ]);
     }
 
     // ─────────────────────────────────────────────

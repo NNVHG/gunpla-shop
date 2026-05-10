@@ -5,6 +5,7 @@ namespace App\Controllers; // Thêm dòng này
 
 use App\Models\Product;    // Gọi Model Product
 use App\Models\Category;  // Gọi Model Category
+use App\Models\Favorite;
 
 class FavoriteController
 {

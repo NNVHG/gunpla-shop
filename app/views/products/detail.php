@@ -1,7 +1,8 @@
 <?php
 /**
  * Chi tiết sản phẩm
- * Biến: $product, $related
+ * @var array $product
+ * @var array $related
  */
 $p      = $product;
 $images = $p['images'] ?? [];

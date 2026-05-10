@@ -1,4 +1,5 @@
 <?php
+
 /**
  * app/controllers/OrderController.php
  * Xử lý đặt hàng và gửi email xác nhận qua PHPMailer + Gmail SMTP
@@ -107,11 +108,12 @@ class OrderController
 
         // ── Xây dựng thông tin giao hàng ──────────
         $info = [
-            'full_name' => htmlspecialchars(trim($_POST['full_name'])),
-            'phone'     => htmlspecialchars(trim($_POST['phone'])),
-            'province'  => htmlspecialchars(trim($_POST['province'])),
-            'address'   => htmlspecialchars(trim($_POST['address'])),
-            'note'      => htmlspecialchars(trim($_POST['note'] ?? '')),
+            'full_name'      => htmlspecialchars(trim($_POST['full_name'])),
+            'phone'          => htmlspecialchars(trim($_POST['phone'])),
+            'province'       => htmlspecialchars(trim($_POST['province'])),
+            'address'        => htmlspecialchars(trim($_POST['address'])),
+            'note'           => htmlspecialchars(trim($_POST['note'] ?? '')),
+            'payment_method' => $_POST['payment_method'] ?? 'cod',
         ];
 
         $userId = $_SESSION['user']['id'] ?? null;
@@ -125,7 +127,75 @@ class OrderController
             return;
         }
 
-        // ── Gửi email xác nhận ─────────────────────
+        // ── Xử lý theo phương thức thanh toán ──────
+        if ($info['payment_method'] === 'vnpay') {
+            // KHÔNG xóa giỏ hàng ở đây
+
+            $vnp_Url = VNP_URL;
+            $vnp_Returnurl = VNP_RETURNURL;
+            $vnp_TmnCode = VNP_TMNCODE;
+            $vnp_HashSecret = VNP_HASHSECRET;
+
+            $vnp_TxnRef = (string) $result['order_id'];
+            $vnp_OrderInfo = 'Thanh toan don hang ' . $result['order_id'];
+            $vnp_OrderType = 'billpayment';
+            
+            // Ép kiểu chuẩn số nguyên, nhân 100 theo chuẩn VNPAY
+            $vnp_Amount = round((float)$result['total'] * 100); 
+            $vnp_Locale = 'vn';
+            
+            // Fix lỗi IP ::1 trên localhost XAMPP
+            $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
+            if($vnp_IpAddr === '::1' || $vnp_IpAddr === '127.0.0.1') {
+                $vnp_IpAddr = '127.0.0.1';
+            }
+
+            // Fix lỗi múi giờ gây sai chữ ký
+            date_default_timezone_set('Asia/Ho_Chi_Minh');
+            $startTime = date('YmdHis');
+            $expire = date('YmdHis', strtotime('+15 minutes', strtotime($startTime)));
+
+            $inputData = array(
+                "vnp_Version" => "2.1.0",
+                "vnp_TmnCode" => $vnp_TmnCode,
+                "vnp_Amount" => $vnp_Amount,
+                "vnp_Command" => "pay",
+                "vnp_CreateDate" => $startTime,
+                "vnp_CurrCode" => "VND",
+                "vnp_IpAddr" => $vnp_IpAddr,
+                "vnp_Locale" => $vnp_Locale,
+                "vnp_OrderInfo" => $vnp_OrderInfo,
+                "vnp_OrderType" => $vnp_OrderType,
+                "vnp_ReturnUrl" => $vnp_Returnurl,
+                "vnp_TxnRef" => $vnp_TxnRef,
+                "vnp_ExpireDate" => $expire
+            );
+
+            ksort($inputData);
+            $query = "";
+            $i = 0;
+            $hashdata = "";
+            foreach ($inputData as $key => $value) {
+                if ($i == 1) {
+                    $hashdata .= '&' . urlencode($key) . "=" . urlencode((string)$value);
+                } else {
+                    $hashdata .= urlencode($key) . "=" . urlencode((string)$value);
+                    $i = 1;
+                }
+                $query .= urlencode($key) . "=" . urlencode((string)$value) . '&';
+            }
+
+            $vnp_Url = $vnp_Url . "?" . $query;
+            if (isset($vnp_HashSecret)) {
+                $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
+                $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
+            }
+
+            header('Location: ' . $vnp_Url);
+            exit;
+        }
+
+        // ── (Dành cho COD) Gửi email xác nhận ──────
         $orderData = $this->orderModel->getById($result['order_id']);
         $this->sendConfirmationEmail($info, $orderData);
 
@@ -136,6 +206,52 @@ class OrderController
         $_SESSION['last_order_id'] = $result['order_id'];
 
         $this->redirect('/orders/success');
+    }
+
+    // ─────────────────────────────────────────────
+    public function vnpayReturn(): void
+    {
+        $vnp_SecureHash = $_GET['vnp_SecureHash'] ?? '';
+        $inputData = array();
+        foreach ($_GET as $key => $value) {
+            if (substr($key, 0, 4) == "vnp_") {
+                $inputData[$key] = $value;
+            }
+        }
+
+        unset($inputData['vnp_SecureHash']);
+        ksort($inputData);
+        $i = 0;
+        $hashData = "";
+        foreach ($inputData as $key => $value) {
+            if ($i == 1) {
+                $hashData = $hashData . '&' . urlencode($key) . "=" . urlencode((string)$value);
+            } else {
+                $hashData = $hashData . urlencode($key) . "=" . urlencode((string)$value);
+                $i = 1;
+            }
+        }
+
+        $secureHash = hash_hmac('sha512', $hashData, VNP_HASHSECRET);
+        $orderId = (int)($_GET['vnp_TxnRef'] ?? 0);
+
+        if ($secureHash === $vnp_SecureHash) {
+            if ($_GET['vnp_ResponseCode'] == '00') {
+                // Thanh toán thành công
+                $this->orderModel->updatePaymentStatus($orderId, 'paid', $_GET['vnp_TransactionNo']);
+                $_SESSION['cart'] = []; // Xóa giỏ hàng
+                $_SESSION['last_order_id'] = $orderId;
+                $this->redirect('/orders/success');
+            } else {
+                // Lỗi hoặc khách hủy thanh toán
+                $this->orderModel->updatePaymentStatus($orderId, 'failed', '');
+                $_SESSION['order_error'] = 'Thanh toán không thành công hoặc bị hủy (Mã lỗi: ' . $_GET['vnp_ResponseCode'] . ')!';
+                $this->redirect('/orders/checkout');
+            }
+        } else {
+            $_SESSION['order_error'] = 'Chữ ký bảo mật không hợp lệ!';
+            $this->redirect('/orders/checkout');
+        }
     }
 
     // ─────────────────────────────────────────────
@@ -241,7 +357,6 @@ class OrderController
             $mail->AltBody = $this->buildEmailText($info, $order); // Fallback text
 
             $mail->send();
-
         } catch (Exception $e) {
             // Log lỗi nhưng không hiển thị ra user
             error_log('Lỗi gửi email: ' . $mail->ErrorInfo);
@@ -255,8 +370,8 @@ class OrderController
     {
         $itemRows = '';
         foreach ($order['items'] as $item) {
-            $price = number_format($item['price_at_order'], 0, ',', '.') . 'đ';
-            $total = number_format($item['price_at_order'] * $item['quantity'], 0, ',', '.') . 'đ';
+            $price = number_format((float)$item['price_at_order'], 0, ',', '.') . 'đ';
+            $total = number_format((float)($item['price_at_order'] * $item['quantity']), 0, ',', '.') . 'đ';
             $itemRows .= "
             <tr>
                 <td style='padding:12px 16px;border-bottom:1px solid #2a2d31;color:#e8e4dc'>
@@ -274,9 +389,9 @@ class OrderController
             </tr>";
         }
 
-        $subtotal    = number_format($order['subtotal'],     0, ',', '.') . 'đ';
-        $shippingFee = number_format($order['shipping_fee'], 0, ',', '.') . 'đ';
-        $totalAmount = number_format($order['total'],        0, ',', '.') . 'đ';
+        $subtotal    = number_format((float)$order['subtotal'],     0, ',', '.') . 'đ';
+        $shippingFee = number_format((float)$order['shipping_fee'], 0, ',', '.') . 'đ';
+        $totalAmount = number_format((float)$order['total'],        0, ',', '.') . 'đ';
 
         return "
         <!DOCTYPE html>
@@ -380,10 +495,10 @@ class OrderController
         $lines[] = str_repeat('-', 40);
         foreach ($order['items'] as $item) {
             $lines[] = "{$item['product_name']} x{$item['quantity']} — "
-                     . number_format($item['price_at_order'] * $item['quantity'], 0, ',', '.') . "đ";
+                . number_format((float)($item['price_at_order'] * $item['quantity']), 0, ',', '.') . "đ";
         }
         $lines[] = str_repeat('-', 40);
-        $lines[] = "Tổng cộng: " . number_format($order['total'], 0, ',', '.') . "đ";
+        $lines[] = "Tổng cộng: " . number_format((float)$order['total'], 0, ',', '.') . "đ";
         return implode("\n", $lines);
     }
 

@@ -1,8 +1,10 @@
 <?php
 /**
  * app/views/admin/dashboard.php
- * Biến từ AdminController::dashboard():
- *   $stats, $revenueChart, $latestOrders, $lowStockProducts
+ * @var array $stats
+ * @var array $revenueChart
+ * @var array $latestOrders
+ * @var array $lowStockProducts
  */
 
 $statusLabels = [

@@ -1,3 +1,10 @@
+<?php
+/**
+ * @var array $user
+ * @var array $orders
+ * @var array $favorites
+ */
+?>
 <div class="container" style="padding: 40px 24px; min-height: 70vh;">
     <div class="breadcrumb" style="margin-bottom: 24px;">
         <a href="<?= BASE_URL ?>/">Trang chủ</a><span>/</span>Tài khoản của tôi

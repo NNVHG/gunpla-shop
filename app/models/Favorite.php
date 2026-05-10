@@ -6,14 +6,14 @@ namespace App\Models; // Thêm dòng này
 use PDO;
 
 class Favorite {
-    private $db;
+    private PDO $db;
 
-    public function __construct($dbConnection) {
+    public function __construct(PDO $dbConnection) {
         $this->db = $dbConnection;
     }
 
     // Toggle yêu thích: Nếu đã có thì xóa, chưa có thì thêm
-    public function toggle($userId, $productId) {
+    public function toggle(int $userId, int $productId): array {
         // Kiểm tra xem đã yêu thích chưa
         $stmt = $this->db->prepare("SELECT 1 FROM favorites WHERE user_id = ? AND product_id = ?");
         $stmt->execute([$userId, $productId]);
@@ -33,14 +33,14 @@ class Favorite {
     }
 
     // Lấy danh sách ID sản phẩm user đã yêu thích (để hiển thị nút tim đỏ)
-    public function getUserFavoriteIds($userId) {
+    public function getUserFavoriteIds(int $userId): array {
         $stmt = $this->db->prepare("SELECT product_id FROM favorites WHERE user_id = ?");
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
     // Lấy toàn bộ thông tin sản phẩm yêu thích của user
-    public function getUserFavorites($userId) {
+    public function getUserFavorites(int $userId): array {
         $sql = "SELECT p.* FROM products p 
                 INNER JOIN favorites f ON p.id = f.product_id 
                 WHERE f.user_id = ? 

@@ -1,7 +1,8 @@
 <?php
 /**
  * app/views/admin/inventory/index.php
- * Biến: $products, $hasLogTable
+ * @var array $products
+ * @var bool $hasLogTable
  */
 ?>
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">

@@ -1,7 +1,11 @@
 <?php
 /**
  * app/views/admin/orders/index.php
- * Biến: $orders, $statusCounts, $currentStatus, $pages, $page
+ * @var array $orders
+ * @var array $statusCounts
+ * @var string $currentStatus
+ * @var int $pages
+ * @var int $page
  */
 
 $statusLabels = [

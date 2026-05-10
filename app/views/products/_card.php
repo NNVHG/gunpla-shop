@@ -1,6 +1,7 @@
 <?php
-/* app/views/products/_card.php
- * Biến yêu cầu: $p (mảng sản phẩm), $i (index, dùng cho animation delay)
+/** app/views/products/_card.php
+ * @var array $p
+ * @var int $i
  */
 $stock      = (int) ($p['stock'] ?? 0);
 $stockClass = $stock === 0 ? 'out-stock' : ($stock <= 5 ? 'low-stock' : 'in-stock');
