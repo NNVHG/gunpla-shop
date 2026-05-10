@@ -61,6 +61,11 @@ $paymentStatusColors = [
         <?php if ($order['transaction_id']): ?>
             <p style="margin-bottom: 8px;"><strong>Mã giao dịch (VNPAY):</strong> <?= htmlspecialchars($order['transaction_id']) ?></p>
         <?php endif; ?>
+        <?php if ($order['payment_method'] === 'cod' && $order['payment_status'] !== 'paid'): ?>
+            <button class="btn-gold" id="btnMarkPaid" data-id="<?= $order['id'] ?>" style="margin-top:8px; padding:6px 12px; font-size:12px; background:#28a745; border-color:#28a745; color:#fff">
+                ✓ Đã nhận tiền
+            </button>
+        <?php endif; ?>
 
         <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:10px">
             <p style="margin-bottom: 12px;">
@@ -137,7 +142,7 @@ document.querySelectorAll('.status-btn').forEach(btn => {
         const status = this.dataset.status;
         if (!confirm('Chuyển trạng thái đơn hàng này?')) return;
 
-        fetch('<?= BASE_URL ?>/admin/orders/status', {
+        fetch('<?= BASE_URL ?>/admin/orderstatus', {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: `order_id=${orderId}&status=${status}`
@@ -153,4 +158,25 @@ document.querySelectorAll('.status-btn').forEach(btn => {
         });
     });
 });
+
+const btnMarkPaid = document.getElementById('btnMarkPaid');
+if (btnMarkPaid) {
+    btnMarkPaid.addEventListener('click', function() {
+        if (!confirm('Xác nhận đã nhận tiền (COD) cho đơn hàng này?')) return;
+        fetch('<?= BASE_URL ?>/admin/markpaid', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `order_id=${this.dataset.id}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert('Đã cập nhật trạng thái thanh toán!');
+                location.reload();
+            } else {
+                alert('Có lỗi xảy ra.');
+            }
+        });
+    });
+}
 </script>

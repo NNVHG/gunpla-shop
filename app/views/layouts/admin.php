@@ -9,6 +9,11 @@
 <link rel="stylesheet" href="<?= BASE_URL ?>/public/css/admin.css?v=<?= time() ?>">
 </head>
 <body>
+<script>
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light-theme');
+  }
+</script>
 
 <aside class="sidebar">
   <div class="sidebar-brand">
@@ -33,6 +38,9 @@
     <a href="<?= BASE_URL ?>/admin/inventory" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'],'/admin/inventory') ? 'active' : '' ?>">
       <span class="nav-icon">≡</span> Kho hàng
     </a>
+    <a href="<?= BASE_URL ?>/admin/users" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'],'/admin/users') ? 'active' : '' ?>">
+      <span class="nav-icon">👥</span> Khách hàng
+    </a>
     <div class="sidebar-label">Tài khoản</div>
     <a href="<?= BASE_URL ?>/" class="nav-item" target="_blank">
       <span class="nav-icon">↗</span> Xem cửa hàng
@@ -49,9 +57,14 @@
 
 <main class="main">
   <div class="topbar">
-    <div class="page-title"><?= htmlspecialchars($title ?? 'Admin') ?></div>
-    <div style="font-family:var(--font-m);font-size:10px;color:var(--text-3);letter-spacing:.08em">
-      <?= date('d/m/Y H:i') ?>
+    <div class="page-title"><?= htmlspecialchars($title ?? 'Dashboard') ?></div>
+    <div style="display:flex; align-items:center; gap: 12px;">
+      <button class="btn-icon theme-toggle" title="Giao diện Sáng/Tối" style="display:flex; align-items:center; justify-content:center; font-size:16px; border:none; background:transparent; cursor:pointer;">
+        🌓
+      </button>
+      <a href="<?= BASE_URL ?>/" target="_blank" style="font-family:var(--font-m);font-size:10px;color:var(--gold);letter-spacing:.1em;border:1px solid var(--gold-dim);padding:5px 10px;border-radius:4px;transition:all .2s">
+        &rarr; XEM WEBSITE
+      </a>
     </div>
   </div>
   <div class="page-body">
@@ -66,6 +79,15 @@
 </main>
 
 </body>
-<script>const BASE_URL = '<?= BASE_URL ?>';</script>
+<script>const BASE_URL = '<?= BASE_URL ?>';
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.theme-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+    });
+  });
+});
+</script>
 <script src="<?= BASE_URL ?>/public/js/admin.js?v=<?= time() ?>"></script>
 </html>

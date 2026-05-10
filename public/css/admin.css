@@ -11,6 +11,13 @@
   --font-m:'Share Tech Mono',monospace;
   --sidebar:220px;
 }
+body.light-theme {
+  --bg-void:#f2f3f5;--bg-panel:#ffffff;--bg-card:#ffffff;--bg-hover:#f8f9fa;
+  --border:#e2e5e9;--border-mid:#d1d5db;
+  --gold:#b8860b;--gold-bright:#daa520;--gold-dim:#e8d8b0;
+  --green:#28a745;--red:#dc3545;--blue:#007bff;--amber:#ffc107;
+  --text-1:#212529;--text-2:#495057;--text-3:#6c757d;
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg-void);color:var(--text-1);font-family:var(--font-b);font-size:13px;display:flex;min-height:100vh;}
 a{color:inherit;text-decoration:none;}

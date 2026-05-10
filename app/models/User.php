@@ -156,4 +156,39 @@ class User
             ':id' => $id,
         ]);
     }
-}
+
+    // ─── ADMIN — QUẢN LÝ NGƯỜI DÙNG ────────────────────────────────
+
+    /**
+     * Lấy toàn bộ danh sách người dùng (sắp xếp admin lên trên, sau đó theo ID giảm dần)
+     */
+    public function getAllUsers(): array
+    {
+        return $this->db->query(
+            "SELECT id, full_name, email, phone, role, created_at
+             FROM users
+             ORDER BY FIELD(role,'admin','customer'), id DESC"
+        )->fetchAll();
+    }
+
+    /**
+     * Cập nhật vai trò người dùng (admin ↔ customer)
+     */
+    public function updateUserRole(int $id, string $role): bool
+    {
+        $allowed = ['admin', 'customer'];
+        if (!in_array($role, $allowed, true)) return false;
+
+        $stmt = $this->db->prepare("UPDATE users SET role = :role WHERE id = :id");
+        return $stmt->execute([':role' => $role, ':id' => $id]);
+    }
+
+    /**
+     * Xóa người dùng khỏi hệ thống
+     */
+    public function deleteUser(int $id): bool
+    {
+        $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id");
+        return $stmt->execute([':id' => $id]);
+    }
+}

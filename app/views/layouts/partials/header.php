@@ -24,6 +24,9 @@
       </div>
       
       <div class="nav-actions">
+        <button class="btn-icon theme-toggle" title="Giao diện Sáng/Tối" style="display:flex; align-items:center; justify-content:center; font-size:16px;">
+          🌓
+        </button>
         <?php if (!empty($_SESSION['user'])): ?>
           
           <a href="<?= BASE_URL ?>/user/profile?tab=wishlist" class="btn-icon" title="Sản phẩm yêu thích" style="text-decoration:none; display:flex; align-items:center; justify-content:center;">

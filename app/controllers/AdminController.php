@@ -569,6 +569,74 @@ class AdminController
         exit;
     }
 
+    // ────────────────────────────────────────────
+    //  QUẢN LÝ NGƯỜI DÙNG (USER MANAGEMENT)
+    // ────────────────────────────────────────────
+
+    /**
+     * GET /admin/users
+     * Hiển thị danh sách tất cả người dùng.
+     */
+    public function users(): void
+    {
+        $this->requireAdmin();
+        $this->renderAdmin('admin/users/index', [
+            'title' => 'Quản lý Khách hàng',
+            'users' => $this->userModel->getAllUsers(),
+        ]);
+    }
+
+    /**
+     * POST /admin/changeuserrole/{id}
+     * Chuyển đổi quyền user ↔ admin. Tự động toggle dựa trên role hiện tại.
+     */
+    public function changeUserRole(?string $id): void
+    {
+        $this->requireAdmin();
+        $this->requirePost();
+
+        $userId      = (int) $id;
+        $currentRole = $_POST['current_role'] ?? 'customer';
+        $newRole     = ($currentRole === 'admin') ? 'customer' : 'admin';
+
+        // Không cho phép admin tự hạ quyền chính mình
+        if ($userId === (int) ($_SESSION['user']['id'] ?? 0)) {
+            $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Bạn không thể thay đổi quyền của chính mình!'];
+            $this->redirect('/admin/users');
+            return;
+        }
+
+        $this->userModel->updateUserRole($userId, $newRole);
+        $_SESSION['flash'] = [
+            'type' => 'success',
+            'msg'  => "Đã đổi quyền tài khoản #{$userId} thành " . strtoupper($newRole),
+        ];
+        $this->redirect('/admin/users');
+    }
+
+    /**
+     * POST /admin/deleteuser/{id}
+     * Xóa người dùng khỏi hệ thống.
+     */
+    public function deleteUser(?string $id): void
+    {
+        $this->requireAdmin();
+        $this->requirePost();
+
+        $userId = (int) $id;
+
+        // Bảo vệ: không cho xóa chính mình
+        if ($userId === (int) ($_SESSION['user']['id'] ?? 0)) {
+            $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Bạn không thể xóa tài khoản của chính mình!'];
+            $this->redirect('/admin/users');
+            return;
+        }
+
+        $this->userModel->deleteUser($userId);
+        $_SESSION['flash'] = ['type' => 'success', 'msg' => "Đã xóa tài khoản #{$userId}."];
+        $this->redirect('/admin/users');
+    }
+
     /**
      * Render view trong layout Admin (khác layout shop)
      * @param bool $withLayout  false → render không có layout (dùng cho trang login)
@@ -593,3 +661,4 @@ class AdminController
         }
     }
 }
+
