@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -8,9 +9,11 @@ use PDO;
 class Category
 {
     private PDO $db;
-    public function __construct() { $this->db = getDB(); }
+    public function __construct()
+    {
+        $this->db = getDB();
+    }
 
-    // ─── CÁC HÀM CŨ ĐỂ ĐỌC DỮ LIỆU (KHÔNG ĐƯỢC XÓA) ──────────
     public function getAll(): array
     {
         return $this->db->query("SELECT c.*, p.name AS parent_name FROM categories c LEFT JOIN categories p ON p.id = c.parent_id ORDER BY c.sort_order ASC, c.id ASC")->fetchAll();
@@ -32,10 +35,14 @@ class Category
     {
         $all = $this->getAll();
         $byParent = [];
-        foreach ($all as $cat) { $byParent[$cat['parent_id'] ?? 'root'][] = $cat; }
-        $build = function($pk) use (&$build, &$byParent) {
+        foreach ($all as $cat) {
+            $byParent[$cat['parent_id'] ?? 'root'][] = $cat;
+        }
+        $build = function ($pk) use (&$build, &$byParent) {
             $nodes = $byParent[$pk] ?? [];
-            foreach ($nodes as &$n) { $n['children'] = $build($n['id']); }
+            foreach ($nodes as &$n) {
+                $n['children'] = $build($n['id']);
+            }
             return $nodes;
         };
         return $build('root');
@@ -64,13 +71,12 @@ class Category
         }
         return $grouped;
     }
-    
+
     public function cloneGroupedByType(): array
     {
         return $this->getGroupedByType();
     }
 
-    // ─── CÁC HÀM MỚI ĐỂ ADMIN THÊM/SỬA/XÓA ──────────
     public function create(array $data): bool
     {
         $stmt = $this->db->prepare("INSERT INTO categories (name, slug, parent_id, type) VALUES (:name, :slug, :parent_id, :type)");
@@ -96,7 +102,6 @@ class Category
 
     public function delete(int $id): bool
     {
-        // Chuyển các danh mục con lên cấp cha trước khi xóa để tránh lỗi khóa ngoại
         $this->db->prepare("UPDATE categories SET parent_id = NULL WHERE parent_id = :id")->execute([':id' => $id]);
         $stmt = $this->db->prepare("DELETE FROM categories WHERE id = :id");
         return $stmt->execute([':id' => $id]);

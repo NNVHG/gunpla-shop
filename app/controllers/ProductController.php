@@ -1,4 +1,5 @@
 <?php
+
 /**
  * app/controllers/ProductController.php
  * Xử lý tất cả request liên quan đến sản phẩm
@@ -12,12 +13,12 @@
 
 declare(strict_types=1);
 
-namespace App\Controllers; // Thêm dòng này
+namespace App\Controllers;
 
-use App\Models\Product;    // Gọi Model Product
+use App\Models\Product;
 use App\Models\Category;
 use App\Models\Favorite;
-use App\Models\Review;     // Gọi Model Review
+use App\Models\Review;
 
 class ProductController
 {
@@ -32,29 +33,21 @@ class ProductController
         $this->reviewModel   = new Review();
     }
 
-    // ─────────────────────────────────────────────
-    //  TRANG CHỦ
-    // ─────────────────────────────────────────────
-
     public function home(): void
     {
         $data = [
             'title'      => 'GUNPLA SHOP — Mô Hình Lắp Ráp Chính Hãng',
             'featured'   => $this->productModel->getFeatured(8),
             'categories' => $this->categoryModel->getTopLevel(),
-            'newArrivals'=> $this->productModel->getAll([], 'newest', 1, 8)['items'],
+            'newArrivals' => $this->productModel->getAll([], 'newest', 1, 8)['items'],
             'favoriteIds' => $this->getFavoriteIds(),
         ];
         $this->render('home/index', $data);
     }
 
-    // ─────────────────────────────────────────────
-    //  DANH SÁCH SẢN PHẨM + LỌC
-    // ─────────────────────────────────────────────
-
     public function index(): void
     {
-        // Lấy tham số lọc từ URL
+
         $filters = [];
         if (!empty($_GET['grade']))       $filters['grade']       = htmlspecialchars($_GET['grade']);
         if (!empty($_GET['scale']))       $filters['scale']       = htmlspecialchars($_GET['scale']);
@@ -63,12 +56,12 @@ class ProductController
         if (!empty($_GET['search']))      $filters['search']      = htmlspecialchars($_GET['search']);
         if (!empty($_GET['type']))        $filters['type']        = htmlspecialchars($_GET['type']);
 
-        $sort    = in_array($_GET['sort'] ?? '', ['newest','price_asc','price_desc','bestseller'])
-                   ? $_GET['sort'] : 'newest';
+        $sort    = in_array($_GET['sort'] ?? '', ['newest', 'price_asc', 'price_desc', 'bestseller'])
+            ? $_GET['sort'] : 'newest';
         $page    = max(1, (int) ($_GET['page'] ?? 1));
-        
+
         $result  = $this->productModel->getAll($filters, $sort, $page, 12);
-        
+
         $categories = $this->categoryModel->getTopLevel();
         $groupedCategories = $this->categoryModel->getGroupedByType();
 
@@ -94,13 +87,6 @@ class ProductController
         $this->render('products/index', $data);
     }
 
-    // ─────────────────────────────────────────────
-    //  CHI TIẾT SẢN PHẨM
-    // ─────────────────────────────────────────────
-
-    /**
-     * @param string|null $param  Có thể là ID (số) hoặc slug
-     */
     public function detail(?string $param): void
     {
         if (!$param) {
@@ -108,7 +94,6 @@ class ProductController
             return;
         }
 
-        // Nếu là số → lấy theo ID, ngược lại → lấy theo slug
         $product = is_numeric($param)
             ? $this->productModel->getById((int) $param)
             : $this->productModel->getBySlug($param);
@@ -119,19 +104,18 @@ class ProductController
             return;
         }
 
-        // Sản phẩm liên quan (cùng grade)
         $related = $this->productModel->getAll(
             ['grade' => $product['grade']],
-            'newest', 1, 4
+            'newest',
+            1,
+            4
         )['items'];
-        // Loại bỏ sản phẩm hiện tại khỏi danh sách liên quan
         $related = array_filter($related, fn($p) => $p['id'] !== $product['id']);
 
-        // Reviews
         $reviews    = $this->reviewModel->getByProduct($product['id']);
         $ratingInfo = $this->reviewModel->getAvgRating($product['id']);
         $hasReviewed = !empty($_SESSION['user']['id'])
-                       && $this->reviewModel->hasReviewed($product['id'], (int) $_SESSION['user']['id']);
+            && $this->reviewModel->hasReviewed($product['id'], (int) $_SESSION['user']['id']);
 
         $data = [
             'title'       => $product['name'] . ' — GUNPLA SHOP',
@@ -139,30 +123,20 @@ class ProductController
             'related'     => array_values($related),
             'reviews'     => $reviews,
             'avgRating'   => $ratingInfo['avg'],
-            'totalReviews'=> $ratingInfo['total'],
+            'totalReviews' => $ratingInfo['total'],
             'hasReviewed' => $hasReviewed,
         ];
 
         $this->render('products/detail', $data);
     }
 
-    // ─────────────────────────────────────────────
-    //  GỬI ĐÁNH GIÁ SẢN PHẨM
-    // ─────────────────────────────────────────────
-
-    /**
-     * POST /products/submitreview
-     * Xử lý form đánh giá. Yêu cầu đăng nhập.
-     */
     public function submitReview(): void
     {
-        // 1. Phải là POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->redirect(BASE_URL . '/products');
             return;
         }
 
-        // 2. Yêu cầu đăng nhập
         if (empty($_SESSION['user']['id'])) {
             $this->redirect(BASE_URL . '/user/login');
             return;
@@ -173,7 +147,6 @@ class ProductController
         $comment   = trim($_POST['comment']      ?? '');
         $userId    = (int) $_SESSION['user']['id'];
 
-        // 3. Validate cơ bản
         $errors = [];
         if ($productId <= 0)               $errors[] = 'Sản phẩm không hợp lệ.';
         if ($rating < 1 || $rating > 5)    $errors[] = 'Vui lòng chọn số sao (1–5).';
@@ -190,15 +163,10 @@ class ProductController
             return;
         }
 
-        // 4. Lưu vào DB
         $this->reviewModel->create($productId, $userId, $rating, $comment);
         $_SESSION['review_success'] = 'Cảm ơn bạn đã đánh giá sản phẩm!';
         $this->redirect($redirectUrl . '#reviews');
     }
-
-    // ─────────────────────────────────────────────
-    //  TÌM KIẾM (AJAX)
-    // ─────────────────────────────────────────────
 
     public function search(): void
     {
@@ -214,19 +182,8 @@ class ProductController
         exit;
     }
 
-    // ─────────────────────────────────────────────
-    //  HELPER
-    // ─────────────────────────────────────────────
-
-    /**
-     * Render view — nạp layout + nội dung trang
-     *
-     * @param string $view  Đường dẫn view tương đối, ví dụ: 'products/index'
-     * @param array  $data  Biến truyền vào view
-     */
     private function render(string $view, array $data = []): void
     {
-        // Giải nén mảng thành biến (extract) để dùng trong view như $title, $products...
         extract($data);
         $viewFile = APP_PATH . '/views/' . $view . '.php';
 
@@ -238,7 +195,6 @@ class ProductController
         }
         $content = ob_get_clean();
 
-        // Nhúng vào layout chính
         include APP_PATH . '/views/layouts/main.php';
     }
 
@@ -253,8 +209,8 @@ class ProductController
         exit;
     }
 
-    // Hàm Helper lấy mảng ID sản phẩm yêu thích
-    private function getFavoriteIds(): array {
+    private function getFavoriteIds(): array
+    {
         if (isset($_SESSION['user']['id'])) {
             require_once APP_PATH . '/models/Favorite.php';
             $favModel = new Favorite(getDB());

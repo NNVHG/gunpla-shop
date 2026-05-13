@@ -1,4 +1,5 @@
 <?php
+
 /**
  * app/Models/Review.php
  * Xử lý đánh giá sản phẩm (bảng `reviews`)
@@ -19,18 +20,6 @@ class Review
         $this->db = getDB();
     }
 
-    // ─────────────────────────────────────────────
-    //  ĐỌC DỮ LIỆU
-    // ─────────────────────────────────────────────
-
-    /**
-     * Lấy tất cả đánh giá đã được duyệt (status = 'approved')
-     * của một sản phẩm, kèm tên người đánh giá.
-     *
-     * @param int $productId
-     * @return array  Mảng đánh giá — mỗi phần tử có: id, user_id, full_name,
-     *                rating, comment, created_at
-     */
     public function getByProduct(int $productId): array
     {
         $stmt = $this->db->prepare("
@@ -50,12 +39,7 @@ class Review
         return $stmt->fetchAll();
     }
 
-    /**
-     * Tính điểm trung bình (trả về float từ 1.0 – 5.0 hoặc 0.0 nếu chưa có đánh giá).
-     *
-     * @param int $productId
-     * @return array{avg: float, total: int}
-     */
+
     public function getAvgRating(int $productId): array
     {
         $stmt = $this->db->prepare("
@@ -70,14 +54,6 @@ class Review
         return ['avg' => round((float) $row['avg_rating'], 1), 'total' => (int) $row['total']];
     }
 
-    /**
-     * Kiểm tra người dùng đã đánh giá sản phẩm này chưa
-     * (mỗi user chỉ được đánh giá 1 lần / 1 sản phẩm).
-     *
-     * @param int $productId
-     * @param int $userId
-     * @return bool
-     */
     public function hasReviewed(int $productId, int $userId): bool
     {
         $stmt = $this->db->prepare("
@@ -88,23 +64,8 @@ class Review
         return (int) $stmt->fetchColumn() > 0;
     }
 
-    // ─────────────────────────────────────────────
-    //  GHI DỮ LIỆU
-    // ─────────────────────────────────────────────
-
-    /**
-     * Thêm mới một đánh giá.
-     * Chỉ gọi hàm này sau khi đã xác thực user đã đăng nhập ở Controller.
-     *
-     * @param int    $productId
-     * @param int    $userId
-     * @param int    $rating   1 – 5
-     * @param string $comment  Nội dung bình luận
-     * @return bool  true nếu thêm thành công
-     */
     public function create(int $productId, int $userId, int $rating, string $comment): bool
     {
-        // Chặn giá trị rating ngoài phạm vi hợp lệ
         $rating = max(1, min(5, $rating));
 
         $stmt = $this->db->prepare("

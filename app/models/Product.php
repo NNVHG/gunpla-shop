@@ -1,4 +1,5 @@
 <?php
+
 /**
  * app/models/Product.php
  * Xử lý tất cả truy vấn liên quan đến bảng products và product_images
@@ -6,9 +7,9 @@
 
 declare(strict_types=1);
 
-namespace App\Models; // Thêm dòng này
+namespace App\Models;
 
-use PDO;            // Thêm dòng này
+use PDO;
 
 class Product
 {
@@ -19,19 +20,6 @@ class Product
         $this->db = getDB();
     }
 
-    // ─────────────────────────────────────────────
-    //  ĐỌC DỮ LIỆU (READ)
-    // ─────────────────────────────────────────────
-
-    /**
-     * Lấy danh sách sản phẩm — có lọc, sắp xếp, phân trang
-     *
-     * @param array $filters  ['grade'=>'HG', 'scale'=>'1/144', 'series'=>'...', 'search'=>'...']
-     * @param string $sort    'newest' | 'price_asc' | 'price_desc' | 'bestseller'
-     * @param int $page       Trang hiện tại (bắt đầu từ 1)
-     * @param int $perPage    Số sản phẩm mỗi trang
-     * @return array          ['items'=>[...], 'total'=>int, 'pages'=>int]
-     */
     public function getAll(
         array  $filters = [],
         string $sort    = 'newest',
@@ -41,32 +29,27 @@ class Product
         $where  = ['p.is_active = 1'];
         $params = [];
 
-        // Lọc theo grade (dòng)
         if (!empty($filters['grade'])) {
             $where[]          = 'p.grade = :grade';
             $params[':grade'] = $filters['grade'];
         }
 
-        // Lọc theo scale (tỷ lệ)
         if (!empty($filters['scale'])) {
             $where[]          = 'p.scale = :scale';
             $params[':scale'] = $filters['scale'];
         }
 
-        // Lọc theo series (dòng phim)
         if (!empty($filters['series'])) {
             $where[]           = 'p.series LIKE :series';
             $params[':series'] = '%' . $filters['series'] . '%';
         }
 
-        // Tìm kiếm theo tên
         if (!empty($filters['search'])) {
             $where[]           = '(p.name LIKE :search OR p.series LIKE :search2)';
             $params[':search']  = '%' . $filters['search'] . '%';
             $params[':search2'] = '%' . $filters['search'] . '%';
         }
 
-        // Lọc theo category_id
         if (!empty($filters['category_id'])) {
             $where[]               = 'p.category_id = :category_id';
             $params[':category_id'] = $filters['category_id'];
@@ -79,25 +62,21 @@ class Product
 
         $whereSQL = 'WHERE ' . implode(' AND ', $where);
 
-        // Sắp xếp
         $orderSQL = match ($sort) {
             'price_asc'  => 'ORDER BY p.price ASC',
             'price_desc' => 'ORDER BY p.price DESC',
             'bestseller' => 'ORDER BY sold_count DESC',
-            default      => 'ORDER BY p.created_at DESC',  // newest
+            default      => 'ORDER BY p.created_at DESC',
         };
 
-        // Đếm tổng (để phân trang)
         $countStmt = $this->db->prepare(
             "SELECT COUNT(*) FROM products p $whereSQL"
         );
         $countStmt->execute($params);
         $total = (int) $countStmt->fetchColumn();
 
-        // Offset (vị trí bắt đầu lấy)
         $offset = ($page - 1) * $perPage;
 
-        // Query chính — kèm ảnh đại diện và số lượng đã bán
         $sql = "
             SELECT
                 p.*,
@@ -134,9 +113,6 @@ class Product
         ];
     }
 
-    /**
-     * Lấy 1 sản phẩm theo ID, kèm toàn bộ ảnh gallery
-     */
     public function getById(int $id): array|false
     {
         $stmt = $this->db->prepare("
@@ -150,7 +126,6 @@ class Product
 
         if (!$product) return false;
 
-        // Lấy gallery ảnh
         $imgStmt = $this->db->prepare(
             "SELECT * FROM product_images WHERE product_id = :id ORDER BY is_primary DESC, sort_order ASC"
         );
@@ -160,9 +135,6 @@ class Product
         return $product;
     }
 
-    /**
-     * Lấy sản phẩm theo slug (dùng cho URL thân thiện)
-     */
     public function getBySlug(string $slug): array|false
     {
         $stmt = $this->db->prepare("
@@ -185,9 +157,6 @@ class Product
         return $product;
     }
 
-    /**
-     * Lấy sản phẩm nổi bật (is_featured hoặc bán chạy nhất, tối đa $limit)
-     */
     public function getFeatured(int $limit = 8): array
     {
         $stmt = $this->db->prepare("
@@ -203,13 +172,6 @@ class Product
         return $stmt->fetchAll();
     }
 
-    // ─────────────────────────────────────────────
-    //  VIẾT DỮ LIỆU (WRITE) — dùng cho Admin
-    // ─────────────────────────────────────────────
-
-    /**
-     * Tạo sản phẩm mới — trả về ID vừa tạo
-     */
     public function create(array $data): int
     {
         $stmt = $this->db->prepare("
@@ -236,15 +198,12 @@ class Product
         return (int) $this->db->lastInsertId();
     }
 
-    /**
-     * Cập nhật sản phẩm theo ID
-     */
     public function update(int $id, array $data): bool
     {
         $fields = [];
         $params = [':id' => $id];
 
-        $allowed = ['name','price','stock','category_id','scale','grade','series','description','weight_gram','is_active'];
+        $allowed = ['name', 'price', 'stock', 'category_id', 'scale', 'grade', 'series', 'description', 'weight_gram', 'is_active'];
         foreach ($allowed as $field) {
             if (isset($data[$field])) {
                 $fields[]         = "$field = :$field";
@@ -259,20 +218,12 @@ class Product
         return $stmt->execute($params);
     }
 
-    /**
-     * Xóa mềm (soft delete — chỉ set is_active = 0, không xóa khỏi DB)
-     */
     public function softDelete(int $id): bool
     {
         $stmt = $this->db->prepare("UPDATE products SET is_active = 0 WHERE id = :id");
         return $stmt->execute([':id' => $id]);
     }
 
-    /**
-     * Cập nhật tồn kho — dùng khi đặt hàng thành công
-     * @param int $id    Product ID
-     * @param int $delta Số âm để trừ kho, số dương để nhập kho
-     */
     public function adjustStock(int $id, int $delta): bool
     {
         $stmt = $this->db->prepare("
@@ -283,19 +234,11 @@ class Product
         return $stmt->execute([':delta' => $delta, ':delta2' => $delta, ':id' => $id]);
     }
 
-    // ─────────────────────────────────────────────
-    //  UPLOAD ẢNH
-    // ─────────────────────────────────────────────
-
-    /**
-     * Lưu ảnh sản phẩm vào bảng product_images và thư mục uploads/
-     * Trả về đường dẫn ảnh hoặc false nếu lỗi
-     */
     public function uploadImage(int $productId, array $fileData, bool $isPrimary = false): string|false
     {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
         if (!in_array($fileData['type'], $allowedTypes)) return false;
-        if ($fileData['size'] > 5 * 1024 * 1024) return false; // Giới hạn 5MB
+        if ($fileData['size'] > 5 * 1024 * 1024) return false;
 
         $ext      = pathinfo($fileData['name'], PATHINFO_EXTENSION);
         $filename = 'product_' . $productId . '_' . uniqid() . '.' . strtolower($ext);
@@ -303,10 +246,9 @@ class Product
 
         if (!move_uploaded_file($fileData['tmp_name'], $dest)) return false;
 
-        // Nếu đây là ảnh đại diện (is_primary), bỏ flag cũ
         if ($isPrimary) {
             $this->db->prepare("UPDATE product_images SET is_primary = 0 WHERE product_id = :id")
-                     ->execute([':id' => $productId]);
+                ->execute([':id' => $productId]);
         }
 
         $stmt = $this->db->prepare("
@@ -322,14 +264,6 @@ class Product
         return '/public/uploads/' . $filename;
     }
 
-    // ─────────────────────────────────────────────
-    //  HELPER
-    // ─────────────────────────────────────────────
-
-    /**
-     * Tạo slug từ tên sản phẩm (tiếng Việt → ASCII)
-     * Ví dụ: "HG 1/144 RX-78-2 Gundam" → "hg-1-144-rx-78-2-gundam"
-     */
     private function makeSlug(string $name): string
     {
         $slug = mb_strtolower($name, 'UTF-8');
@@ -337,7 +271,6 @@ class Product
         $slug = preg_replace('/\s+/', '-', trim($slug));
         $slug = preg_replace('/-+/', '-', $slug);
 
-        // Đảm bảo slug là duy nhất
         $base  = $slug;
         $count = 1;
         while ($this->slugExists($slug)) {

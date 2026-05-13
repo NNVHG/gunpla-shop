@@ -1,23 +1,26 @@
 <?php
+
 declare(strict_types=1);
 
-namespace App\Controllers; // Thêm dòng này
+namespace App\Controllers;
 
-use App\Models\Product;    // Gọi Model Product
-use App\Models\Category;  // Gọi Model Category
+use App\Models\Product;
+use App\Models\Category;
 use App\Models\Favorite;
 
 class FavoriteController
 {
     private Favorite $favoriteModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->favoriteModel = new Favorite(getDB());
     }
 
-    public function toggle(): void {
+    public function toggle(): void
+    {
         header('Content-Type: application/json');
-        
+
         if (!isset($_SESSION['user']['id'])) {
             echo json_encode(['status' => 'unauthorized', 'message' => 'Vui lòng đăng nhập để lưu sản phẩm.']);
             exit;

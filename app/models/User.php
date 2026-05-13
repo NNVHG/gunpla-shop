@@ -1,14 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
-namespace App\Models; // Thêm dòng này
+namespace App\Models;
 
-use PDO;            // Thêm dòng này
+use PDO;
 
 class User
 {
     private PDO $db;
-    public function __construct() { $this->db = getDB(); }
+    public function __construct()
+    {
+        $this->db = getDB();
+    }
 
     public function findByEmail(string $email): array|false
     {
@@ -41,9 +45,13 @@ class User
 
     public function update(int $id, array $data): bool
     {
-        $fields = []; $params = [':id' => $id];
-        foreach (['full_name','phone','address'] as $f) {
-            if (isset($data[$f])) { $fields[] = "$f = :$f"; $params[":$f"] = $data[$f]; }
+        $fields = [];
+        $params = [':id' => $id];
+        foreach (['full_name', 'phone', 'address'] as $f) {
+            if (isset($data[$f])) {
+                $fields[] = "$f = :$f";
+                $params[":$f"] = $data[$f];
+            }
         }
         if (empty($fields)) return false;
         return $this->db->prepare("UPDATE users SET " . implode(', ', $fields) . " WHERE id = :id")->execute($params);
@@ -57,12 +65,6 @@ class User
         return $user;
     }
 
-    // ─── ĐĂNG KÝ ────────────────────────────────────────────────────
-
-    /**
-     * Validate dữ liệu form đăng ký
-     * Trả về mảng lỗi — rỗng nghĩa là hợp lệ
-     */
     public function validateRegister(array $post): array
     {
         $errors = [];
@@ -91,10 +93,6 @@ class User
         return $errors;
     }
 
-    /**
-     * Tạo tài khoản mới từ dữ liệu form
-     * Trả về ['success'=>bool, 'user_id'=>int, 'message'=>string]
-     */
     public function register(array $post): array
     {
         $email = trim($post['email'] ?? '');
@@ -122,11 +120,6 @@ class User
         ];
     }
 
-    // ─── CẬP NHẬT PROFILE ───────────────────────────────────────────
-
-    /**
-     * Cập nhật thông tin cá nhân (không đổi mật khẩu ở đây)
-     */
     public function updateProfile(int $id, array $post): bool
     {
         $stmt = $this->db->prepare("
@@ -144,10 +137,6 @@ class User
         ]);
     }
 
-    /**
-     * Đổi mật khẩu — chỉ cần new password (Admin reset hoặc đã xác thực trước)
-     * UserController đã kiểm tra độ dài trước khi gọi hàm này
-     */
     public function changePassword(int $id, string $newPassword): bool
     {
         $stmt = $this->db->prepare("UPDATE users SET password = :p WHERE id = :id");
@@ -157,11 +146,6 @@ class User
         ]);
     }
 
-    // ─── ADMIN — QUẢN LÝ NGƯỜI DÙNG ────────────────────────────────
-
-    /**
-     * Lấy toàn bộ danh sách người dùng (sắp xếp admin lên trên, sau đó theo ID giảm dần)
-     */
     public function getAllUsers(): array
     {
         return $this->db->query(
@@ -171,9 +155,6 @@ class User
         )->fetchAll();
     }
 
-    /**
-     * Cập nhật vai trò người dùng (admin ↔ customer)
-     */
     public function updateUserRole(int $id, string $role): bool
     {
         $allowed = ['admin', 'customer'];
@@ -183,12 +164,9 @@ class User
         return $stmt->execute([':role' => $role, ':id' => $id]);
     }
 
-    /**
-     * Xóa người dùng khỏi hệ thống
-     */
     public function deleteUser(int $id): bool
     {
         $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id");
         return $stmt->execute([':id' => $id]);
     }
-}
+}

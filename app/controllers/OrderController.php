@@ -13,20 +13,17 @@
 
 declare(strict_types=1);
 
-namespace App\Controllers; // Thêm dòng này
+namespace App\Controllers;
 
-use App\Models\Product;    // Gọi Model Product
-use App\Models\Category;  // Gọi Model Category
-use App\Models\Order;     // Gọi Model Order
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Order;
 
-
-// PHPMailer — cài bằng: composer require phpmailer/phpmailer
-// Hoặc tải thủ công: https://github.com/PHPMailer/PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-// Nạp PHPMailer (nếu dùng Composer)
+
 if (file_exists(BASE_PATH . '/vendor/autoload.php')) {
     require_once BASE_PATH . '/vendor/autoload.php';
 }
@@ -42,22 +39,15 @@ class OrderController
         $this->cartCtrl   = new CartController();
     }
 
-    // ─────────────────────────────────────────────
-    //  TRANG CHECKOUT
-    // ─────────────────────────────────────────────
-
     public function checkout(): void
     {
         $items = $this->cartCtrl->getItems();
 
-        // 1. Kiểm tra giỏ hàng có trống không
         if (empty($items)) {
             $this->redirect('/');
             return;
         }
 
-        // 2. YÊU CẦU ĐĂNG NHẬP: Nếu chưa có session user, chuyển hướng đến trang Login
-        // Đồng thời truyền theo tham số ?redirect=/orders/checkout để Login xong quay lại đúng đây
         if (!isset($_SESSION['user']['id'])) {
             $this->redirect('/user/login?redirect=/orders/checkout');
             return;
@@ -70,20 +60,12 @@ class OrderController
             'items'         => $items,
             'subtotal'      => $subtotal,
             'shippingZones' => $this->orderModel->getShippingZones(),
-            // Điền sẵn thông tin user vào form
             'user'          => $_SESSION['user'] ?? null,
         ];
 
         $this->render('orders/checkout', $data);
     }
 
-    // ─────────────────────────────────────────────
-    //  XỬ LÝ ĐẶT HÀNG
-    // ─────────────────────────────────────────────
-
-    /**
-     * POST /orders/place
-     */
     public function place(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -91,11 +73,10 @@ class OrderController
             return;
         }
 
-        // ── Validate đầu vào ──────────────────────
         $errors = $this->validateCheckoutForm($_POST);
         if (!empty($errors)) {
             $_SESSION['checkout_errors'] = $errors;
-            $_SESSION['checkout_form']   = $_POST;  // Giữ lại dữ liệu form
+            $_SESSION['checkout_form']   = $_POST;
             $this->redirect('/orders/checkout');
             return;
         }
@@ -106,7 +87,6 @@ class OrderController
             return;
         }
 
-        // ── Xây dựng thông tin giao hàng ──────────
         $info = [
             'full_name'      => htmlspecialchars(trim($_POST['full_name'])),
             'phone'          => htmlspecialchars(trim($_POST['phone'])),
@@ -118,7 +98,6 @@ class OrderController
 
         $userId = $_SESSION['user']['id'] ?? null;
 
-        // ── Đặt hàng ──────────────────────────────
         $result = $this->orderModel->place($info, $items, $userId);
 
         if (!$result['success']) {
@@ -127,9 +106,7 @@ class OrderController
             return;
         }
 
-        // ── Xử lý theo phương thức thanh toán ──────
         if ($info['payment_method'] === 'vnpay') {
-            // KHÔNG xóa giỏ hàng ở đây
 
             $vnp_Url = VNP_URL;
             $vnp_Returnurl = VNP_RETURNURL;
@@ -139,18 +116,15 @@ class OrderController
             $vnp_TxnRef = (string) $result['order_id'];
             $vnp_OrderInfo = 'Thanh toan don hang ' . $result['order_id'];
             $vnp_OrderType = 'billpayment';
-            
-            // Ép kiểu chuẩn số nguyên, nhân 100 theo chuẩn VNPAY
-            $vnp_Amount = round((float)$result['total'] * 100); 
+
+            $vnp_Amount = round((float)$result['total'] * 100);
             $vnp_Locale = 'vn';
-            
-            // Fix lỗi IP ::1 trên localhost XAMPP
+
             $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
-            if($vnp_IpAddr === '::1' || $vnp_IpAddr === '127.0.0.1') {
+            if ($vnp_IpAddr === '::1' || $vnp_IpAddr === '127.0.0.1') {
                 $vnp_IpAddr = '127.0.0.1';
             }
 
-            // Fix lỗi múi giờ gây sai chữ ký
             date_default_timezone_set('Asia/Ho_Chi_Minh');
             $startTime = date('YmdHis');
             $expire = date('YmdHis', strtotime('+15 minutes', strtotime($startTime)));
@@ -195,20 +169,16 @@ class OrderController
             exit;
         }
 
-        // ── (Dành cho COD) Gửi email xác nhận ──────
         $orderData = $this->orderModel->getById($result['order_id']);
         $this->sendConfirmationEmail($info, $orderData);
 
-        // ── Xóa giỏ hàng sau khi đặt thành công ──
         $_SESSION['cart'] = [];
 
-        // Lưu order_id để hiển thị trang cảm ơn
         $_SESSION['last_order_id'] = $result['order_id'];
 
         $this->redirect('/orders/success');
     }
 
-    // ─────────────────────────────────────────────
     public function vnpayReturn(): void
     {
         $vnp_SecureHash = $_GET['vnp_SecureHash'] ?? '';
@@ -237,13 +207,13 @@ class OrderController
 
         if ($secureHash === $vnp_SecureHash) {
             if ($_GET['vnp_ResponseCode'] == '00') {
-                // Thanh toán thành công
+
                 $this->orderModel->updatePaymentStatus($orderId, 'paid', $_GET['vnp_TransactionNo']);
-                $_SESSION['cart'] = []; // Xóa giỏ hàng
+                $_SESSION['cart'] = [];
                 $_SESSION['last_order_id'] = $orderId;
                 $this->redirect('/orders/success');
             } else {
-                // Lỗi hoặc khách hủy thanh toán
+
                 $this->orderModel->updatePaymentStatus($orderId, 'failed', '');
                 $_SESSION['order_error'] = 'Thanh toán không thành công hoặc bị hủy (Mã lỗi: ' . $_GET['vnp_ResponseCode'] . ')!';
                 $this->redirect('/orders/checkout');
@@ -253,10 +223,6 @@ class OrderController
             $this->redirect('/orders/checkout');
         }
     }
-
-    // ─────────────────────────────────────────────
-    //  TRANG CẢM ƠN
-    // ─────────────────────────────────────────────
 
     public function success(): void
     {
@@ -275,10 +241,6 @@ class OrderController
         $this->render('orders/success', $data);
     }
 
-    // ─────────────────────────────────────────────
-    //  CHI TIẾT ĐƠN HÀNG
-    // ─────────────────────────────────────────────
-
     public function detail(?string $param): void
     {
         $orderId = (int) ($param ?? 0);
@@ -294,7 +256,6 @@ class OrderController
             return;
         }
 
-        // Chỉ cho user xem đơn của mình (hoặc admin)
         $userId = $_SESSION['user']['id'] ?? null;
         $isAdmin = ($_SESSION['user']['role'] ?? '') === 'admin';
         if (!$isAdmin && $order['user_id'] !== $userId) {
@@ -310,30 +271,19 @@ class OrderController
         $this->render('orders/detail', $data);
     }
 
-    // ─────────────────────────────────────────────
-    //  GỬI EMAIL XÁC NHẬN — PHPMailer + Gmail SMTP
-    // ─────────────────────────────────────────────
-
-    /**
-     * Gửi email xác nhận đơn hàng cho khách
-     * Cần cài PHPMailer và bật "App Password" trên tài khoản Gmail
-     */
     private function sendConfirmationEmail(array $info, array $order): void
     {
-        // Nếu chưa cài PHPMailer thì bỏ qua, không crash
         if (!class_exists('PHPMailer\PHPMailer\PHPMailer')) {
             error_log('PHPMailer chưa được cài. Chạy: composer require phpmailer/phpmailer');
             return;
         }
 
-        // Email người đặt — lấy từ session hoặc form
         $toEmail = $_SESSION['user']['email'] ?? ($_POST['email'] ?? null);
         if (!$toEmail) return;
 
         $mail = new PHPMailer(true);
 
         try {
-            // ── Cấu hình SMTP Gmail ──────────────
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
@@ -343,29 +293,23 @@ class OrderController
             $mail->Port       = 587;
             $mail->CharSet    = 'UTF-8';
 
-            // ── Người gửi / nhận ─────────────────
             $mail->setFrom(
                 defined('MAIL_USER') ? MAIL_USER : 'your_gmail@gmail.com',
                 'GUNPLA SHOP'
             );
             $mail->addAddress($toEmail, $info['full_name']);
 
-            // ── Nội dung email HTML ───────────────
             $mail->isHTML(true);
             $mail->Subject = "✅ Xác nhận đơn hàng #{$order['id']} — GUNPLA SHOP";
             $mail->Body    = $this->buildEmailHtml($info, $order);
-            $mail->AltBody = $this->buildEmailText($info, $order); // Fallback text
+            $mail->AltBody = $this->buildEmailText($info, $order);
 
             $mail->send();
         } catch (Exception $e) {
-            // Log lỗi nhưng không hiển thị ra user
             error_log('Lỗi gửi email: ' . $mail->ErrorInfo);
         }
     }
 
-    /**
-     * Tạo nội dung email HTML — dark theme, đồng bộ với UI shop
-     */
     private function buildEmailHtml(array $info, array $order): string
     {
         $itemRows = '';
@@ -485,7 +429,6 @@ class OrderController
         </html>";
     }
 
-    /** Phiên bản text thuần cho email client không hỗ trợ HTML */
     private function buildEmailText(array $info, array $order): string
     {
         $lines  = ["GUNPLA SHOP — Xác nhận đơn hàng #{$order['id']}", str_repeat('-', 40)];
@@ -501,10 +444,6 @@ class OrderController
         $lines[] = "Tổng cộng: " . number_format((float)$order['total'], 0, ',', '.') . "đ";
         return implode("\n", $lines);
     }
-
-    // ─────────────────────────────────────────────
-    //  VALIDATE FORM CHECKOUT
-    // ─────────────────────────────────────────────
 
     private function validateCheckoutForm(array $post): array
     {
@@ -526,10 +465,6 @@ class OrderController
 
         return $errors;
     }
-
-    // ─────────────────────────────────────────────
-    //  HELPER
-    // ─────────────────────────────────────────────
 
     private function render(string $view, array $data = []): void
     {

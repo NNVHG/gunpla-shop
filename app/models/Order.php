@@ -1,4 +1,5 @@
 <?php
+
 /**
  * app/models/Order.php
  * Xử lý toàn bộ logic liên quan đến đơn hàng (orders) và chi tiết (order_items)
@@ -6,17 +7,15 @@
 
 declare(strict_types=1);
 
-namespace App\Models; // Thêm dòng này
+namespace App\Models;
 
-use PDO;            // Thêm dòng này
+use PDO;
 use PDOException;
 
 class Order
 {
     private PDO $db;
 
-    // Phí ship theo tỉnh/thành — đơn vị VNĐ
-    // Dựa trên vùng miền, trọng lượng tính thêm ở calcShipping()
     private const SHIP_ZONES = [
         'Bình Dương'          => 15000,
         'TP. Hồ Chí Minh'     => 20000,
@@ -24,7 +23,7 @@ class Order
         'Long An'             => 25000,
         'Hà Nội'              => 35000,
         'Đà Nẵng'             => 30000,
-        'default'             => 40000,  // Các tỉnh còn lại
+        'default'             => 40000,
     ];
 
     public function __construct()
@@ -32,48 +31,21 @@ class Order
         $this->db = getDB();
     }
 
-    // ─────────────────────────────────────────────
-    //  TÍNH PHÍ SHIP
-    // ─────────────────────────────────────────────
-
-    /**
-     * Tính phí vận chuyển (phí ship) dựa trên tỉnh và tổng trọng lượng
-     *
-     * @param string $province   Tên tỉnh/thành phố
-     * @param int    $totalGrams Tổng trọng lượng đơn hàng (gram)
-     * @return int  Phí ship (VNĐ)
-     */
     public function calcShipping(string $province, int $totalGrams = 0): int
     {
         $base = self::SHIP_ZONES[$province] ?? self::SHIP_ZONES['default'];
 
-        // Phụ phí trọng lượng: +5.000đ mỗi 500g vượt quá 500g đầu
         $extraWeight = max(0, $totalGrams - 500);
         $weightFee   = (int) ceil($extraWeight / 500) * 5000;
 
         return $base + $weightFee;
     }
 
-    /**
-     * Trả về danh sách tỉnh/thành và phí cơ bản — dùng cho dropdown checkout
-     */
     public function getShippingZones(): array
     {
         return self::SHIP_ZONES;
     }
 
-    // ─────────────────────────────────────────────
-    //  TẠO ĐƠN HÀNG
-    // ─────────────────────────────────────────────
-
-    /**
-     * Đặt hàng — tạo đơn + trừ kho, bọc trong transaction
-     *
-     * @param array $info    Thông tin người nhận: full_name, phone, province, address, note
-     * @param array $items   Mảng sản phẩm từ giỏ hàng: [['id'=>1,'qty'=>2,'price'=>250000], ...]
-     * @param int|null $userId  null nếu đặt không cần tài khoản
-     * @return array  ['success'=>bool, 'order_id'=>int, 'message'=>string]
-     */
     public function place(array $info, array $items, ?int $userId = null): array
     {
         if (empty($items)) {
@@ -83,7 +55,6 @@ class Order
         try {
             $this->db->beginTransaction();
 
-            // Kiểm tra tồn kho từng sản phẩm trước khi tạo đơn
             foreach ($items as $item) {
                 $stmt = $this->db->prepare(
                     "SELECT stock, name FROM products WHERE id = :id AND is_active = 1 FOR UPDATE"
@@ -104,17 +75,14 @@ class Order
                 }
             }
 
-            // Tính tổng trọng lượng
             $totalGrams = $this->calcTotalWeight($items);
 
-            // Tính tiền
             $subtotal    = array_sum(array_map(fn($i) => $i['price'] * $i['qty'], $items));
             $shippingFee = $this->calcShipping($info['province'], $totalGrams);
             $total       = $subtotal + $shippingFee;
 
             $paymentMethod = $info['payment_method'] ?? 'cod';
 
-            // Tạo đơn hàng
             $stmt = $this->db->prepare("
                 INSERT INTO orders (user_id, full_name, phone, province, address, note, subtotal, shipping_fee, total, status, payment_method)
                 VALUES (:user_id, :full_name, :phone, :province, :address, :note, :subtotal, :shipping_fee, :total, 'pending', :payment_method)
@@ -133,9 +101,7 @@ class Order
             ]);
             $orderId = (int) $this->db->lastInsertId();
 
-            // Thêm từng sản phẩm vào order_items và trừ kho
             foreach ($items as $item) {
-                // Lấy tên sản phẩm tại thời điểm đặt (snapshot)
                 $nameSql  = $this->db->prepare("SELECT name FROM products WHERE id = :id");
                 $nameSql->execute([':id' => $item['id']]);
                 $prodName = $nameSql->fetchColumn();
@@ -152,9 +118,8 @@ class Order
                     ':price_at_order' => $item['price'],
                 ]);
 
-                // Trừ kho
                 $this->db->prepare("UPDATE products SET stock = stock - :qty WHERE id = :id")
-                         ->execute([':qty' => $item['qty'], ':id' => $item['id']]);
+                    ->execute([':qty' => $item['qty'], ':id' => $item['id']]);
             }
 
             $this->db->commit();
@@ -166,7 +131,6 @@ class Order
                 'shipping_fee'  => $shippingFee,
                 'message'       => 'Đặt hàng thành công',
             ];
-
         } catch (PDOException $e) {
             $this->db->rollBack();
             error_log('Order::place() error: ' . $e->getMessage());
@@ -174,13 +138,6 @@ class Order
         }
     }
 
-    // ─────────────────────────────────────────────
-    //  ĐỌC DỮ LIỆU
-    // ─────────────────────────────────────────────
-
-    /**
-     * Lấy thông tin 1 đơn hàng kèm danh sách sản phẩm
-     */
     public function getById(int $id): array|false
     {
         $stmt = $this->db->prepare("SELECT * FROM orders WHERE id = :id");
@@ -200,9 +157,6 @@ class Order
         return $order;
     }
 
-    /**
-     * Lấy danh sách đơn của 1 user
-     */
     public function getByUser(int $userId): array
     {
         $stmt = $this->db->prepare(
@@ -212,9 +166,6 @@ class Order
         return $stmt->fetchAll();
     }
 
-    /**
-     * Lấy tất cả đơn (dùng cho Admin) — có phân trang
-     */
     public function getAll(string $status = '', int $page = 1, int $perPage = 20): array
     {
         $where  = [];
@@ -243,21 +194,15 @@ class Order
         return ['items' => $stmt->fetchAll(), 'total' => $total, 'pages' => (int) ceil($total / $perPage)];
     }
 
-    /**
-     * Cập nhật trạng thái đơn hàng (dùng cho Admin)
-     */
     public function updateStatus(int $id, string $status): bool
     {
-        $allowed = ['pending','confirmed','shipping','delivered','cancelled'];
+        $allowed = ['pending', 'confirmed', 'shipping', 'delivered', 'cancelled'];
         if (!in_array($status, $allowed)) return false;
 
         $stmt = $this->db->prepare("UPDATE orders SET status = :status WHERE id = :id");
         return $stmt->execute([':status' => $status, ':id' => $id]);
     }
 
-    /**
-     * Cập nhật trạng thái thanh toán (đặc biệt cho cổng trực tuyến)
-     */
     public function updatePaymentStatus(int $id, string $status, ?string $transactionId = null): bool
     {
         $allowed = ['unpaid', 'paid', 'failed'];
@@ -270,10 +215,6 @@ class Order
             ':id'     => $id
         ]);
     }
-
-    // ─────────────────────────────────────────────
-    //  HELPER
-    // ─────────────────────────────────────────────
 
     private function calcTotalWeight(array $items): int
     {

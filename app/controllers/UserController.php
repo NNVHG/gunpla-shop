@@ -1,40 +1,49 @@
 <?php
+
 declare(strict_types=1);
 
-namespace App\Controllers; // Thêm dòng này
+namespace App\Controllers;
 
-use App\Models\Product;    // Gọi Model Product
-use App\Models\Category;  // Gọi Model Category
-use App\Models\User;      // Gọi Model User
-use App\Models\Order;     // Gọi Model Order
-use App\Models\Favorite;  // Gọi Model Favorite
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\User;
+use App\Models\Order;
+use App\Models\Favorite;
 
 class UserController
 {
     private User $userModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->userModel = new User();
     }
 
-    public function login(): void {
+    public function login(): void
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') $this->loginSubmit();
         else $this->loginForm();
     }
 
-    public function register(): void {
+    public function register(): void
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') $this->registerSubmit();
         else $this->registerForm();
     }
 
-    public function loginForm(): void {
-        if ($this->isLoggedIn()) { $this->redirect('/'); return; }
+    public function loginForm(): void
+    {
+        if ($this->isLoggedIn()) {
+            $this->redirect('/');
+            return;
+        }
         $error = $_SESSION['login_error'] ?? null;
         unset($_SESSION['login_error']);
         $this->render('user/login', ['title' => 'Đăng nhập', 'error' => $error], false);
     }
 
-    public function loginSubmit(): void {
+    public function loginSubmit(): void
+    {
         $this->requirePost();
         $email    = trim($_POST['email']    ?? '');
         $password = trim($_POST['password'] ?? '');
@@ -56,15 +65,20 @@ class UserController
         }
     }
 
-    public function registerForm(): void {
-        if ($this->isLoggedIn()) { $this->redirect('/'); return; }
+    public function registerForm(): void
+    {
+        if ($this->isLoggedIn()) {
+            $this->redirect('/');
+            return;
+        }
         $errors = $_SESSION['register_errors'] ?? [];
         $old    = $_SESSION['register_form']   ?? [];
         unset($_SESSION['register_errors'], $_SESSION['register_form']);
         $this->render('user/register', compact('errors', 'old') + ['title' => 'Đăng ký tài khoản'], false);
     }
 
-    public function registerSubmit(): void {
+    public function registerSubmit(): void
+    {
         $this->requirePost();
         $errors = $this->userModel->validateRegister($_POST);
 
@@ -93,24 +107,25 @@ class UserController
         $this->redirect('/');
     }
 
-    public function logout(): void {
+    public function logout(): void
+    {
         unset($_SESSION['user']);
         $this->redirect('/');
     }
 
-    public function profile(): void {
+    public function profile(): void
+    {
         $this->requireLogin();
         $userId = (int) $_SESSION['user']['id'];
-        
+
         $user = $this->userModel->findById($userId);
-        
+
         $orderModel = new Order();
-        $orders = $orderModel->getByUser($userId); 
-        
+        $orders = $orderModel->getByUser($userId);
+
         $favoriteModel = new Favorite(getDB());
         $favorites = $favoriteModel->getUserFavorites($userId);
 
-        // Đã sửa 'user/profile' thành 'profile/profile' để khớp với thư mục của bạn
         $this->render('profile/profile', [
             'title'     => 'Trung tâm điều khiển Pilot — GUNPLA SHOP',
             'user'      => $user,
@@ -121,7 +136,8 @@ class UserController
         unset($_SESSION['profile_errors']);
     }
 
-    public function profileUpdate(): void {
+    public function profileUpdate(): void
+    {
         $this->requireLogin();
         $this->requirePost();
         $userId = (int) $_SESSION['user']['id'];
@@ -142,17 +158,35 @@ class UserController
         $this->redirect('/user/profile');
     }
 
-    private function isLoggedIn(): bool   { return !empty($_SESSION['user']); }
-    private function requireLogin(): void { if (!$this->isLoggedIn()) $this->redirect('/user/login'); }
-    private function requirePost(): void  { if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); exit; } }
-    private function redirect(string $url): void { header('Location: ' . BASE_URL . '/' . ltrim($url, '/')); exit; }
-    private function render(string $view, array $data = [], bool $withLayout = true): void {
+    private function isLoggedIn(): bool
+    {
+        return !empty($_SESSION['user']);
+    }
+    private function requireLogin(): void
+    {
+        if (!$this->isLoggedIn()) $this->redirect('/user/login');
+    }
+    private function requirePost(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            exit;
+        }
+    }
+    private function redirect(string $url): void
+    {
+        header('Location: ' . BASE_URL . '/' . ltrim($url, '/'));
+        exit;
+    }
+    private function render(string $view, array $data = [], bool $withLayout = true): void
+    {
         extract($data);
         ob_start();
         $f = APP_PATH . '/views/' . $view . '.php';
-        if (file_exists($f)) include $f; else echo "<p>View not found: $f</p>";
+        if (file_exists($f)) include $f;
+        else echo "<p>View not found: $f</p>";
         $content = ob_get_clean();
-        
+
         if ($withLayout) include APP_PATH . '/views/layouts/main.php';
         else echo $content;
     }

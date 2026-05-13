@@ -1,4 +1,5 @@
 <?php
+
 /**
  * app/views/admin/inventory/index.php
  * @var array $products
@@ -19,7 +20,7 @@
     <span class="admin-table-title">Tồn kho toàn bộ sản phẩm</span>
     <div style="display:flex;align-items:center;gap:8px">
       <input type="text" id="stockSearch" placeholder="Tìm sản phẩm..."
-             style="padding:5px 10px;font-size:11px;width:200px" oninput="filterTable(this.value)">
+        style="padding:5px 10px;font-size:11px;width:200px" oninput="filterTable(this.value)">
     </div>
   </div>
   <table id="inventoryTable">
@@ -36,8 +37,8 @@
     <tbody>
       <?php foreach ($products as $p): ?>
         <?php
-          $pct   = min(100, $p['stock'] > 0 ? ($p['stock'] / 30) * 100 : 0);
-          $color = $p['stock'] === 0 ? 'var(--red)' : ($p['stock'] <= 5 ? 'var(--amber)' : 'var(--green)');
+        $pct   = min(100, $p['stock'] > 0 ? ($p['stock'] / 30) * 100 : 0);
+        $color = $p['stock'] === 0 ? 'var(--red)' : ($p['stock'] <= 5 ? 'var(--amber)' : 'var(--green)');
         ?>
         <tr id="inv-row-<?= $p['id'] ?>" data-name="<?= strtolower(htmlspecialchars($p['name'])) ?>">
           <td>
@@ -48,7 +49,7 @@
           </td>
           <td><span class="badge badge-confirmed" style="font-size:9px"><?= htmlspecialchars($p['grade']) ?></span></td>
           <td style="font-family:var(--font-m);font-size:11px;color:var(--text-2)"><?= htmlspecialchars($p['scale'] ?? '—') ?></td>
-          <td style="font-family:var(--font-d);font-size:15px;color:var(--gold)"><?= number_format($p['price'],0,',','.') ?>đ</td>
+          <td style="font-family:var(--font-d);font-size:15px;color:var(--gold)"><?= number_format($p['price'], 0, ',', '.') ?>đ</td>
           <td>
             <div class="stock-bar-wrap">
               <div class="stock-bar" style="height:6px">
@@ -61,17 +62,14 @@
           </td>
           <td>
             <div style="display:flex;align-items:center;gap:6px">
-              <!-- Trừ kho -->
               <button class="btn btn-sm btn-danger" title="Xuất kho"
-                      onclick="adjustStock(<?= $p['id'] ?>, -1, this)">−1</button>
-              <!-- Nhập kho nhanh -->
+                onclick="adjustStock(<?= $p['id'] ?>, -1, this)">−1</button>
               <?php foreach ([10, 20, 50] as $qty): ?>
                 <button class="btn btn-sm" style="color:var(--green);border-color:rgba(58,158,106,0.3)"
-                        onclick="adjustStock(<?= $p['id'] ?>, <?= $qty ?>, this)" title="Nhập thêm <?= $qty ?>">
+                  onclick="adjustStock(<?= $p['id'] ?>, <?= $qty ?>, this)" title="Nhập thêm <?= $qty ?>">
                   +<?= $qty ?>
                 </button>
               <?php endforeach; ?>
-              <!-- Nhập số tùy chọn -->
               <button class="btn btn-sm btn-gold" onclick="openAdjustModal(<?= $p['id'] ?>, '<?= htmlspecialchars(addslashes($p['name'])) ?>', <?= $p['stock'] ?>)">
                 ±N
               </button>
@@ -83,7 +81,6 @@
   </table>
 </div>
 
-<!-- Modal điều chỉnh kho tùy chọn -->
 <div id="adjustModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center">
   <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:28px;width:380px">
     <h3 style="font-family:var(--font-d);font-size:20px;letter-spacing:0.08em;margin-bottom:6px" id="modalTitle"></h3>
@@ -104,4 +101,3 @@
     </div>
   </div>
 </div>
-

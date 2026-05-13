@@ -1,4 +1,5 @@
 <?php
+
 /**
  * app/views/admin/dashboard.php
  * @var array $stats
@@ -8,15 +9,14 @@
  */
 
 $statusLabels = [
-    'pending'   => 'Chờ xác nhận',
-    'confirmed' => 'Đã xác nhận',
-    'shipping'  => 'Đang giao',
-    'delivered' => 'Đã giao',
-    'cancelled' => 'Đã hủy',
+  'pending'   => 'Chờ xác nhận',
+  'confirmed' => 'Đã xác nhận',
+  'shipping'  => 'Đang giao',
+  'delivered' => 'Đã giao',
+  'cancelled' => 'Đã hủy',
 ];
 ?>
 
-<!-- Stats row -->
 <div class="stats-grid" style="grid-template-columns:repeat(6,1fr)">
   <div class="stat-card">
     <div class="stat-card-label">Sản phẩm</div>
@@ -50,10 +50,8 @@ $statusLabels = [
   </div>
 </div>
 
-<!-- Chart + Low stock side by side -->
 <div style="display:grid;grid-template-columns:1fr 340px;gap:20px;margin-bottom:24px">
 
-  <!-- Doanh thu 7 ngày -->
   <div class="admin-table-wrap">
     <div class="admin-table-head">
       <span class="admin-table-title">Doanh thu 7 ngày gần nhất</span>
@@ -63,7 +61,6 @@ $statusLabels = [
     </div>
   </div>
 
-  <!-- Sản phẩm sắp hết hàng -->
   <div class="admin-table-wrap">
     <div class="admin-table-head">
       <span class="admin-table-title">Cảnh báo tồn kho</span>
@@ -72,8 +69,8 @@ $statusLabels = [
     <div style="padding:8px 0">
       <?php foreach ($lowStockProducts as $p): ?>
         <?php
-          $pct   = min(100, $p['stock'] > 0 ? ($p['stock'] / 20) * 100 : 0);
-          $color = $p['stock'] === 0 ? 'var(--red)' : ($p['stock'] <= 3 ? 'var(--amber)' : 'var(--gold)');
+        $pct   = min(100, $p['stock'] > 0 ? ($p['stock'] / 20) * 100 : 0);
+        $color = $p['stock'] === 0 ? 'var(--red)' : ($p['stock'] <= 3 ? 'var(--amber)' : 'var(--gold)');
         ?>
         <div style="padding:8px 18px;border-bottom:1px solid var(--border)">
           <div style="display:flex;justify-content:space-between;margin-bottom:5px">
@@ -98,7 +95,6 @@ $statusLabels = [
   </div>
 </div>
 
-<!-- Đơn hàng mới nhất -->
 <div class="admin-table-wrap">
   <div class="admin-table-head">
     <span class="admin-table-title">Đơn hàng gần nhất</span>
@@ -139,49 +135,71 @@ $statusLabels = [
   </table>
 </div>
 
-<!-- Chart.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
-const chartData = <?= json_encode($revenueChart) ?>;
+  const chartData = <?= json_encode($revenueChart) ?>;
 
-// Tạo mảng 7 ngày gần nhất
-const days = [];
-const revenues = [];
-for (let i = 6; i >= 0; i--) {
-  const d = new Date(); d.setDate(d.getDate() - i);
-  const key = d.toISOString().slice(0, 10);
-  days.push(d.toLocaleDateString('vi-VN', {day:'2-digit',month:'2-digit'}));
-  const found = chartData.find(r => r.date === key);
-  revenues.push(found ? parseInt(found.revenue) : 0);
-}
+  const days = [];
+  const revenues = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    days.push(d.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit'
+    }));
+    const found = chartData.find(r => r.date === key);
+    revenues.push(found ? parseInt(found.revenue) : 0);
+  }
 
-new Chart(document.getElementById('revenueChart'), {
-  type: 'bar',
-  data: {
-    labels: days,
-    datasets: [{
-      data: revenues,
-      backgroundColor: 'rgba(200,168,90,0.25)',
-      borderColor: '#c8a85a',
-      borderWidth: 1,
-      borderRadius: 3,
-      hoverBackgroundColor: 'rgba(200,168,90,0.45)',
-    }]
-  },
-  options: {
-    responsive: true,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#7a7874', font: { family: 'Share Tech Mono', size: 10 } } },
-      y: {
-        grid: { color: 'rgba(255,255,255,0.04)' },
-        ticks: {
-          color: '#7a7874',
-          font: { family: 'Share Tech Mono', size: 10 },
-          callback: v => v >= 1000000 ? (v/1000000).toFixed(1) + 'M' : (v >= 1000 ? (v/1000).toFixed(0) + 'K' : v)
+  new Chart(document.getElementById('revenueChart'), {
+    type: 'bar',
+    data: {
+      labels: days,
+      datasets: [{
+        data: revenues,
+        backgroundColor: 'rgba(200,168,90,0.25)',
+        borderColor: '#c8a85a',
+        borderWidth: 1,
+        borderRadius: 3,
+        hoverBackgroundColor: 'rgba(200,168,90,0.45)',
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            color: 'rgba(255,255,255,0.04)'
+          },
+          ticks: {
+            color: '#7a7874',
+            font: {
+              family: 'Share Tech Mono',
+              size: 10
+            }
+          }
+        },
+        y: {
+          grid: {
+            color: 'rgba(255,255,255,0.04)'
+          },
+          ticks: {
+            color: '#7a7874',
+            font: {
+              family: 'Share Tech Mono',
+              size: 10
+            },
+            callback: v => v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : (v >= 1000 ? (v / 1000).toFixed(0) + 'K' : v)
+          }
         }
       }
     }
-  }
-});
+  });
 </script>

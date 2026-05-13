@@ -1,4 +1,5 @@
 <?php
+
 /**
  * app/Views/admin/users/index.php — Quản lý Khách hàng
  * @var array $users   List of users: id, full_name, email, phone, role, created_at
@@ -33,64 +34,63 @@
             Chưa có tài khoản nào.
           </td>
         </tr>
-      <?php else: foreach ($users as $u): ?>
-        <tr>
-          <td style="font-family:var(--font-m);color:var(--text-2);font-size:11px;"><?= $u['id'] ?></td>
+        <?php else: foreach ($users as $u): ?>
+          <tr>
+            <td style="font-family:var(--font-m);color:var(--text-2);font-size:11px;"><?= $u['id'] ?></td>
 
-          <td style="font-weight:500;"><?= htmlspecialchars($u['full_name']) ?></td>
+            <td style="font-weight:500;"><?= htmlspecialchars($u['full_name']) ?></td>
 
-          <td style="font-family:var(--font-m);font-size:11px;color:var(--text-2);">
-            <?= htmlspecialchars($u['email']) ?>
-          </td>
+            <td style="font-family:var(--font-m);font-size:11px;color:var(--text-2);">
+              <?= htmlspecialchars($u['email']) ?>
+            </td>
 
-          <td style="font-family:var(--font-m);font-size:11px;color:var(--text-2);">
-            <?= htmlspecialchars($u['phone'] ?? '—') ?>
-          </td>
+            <td style="font-family:var(--font-m);font-size:11px;color:var(--text-2);">
+              <?= htmlspecialchars($u['phone'] ?? '—') ?>
+            </td>
 
-          <td>
-            <?php if ($u['role'] === 'admin'): ?>
-              <span class="badge badge-confirmed">ADMIN</span>
-            <?php else: ?>
-              <span class="badge badge-pending">CUSTOMER</span>
-            <?php endif; ?>
-          </td>
-
-          <td style="font-family:var(--font-m);font-size:10px;color:var(--text-2);white-space:nowrap;">
-            <?= date('d/m/Y H:i', strtotime($u['created_at'])) ?>
-          </td>
-
-          <td>
-            <div style="display:flex;gap:6px;flex-wrap:nowrap;">
-
-              <!-- Nút đổi quyền -->
-              <form method="POST"
-                    action="<?= BASE_URL ?>/admin/changeuserrole/<?= $u['id'] ?>"
-                    onsubmit="return confirm('Chuyển quyền tài khoản #<?= $u['id'] ?> thành <?= $u['role'] === 'admin' ? 'CUSTOMER' : 'ADMIN' ?>?')">
-                <input type="hidden" name="current_role" value="<?= htmlspecialchars($u['role']) ?>">
-                <button type="submit"
-                        class="btn btn-sm <?= $u['role'] === 'admin' ? '' : 'btn-gold' ?>"
-                        title="<?= $u['role'] === 'admin' ? 'Hạ xuống Customer' : 'Nâng lên Admin' ?>">
-                  <?= $u['role'] === 'admin' ? '↓ Customer' : '↑ Admin' ?>
-                </button>
-              </form>
-
-              <!-- Nút xóa (chặn tự xóa mình) -->
-              <?php if ((int)$u['id'] !== (int)($_SESSION['user']['id'] ?? 0)): ?>
-                <form method="POST"
-                      action="<?= BASE_URL ?>/admin/deleteuser/<?= $u['id'] ?>"
-                      onsubmit="return confirm('Bạn có chắc chắn muốn XÓA tài khoản #<?= $u['id'] ?> (<?= htmlspecialchars(addslashes($u['email'])) ?>)?\n\nHành động này KHÔNG thể hoàn tác!')">
-                  <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
-                </form>
+            <td>
+              <?php if ($u['role'] === 'admin'): ?>
+                <span class="badge badge-confirmed">ADMIN</span>
               <?php else: ?>
-                <span style="font-family:var(--font-m);font-size:9px;color:var(--text-3);padding:4px 6px;">
-                  (bạn)
-                </span>
+                <span class="badge badge-pending">CUSTOMER</span>
               <?php endif; ?>
+            </td>
 
-            </div>
-          </td>
-        </tr>
-      <?php endforeach; endif; ?>
+            <td style="font-family:var(--font-m);font-size:10px;color:var(--text-2);white-space:nowrap;">
+              <?= date('d/m/Y H:i', strtotime($u['created_at'])) ?>
+            </td>
+
+            <td>
+              <div style="display:flex;gap:6px;flex-wrap:nowrap;">
+
+                <form method="POST"
+                  action="<?= BASE_URL ?>/admin/changeuserrole/<?= $u['id'] ?>"
+                  onsubmit="return confirm('Chuyển quyền tài khoản #<?= $u['id'] ?> thành <?= $u['role'] === 'admin' ? 'CUSTOMER' : 'ADMIN' ?>?')">
+                  <input type="hidden" name="current_role" value="<?= htmlspecialchars($u['role']) ?>">
+                  <button type="submit"
+                    class="btn btn-sm <?= $u['role'] === 'admin' ? '' : 'btn-gold' ?>"
+                    title="<?= $u['role'] === 'admin' ? 'Hạ xuống Customer' : 'Nâng lên Admin' ?>">
+                    <?= $u['role'] === 'admin' ? '↓ Customer' : '↑ Admin' ?>
+                  </button>
+                </form>
+
+                <?php if ((int)$u['id'] !== (int)($_SESSION['user']['id'] ?? 0)): ?>
+                  <form method="POST"
+                    action="<?= BASE_URL ?>/admin/deleteuser/<?= $u['id'] ?>"
+                    onsubmit="return confirm('Bạn có chắc chắn muốn XÓA tài khoản #<?= $u['id'] ?> (<?= htmlspecialchars(addslashes($u['email'])) ?>)?\n\nHành động này KHÔNG thể hoàn tác!')">
+                    <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                  </form>
+                <?php else: ?>
+                  <span style="font-family:var(--font-m);font-size:9px;color:var(--text-3);padding:4px 6px;">
+                    (bạn)
+                  </span>
+                <?php endif; ?>
+
+              </div>
+            </td>
+          </tr>
+      <?php endforeach;
+      endif; ?>
     </tbody>
   </table>
 </div>

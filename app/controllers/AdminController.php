@@ -22,12 +22,12 @@
 
 declare(strict_types=1);
 
-namespace App\Controllers; // Thêm dòng này
+namespace App\Controllers;
 
-use App\Models\Product;    // Gọi Model Product
-use App\Models\Category;  // Gọi Model Category
-use App\Models\User;      // Gọi Model User
-use App\Models\Order;     // Gọi Model Order
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\User;
+use App\Models\Order;
 
 class AdminController
 {
@@ -44,18 +44,10 @@ class AdminController
         $this->userModel     = new User();
     }
 
-    // ────────────────────────────────────────────
-    //  ĐIỀU HƯỚNG MẶC ĐỊNH KHI VÀO /ADMIN
-    // ────────────────────────────────────────────
     public function index(): void
     {
-        // Tự động chuyển hướng vào trang dashboard
         $this->redirect('/admin/dashboard');
     }
-
-    // ────────────────────────────────────────────
-    //  AUTH — Đăng nhập / Đăng xuất Admin
-    // ────────────────────────────────────────────
 
     public function login(): void
     {
@@ -103,16 +95,11 @@ class AdminController
         $this->redirect('/admin/login');
     }
 
-    // ────────────────────────────────────────────
-    //  DASHBOARD — Thống kê tổng quan
-    // ────────────────────────────────────────────
-
     public function dashboard(): void
     {
         $this->requireAdmin();
         $db = getDB();
 
-        // Thống kê nhanh
         $stats = [
             'total_products'  => (int) $db->query("SELECT COUNT(*) FROM products WHERE is_active=1")->fetchColumn(),
             'total_orders'    => (int) $db->query("SELECT COUNT(*) FROM orders")->fetchColumn(),
@@ -122,7 +109,6 @@ class AdminController
             'low_stock'       => (int) $db->query("SELECT COUNT(*) FROM products WHERE stock<=5 AND is_active=1")->fetchColumn(),
         ];
 
-        // Doanh thu 7 ngày gần nhất (cho chart)
         $revenueChart = $db->query("
             SELECT DATE(created_at) AS date, SUM(total) AS revenue
             FROM orders
@@ -131,10 +117,8 @@ class AdminController
             ORDER BY date ASC
         ")->fetchAll();
 
-        // Đơn hàng mới nhất
         $latestOrders = $this->orderModel->getAll('', 1, 8)['items'];
 
-        // Sản phẩm sắp hết hàng
         $lowStockProducts = $db->query("
             SELECT id, name, grade, scale, stock
             FROM products WHERE stock <= 5 AND is_active = 1 ORDER BY stock ASC LIMIT 8
@@ -147,10 +131,6 @@ class AdminController
             'lowStockProducts'
         ));
     }
-
-    // ────────────────────────────────────────────
-    //  QUẢN LÝ SẢN PHẨM
-    // ────────────────────────────────────────────
 
     public function products(): void
     {
@@ -175,8 +155,8 @@ class AdminController
         $this->requireAdmin();
         $this->renderAdmin('admin/products/form', [
             'title'       => 'Thêm sản phẩm mới',
-            'categories'  => $this->categoryModel->getTree(), // Dùng getTree để hiển thị danh mục phân cấp
-            'groupedCats' => $this->categoryModel->getGroupedByType(), // Dữ liệu cho các dropdown khác
+            'categories'  => $this->categoryModel->getTree(),
+            'groupedCats' => $this->categoryModel->getGroupedByType(),
             'product'     => null,
         ]);
     }
@@ -207,7 +187,6 @@ class AdminController
             'is_active'   => isset($_POST['is_active']) ? 1 : 0,
         ]);
 
-        // Upload ảnh nếu có
         if (!empty($_FILES['thumbnail']['name'])) {
             $this->productModel->uploadImage($productId, $_FILES['thumbnail'], true);
         }
@@ -275,10 +254,6 @@ class AdminController
         $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Đã ẩn sản phẩm khỏi cửa hàng.'];
         $this->redirect('/admin/products');
     }
-
-    // ────────────────────────────────────────────
-    //  QUẢN LÝ DANH MỤC (CATEGORY)
-    // ────────────────────────────────────────────
 
     public function categories(): void
     {
@@ -389,10 +364,6 @@ class AdminController
         $this->redirect('/admin/categories');
     }
 
-    // ────────────────────────────────────────────
-    //  QUẢN LÝ ĐƠN HÀNG
-    // ────────────────────────────────────────────
-
     public function orders(): void
     {
         $this->requireAdmin();
@@ -400,7 +371,6 @@ class AdminController
         $page   = max(1, (int) ($_GET['page'] ?? 1));
         $result = $this->orderModel->getAll($status, $page, 20);
 
-        // Đếm theo từng trạng thái (cho filter tabs)
         $db         = getDB();
         $statusCounts = [];
         foreach (['pending', 'confirmed', 'shipping', 'delivered', 'cancelled'] as $s) {
@@ -436,10 +406,6 @@ class AdminController
         ]);
     }
 
-    /**
-     * POST /admin/orders/status
-     * Body: { order_id: int, status: string }
-     */
     public function orderStatus(): void
     {
         $this->requireAdmin();
@@ -453,16 +419,11 @@ class AdminController
         exit;
     }
 
-    // ────────────────────────────────────────────
-    //  QUẢN LÝ KHO (INVENTORY)
-    // ────────────────────────────────────────────
-
     public function inventory(): void
     {
         $this->requireAdmin();
         $db = getDB();
 
-        // Toàn bộ sản phẩm kèm tồn kho, sắp xếp theo stock tăng dần
         $products = $db->query("
             SELECT p.id, p.name, p.grade, p.scale, p.series, p.stock, p.price,
                    pi.image_path AS thumbnail_path
@@ -472,7 +433,6 @@ class AdminController
             ORDER BY p.stock ASC
         ")->fetchAll();
 
-        // Lịch sử điều chỉnh kho (nếu có bảng inventory_logs)
         $hasLogTable = false;
         try {
             $db->query("SELECT 1 FROM inventory_logs LIMIT 1");
@@ -487,11 +447,6 @@ class AdminController
         ]);
     }
 
-    /**
-     * POST /admin/inventory/adjust
-     * Body: { product_id: int, delta: int, reason: string }
-     * delta dương = nhập thêm hàng, delta âm = xuất/điều chỉnh giảm
-     */
     public function inventoryAdjust(): void
     {
         $this->requireAdmin();
@@ -509,7 +464,6 @@ class AdminController
         $success = $this->productModel->adjustStock($productId, $delta);
 
         if ($success) {
-            // Lấy tồn kho mới
             $db       = getDB();
             $newStock = (int) $db->query("SELECT stock FROM products WHERE id=$productId")->fetchColumn();
 
@@ -526,10 +480,6 @@ class AdminController
         exit;
     }
 
-    // ────────────────────────────────────────────
-    //  VALIDATE FORM SẢN PHẨM
-    // ────────────────────────────────────────────
-
     private function validateProductForm(array $post): array
     {
         $errors = [];
@@ -538,10 +488,6 @@ class AdminController
         if (empty($post['category_id']))               $errors['category_id'] = 'Vui lòng chọn danh mục';
         return $errors;
     }
-
-    // ────────────────────────────────────────────
-    //  MIDDLEWARE + HELPER
-    // ────────────────────────────────────────────
 
     private function isAdmin(): bool
     {
@@ -569,14 +515,6 @@ class AdminController
         exit;
     }
 
-    // ────────────────────────────────────────────
-    //  QUẢN LÝ NGƯỜI DÙNG (USER MANAGEMENT)
-    // ────────────────────────────────────────────
-
-    /**
-     * GET /admin/users
-     * Hiển thị danh sách tất cả người dùng.
-     */
     public function users(): void
     {
         $this->requireAdmin();
@@ -586,10 +524,6 @@ class AdminController
         ]);
     }
 
-    /**
-     * POST /admin/changeuserrole/{id}
-     * Chuyển đổi quyền user ↔ admin. Tự động toggle dựa trên role hiện tại.
-     */
     public function changeUserRole(?string $id): void
     {
         $this->requireAdmin();
@@ -599,7 +533,6 @@ class AdminController
         $currentRole = $_POST['current_role'] ?? 'customer';
         $newRole     = ($currentRole === 'admin') ? 'customer' : 'admin';
 
-        // Không cho phép admin tự hạ quyền chính mình
         if ($userId === (int) ($_SESSION['user']['id'] ?? 0)) {
             $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Bạn không thể thay đổi quyền của chính mình!'];
             $this->redirect('/admin/users');
@@ -614,10 +547,6 @@ class AdminController
         $this->redirect('/admin/users');
     }
 
-    /**
-     * POST /admin/deleteuser/{id}
-     * Xóa người dùng khỏi hệ thống.
-     */
     public function deleteUser(?string $id): void
     {
         $this->requireAdmin();
@@ -625,7 +554,6 @@ class AdminController
 
         $userId = (int) $id;
 
-        // Bảo vệ: không cho xóa chính mình
         if ($userId === (int) ($_SESSION['user']['id'] ?? 0)) {
             $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Bạn không thể xóa tài khoản của chính mình!'];
             $this->redirect('/admin/users');
@@ -637,10 +565,6 @@ class AdminController
         $this->redirect('/admin/users');
     }
 
-    /**
-     * Render view trong layout Admin (khác layout shop)
-     * @param bool $withLayout  false → render không có layout (dùng cho trang login)
-     */
     private function renderAdmin(string $view, array $data = [], bool $withLayout = true): void
     {
         extract($data);
@@ -661,4 +585,3 @@ class AdminController
         }
     }
 }
-
