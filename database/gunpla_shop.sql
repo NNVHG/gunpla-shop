@@ -137,6 +137,26 @@ CREATE TABLE `order_items` (
   CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS `news` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `summary` text DEFAULT NULL,
+  `content` longtext DEFAULT NULL,
+  `image_path` varchar(255) DEFAULT NULL,
+  `is_published` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `slug` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Insert some dummy data for testing
+INSERT INTO `news` (`title`, `slug`, `summary`, `content`, `is_published`) VALUES
+('Gunpla Expo 2026 sắp diễn ra', 'gunpla-expo-2026-sap-dien-ra', 'Sự kiện lớn nhất năm dành cho tín đồ Gunpla sẽ được tổ chức vào tháng sau.', '<p>Sự kiện Gunpla Expo 2026 hứa hẹn sẽ mang đến nhiều mẫu mô hình mới, các cuộc thi độ mô hình hấp dẫn và nhiều phần quà giá trị. Đừng bỏ lỡ!</p>', 1),
+('Mẫu Gundam MGEX Strike Freedom đã về hàng', 'gundam-mgex-strike-freedom-da-ve-hang', 'Siêu phẩm MGEX Strike Freedom với khung xương vàng óng ánh đã có mặt tại shop.', '<p>Phiên bản MGEX (Master Grade Extreme) của Strike Freedom Gundam là một trong những bộ mô hình chi tiết và đắt giá nhất hiện nay. Điểm nhấn của bộ mô hình này là khung xương được mạ vàng vô cùng tinh xảo.</p>', 1);
+
+
 COMMIT;
 
 INSERT INTO `categories` (`id`, `name`, `slug`, `parent_id`, `type`, `sort_order`) VALUES

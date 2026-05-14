@@ -71,6 +71,7 @@ $routes = [
     'admin'    => \App\Controllers\AdminController::class,
     'user'     => \App\Controllers\UserController::class,     // Quản lý Profile (hồ sơ)
     'favorite' => \App\Controllers\FavoriteController::class, // Quản lý Yêu thích
+    'news'     => \App\Controllers\NewsController::class,     // Quản lý Tin tức
 ];
 
 if (!isset($routes[$controllerName])) {

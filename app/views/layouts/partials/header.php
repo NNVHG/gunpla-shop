@@ -15,7 +15,7 @@
         <li><a href="<?= BASE_URL ?>/" <?= $uri==='/' || $uri==='/gunpla-shop/' ?'class="active"':'' ?>>Trang chủ</a></li>
         <li><a href="<?= BASE_URL ?>/products" <?= $isProduct ? 'class="active"' : '' ?>>Sản phẩm</a></li>
         <li><a href="<?= BASE_URL ?>/products?type=tool" <?= $isTool ? 'class="active"' : '' ?>>Dụng cụ</a></li>
-        <li><a href="#">Tin tức</a></li>
+        <li><a href="<?= BASE_URL ?>/news" <?= str_contains($uri, '/news') ? 'class="active"' : '' ?>>Tin tức</a></li>
       </ul>
       <div class="search-wrap" style="position:relative;flex:1;max-width:340px">
         <span class="search-icon">&#9906;</span>
