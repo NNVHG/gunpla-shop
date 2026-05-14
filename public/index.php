@@ -89,4 +89,4 @@ if (!method_exists($controller, $action)) {
     exit;
 }
 
-$controller->$action($param);
+$controller->$action($param);

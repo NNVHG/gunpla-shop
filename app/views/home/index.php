@@ -38,7 +38,11 @@
   </div>
 </section>
 
-<?php if (!empty($categories)): ?>
+<?php 
+$activeCategories = array_filter($categories ?? [], fn($c) => ($c['product_count'] ?? 0) > 0);
+usort($activeCategories, fn($a, $b) => $b['product_count'] <=> $a['product_count']);
+if (!empty($activeCategories)): 
+?>
   <section class="categories-section">
     <div class="container">
       <div class="section-head">
@@ -46,7 +50,7 @@
         <a href="<?= BASE_URL ?>/products" class="section-link">Xem tất cả &rarr;</a>
       </div>
       <div class="category-grid">
-        <?php foreach (array_slice($categories, 0, 5) as $c): ?>
+        <?php foreach (array_slice($activeCategories, 0, 5) as $c): ?>
           <a href="<?= BASE_URL ?>/products?category_id=<?= $c['id'] ?>" class="cat-card">
             <div class="cat-icon">📦</div>
             <div class="cat-name"><?= htmlspecialchars($c['name']) ?></div>
