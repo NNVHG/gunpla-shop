@@ -40,33 +40,26 @@ if ($controllerName === '' || $controllerName === 'index.php') {
     $controllerName = 'products';
     $action         = 'home';
 } else {
-    // ── Compound action resolution ──────────────────────────────────
-    // URL: /admin/products/store  → action = productStore,  param = null
-    // URL: /admin/orders/detail/5 → action = orderDetail,   param = 5
-    // URL: /admin/orders          → action = orders,         param = null
-    // URL: /products/detail/42    → action = detail,         param = 42
-    // URL: /products/submitreview → action = submitReview,   param = null
-    // ────────────────────────────────────────────────────────────────
-    $seg1 = !empty($parts[1]) ? strtolower($parts[1]) : 'index';  // "products"
-    $seg2 = $parts[2] ?? null;                                      // "store" | "42" | null
-    $seg3 = $parts[3] ?? null;                                      // "42" | null (4th segment)
+
+    $seg1 = !empty($parts[1]) ? strtolower($parts[1]) : 'index';
+    $seg2 = $parts[2] ?? null;
+    $seg3 = $parts[3] ?? null;
 
     if ($seg2 !== null && !is_numeric($seg2)) {
-        // Chuyển đổi $seg1 từ số nhiều sang số ít để map đúng với tên hàm trong Controller
-        // Ví dụ: products -> product, categories -> category, orders -> order
-        $singleEntity = rtrim($seg1, 's');
-        if ($seg1 === 'categories') {
-            $singleEntity = 'category';
+            $singleEntity = rtrim($seg1, 's');
+            
+            if ($seg1 === 'categories') {
+                $singleEntity = 'category';
+            } elseif ($seg1 === 'news') {
+                $singleEntity = 'news';
+            }
+            
+            $action = $singleEntity . ucfirst($seg2);
+            $param = $seg3; 
+        } else {
+            $action = $seg1;
+            $param = $seg2;
         }
-        
-        // Nối thành camelCase. Ví dụ: product + create → productCreate
-        $action = $singleEntity . ucfirst($seg2);
-        $param = $seg3; // Tham số ID nếu có (ví dụ: edit/42)
-    } else {
-        // Trường hợp seg2 là ID số hoặc không có
-        $action = $seg1;
-        $param = $seg2;
-    }
 }
 
 // ── Routing ────────────────────────────────────────────────────────

@@ -2,7 +2,7 @@
 
 /**
  * app/Controllers/NewsController.php
- * Xử lý request liên quan đến tin tức
+ * Xử lý request liên quan đến tin tức (Giao diện Frontend của Khách hàng)
  */
 
 declare(strict_types=1);
@@ -32,10 +32,10 @@ class NewsController
 
         $data = [
             'title'      => 'Tin tức — GUNPLA SHOP',
-            'news'       => $result['items'],
-            'total'      => $result['total'],
-            'pages'      => $result['pages'],
-            'page'       => $result['page'],
+            'news'       => $result['items'] ?? [],
+            'total'      => $result['total'] ?? 0,
+            'pages'      => $result['pages'] ?? 1,
+            'page'       => $result['page'] ?? $page,
             'categories' => $categories
         ];
 
@@ -50,8 +50,8 @@ class NewsController
         }
 
         $newsItem = is_numeric($param) 
-            ? $this->newsModel->getById((int) $param)
-            : $this->newsModel->getBySlug($param);
+            ? $this->newsModel->findById((int) $param)
+            : $this->newsModel->findBySlug($param);
 
         if (!$newsItem) {
             http_response_code(404);

@@ -26,11 +26,11 @@
       <span class="nav-icon">▦</span> Dashboard
     </a>
     <div class="sidebar-label">Cửa hàng</div>
-    <a href="<?= BASE_URL ?>/admin/products" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'],'/admin/products') ? 'active' : '' ?>">
-      <span class="nav-icon">◈</span> Sản phẩm
-    </a>
     <a href="<?= BASE_URL ?>/admin/categories" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'],'/admin/categories') ? 'active' : '' ?>">
       <span class="nav-icon">▤</span> Danh mục
+    </a>
+    <a href="<?= BASE_URL ?>/admin/products" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'],'/admin/products') ? 'active' : '' ?>">
+      <span class="nav-icon">◈</span> Sản phẩm
     </a>
     <a href="<?= BASE_URL ?>/admin/orders" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'],'/admin/orders') ? 'active' : '' ?>">
       <span class="nav-icon">◎</span> Đơn hàng
@@ -43,6 +43,13 @@
     </a>
     <a href="<?= BASE_URL ?>/admin/reviews" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/admin/reviews') ? 'active' : '' ?>">
       <span class="nav-icon">★</span> Đánh giá khách hàng
+    </a>
+    <a href="<?= BASE_URL ?>/admin/news" class="nav-link <?= (strpos($_SERVER['REQUEST_URI'], '/admin/news') !== false) ? 'active' : '' ?>" style="display: flex; align-items: center; gap: 10px; padding: 12px 20px; color: #374151; text-decoration: none; border-radius: 6px; margin-bottom: 4px; font-weight: 500;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+        <polyline points="22,6 12,13 2,6"></polyline>
+    </svg>
+    <span>Quản lý tin tức</span>
     </a>
     <div class="sidebar-label">Tài khoản</div>
     <a href="<?= BASE_URL ?>/" class="nav-item" target="_blank">

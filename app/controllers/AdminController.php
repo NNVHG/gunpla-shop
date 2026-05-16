@@ -28,6 +28,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\News;
 
 class AdminController
 {
@@ -35,6 +36,7 @@ class AdminController
     private Order    $orderModel;
     private Category $categoryModel;
     private User     $userModel;
+    private News     $newsModel;
 
     public function __construct()
     {
@@ -42,6 +44,7 @@ class AdminController
         $this->orderModel    = new Order();
         $this->categoryModel = new Category();
         $this->userModel     = new User();
+        $this->newsModel     = new News();
     }
 
     public function index(): void
@@ -631,5 +634,248 @@ class AdminController
             'title' => 'Quản lý Đánh giá',
             'reviews' => $reviews
         ]);
+    }
+
+    public function news(): void
+    {
+        $this->requireAdmin();
+        $allNews = $this->newsModel->getAll();
+        $this->renderAdmin('admin/news/index', ['allNews' => $allNews]);
+    }
+
+    public function newsCreate(): void
+    {
+        $this->requireAdmin();
+        $errors = [];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $title        = trim($_POST['title'] ?? '');
+            $summary      = trim($_POST['summary'] ?? '');
+            $content      = trim($_POST['content'] ?? '');
+            $is_published = isset($_POST['is_published']) ? 1 : 0;
+            
+            $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
+
+            $image_path = '';
+            if (isset($_FILES['image_path']) && $_FILES['image_path']['error'] === UPLOAD_ERR_OK) {
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                if (in_array($_FILES['image_path']['type'], $allowedTypes)) {
+                    $ext = pathinfo($_FILES['image_path']['name'], PATHINFO_EXTENSION);
+                    $filename = 'news_' . uniqid() . '.' . strtolower($ext);
+                    
+                    // CHỈ ĐỊNH ĐÚNG THƯ MỤC public/uploads/img/
+                    $dest = BASE_PATH . '/public/uploads/img/' . $filename;
+                    if (move_uploaded_file($_FILES['image_path']['tmp_name'], $dest)) {
+                        $image_path = 'uploads/img/' . $filename;
+                    }
+                }
+            }
+
+            if (empty($title)) {
+                $errors[] = 'Tiêu đề tin tức không được để trống.';
+            }
+
+            if (empty($errors)) {
+                $this->newsModel->create([
+                    'title'        => $title,
+                    'slug'         => $slug,
+                    'summary'      => $summary,
+                    'content'      => $content,
+                    'image_path'   => $image_path,
+                    'is_published' => $is_published
+                ]);
+                $this->redirect('admin/news');
+                return;
+            }
+        }
+
+        $this->render('admin/news/form', ['errors' => $errors, 'isEdit' => false, 'news' => []]);
+    }
+
+    public function newsEdit(string $id): void
+    {
+        $this->requireAdmin();
+        $newsId = (int)$id;
+        $news = $this->newsModel->findById($newsId);
+
+        if (!$news) {
+            $this->redirect('admin/news');
+            return;
+        }
+
+        $errors = [];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $title        = trim($_POST['title'] ?? '');
+            $summary      = trim($_POST['summary'] ?? '');
+            $content      = trim($_POST['content'] ?? '');
+            $is_published = isset($_POST['is_published']) ? 1 : 0;
+            $slug         = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
+
+            $image_path = $news['image_path']; // Giữ ảnh cũ nếu không up ảnh mới
+            if (isset($_FILES['image_path']) && $_FILES['image_path']['error'] === UPLOAD_ERR_OK) {
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                if (in_array($_FILES['image_path']['type'], $allowedTypes)) {
+                    $ext = pathinfo($_FILES['image_path']['name'], PATHINFO_EXTENSION);
+                    $filename = 'news_' . uniqid() . '.' . strtolower($ext);
+                    
+                    // CHỈ ĐỊNH ĐÚNG THƯ MỤC public/uploads/img/
+                    $dest = BASE_PATH . '/public/uploads/img/' . $filename;
+                    if (move_uploaded_file($_FILES['image_path']['tmp_name'], $dest)) {
+                        $image_path = 'uploads/img/' . $filename;
+                    }
+                }
+            }
+
+            if (empty($title)) {
+                $errors[] = 'Tiêu đề tin tức không được để trống.';
+            }
+
+            if (empty($errors)) {
+                $this->newsModel->update($newsId, [
+                    'title'        => $title,
+                    'slug'         => $slug,
+                    'summary'      => $summary,
+                    'content'      => $content,
+                    'image_path'   => $image_path,
+                    'is_published' => $is_published
+                ]);
+                $this->redirect('admin/news');
+                return;
+            }
+        }
+
+        $this->render('admin/news/form', ['errors' => $errors, 'isEdit' => true, 'news' => $news]);
+    }
+
+    protected function render(string $view, array $data = []): void
+    {
+        extract($data);
+        require BASE_PATH . '/app/Views/' . $view . '.php';
+    }
+
+    public function newsDelete(string $id): void
+    {
+        $this->requireAdmin();
+        $newsId = (int)$id;
+        $this->newsModel->delete($newsId);
+        $this->redirect('admin/news');
+    }
+
+    public function createNews(): void
+    {
+        $errors = [];
+        $newsModel = new \App\Models\News();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $title        = trim($_POST['title'] ?? '');
+            $summary      = trim($_POST['summary'] ?? '');
+            $content      = trim($_POST['content'] ?? '');
+            $is_published = isset($_POST['is_published']) ? 1 : 0;
+            
+            $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
+
+            if (empty($title)) $errors[] = "Tiêu đề bài viết không được để trống.";
+            if (empty($content)) $errors[] = "Nội dung bài viết không được để trống.";
+
+            $imagePath = '';
+            if (isset($_FILES['image_path']) && $_FILES['image_path']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = APP_PATH . '/../public/uploads/news/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                $fileName = time() . '_' . basename($_FILES['image_path']['name']);
+                if (move_uploaded_file($_FILES['image_path']['tmp_name'], $uploadDir . $fileName)) {
+                    $imagePath = 'public/uploads/news/' . $fileName;
+                }
+            }
+
+            if (empty($errors)) {
+                $newsModel->create([
+                    'title'        => $title,
+                    'slug'         => $slug,
+                    'summary'      => $summary,
+                    'content'      => $content,
+                    'image_path'   => $imagePath,
+                    'is_published' => $is_published
+                ]);
+
+                header("Location: " . BASE_URL . "/admin/news");
+                exit;
+            }
+        }
+
+        $data = [
+            'title'  => 'Thêm bài viết mới — Admin panel',
+            'isEdit' => false,
+            'news'   => [],
+            'errors' => $errors
+        ];
+
+        $this->render('admin/news/form', $data);
+    }
+
+    public function editNews(?string $id): void
+    {
+        $newsId = (int)$id;
+        $newsModel = new \App\Models\News();
+        $newsItem = $newsModel->findById($newsId);
+
+        if (!$newsItem) {
+            header("Location: " . BASE_URL . "/admin/news");
+            exit;
+        }
+
+        $errors = [];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $title        = trim($_POST['title'] ?? '');
+            $summary      = trim($_POST['summary'] ?? '');
+            $content      = trim($_POST['content'] ?? '');
+            $is_published = isset($_POST['is_published']) ? 1 : 0;
+            
+            $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
+
+            if (empty($title)) $errors[] = "Tiêu đề bài viết không được để trống.";
+            if (empty($content)) $errors[] = "Nội dung bài viết không được để trống.";
+
+            $imagePath = $newsItem['image_path'];
+            
+            if (isset($_FILES['image_path']) && $_FILES['image_path']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = APP_PATH . '/../public/uploads/news/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                $fileName = time() . '_' . basename($_FILES['image_path']['name']);
+                if (move_uploaded_file($_FILES['image_path']['tmp_name'], $uploadDir . $fileName)) {
+                    $imagePath = 'public/uploads/news/' . $fileName;
+                    if (!empty($newsItem['image_path']) && file_exists(APP_PATH . '/../' . $newsItem['image_path'])) {
+                        @unlink(APP_PATH . '/../' . $newsItem['image_path']);
+                    }
+                }
+            }
+
+            if (empty($errors)) {
+                $newsModel->update($newsId, [
+                    'title'        => $title,
+                    'slug'         => $slug,
+                    'summary'      => $summary,
+                    'content'      => $content,
+                    'image_path'   => $imagePath,
+                    'is_published' => $is_published
+                ]);
+
+                header("Location: " . BASE_URL . "/admin/news");
+                exit;
+            }
+        }
+
+        $data = [
+            'title'  => 'Cập nhật bài viết — Admin panel',
+            'isEdit' => true,
+            'news'   => $newsItem,
+            'errors' => $errors
+        ];
+
+        $this->render('admin/news/form', $data);
     }
 }
