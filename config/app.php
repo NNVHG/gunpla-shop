@@ -1,4 +1,5 @@
 <?php
+
 /**
  * config/app.php — Cấu hình toàn cục ứng dụng
  *
@@ -6,11 +7,10 @@
  * để tránh lộ mật khẩu email và thông tin nhạy cảm.
  */
 
-// ─── Thông tin ứng dụng ──────────────────────────────
 define('URLROOT', '/gunpla-shop');
 define('APP_NAME',    'GUNPLA SHOP');
-define('APP_URL',     'http://localhost/gunpla-shop');  // Đổi khi deploy
-define('APP_DEBUG',   true);    // false khi deploy lên server thật
+define('APP_URL',     'http://localhost/gunpla-shop');
+define('APP_DEBUG',   true);
 
 // ─── Cấu hình Gmail SMTP (PHPMailer) ────────────────
 // Bước 1: Bật 2-Step Verification trên tài khoản Gmail
@@ -26,12 +26,10 @@ define('VNP_HASHSECRET', 'POOO24CO2FUU8PF8YSJJQKML2G174Y8M'); // Key mới nhấ
 define('VNP_URL', 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html');
 define('VNP_RETURNURL', APP_URL . '/orders/vnpayReturn');
 
-// ─── Cấu hình session ────────────────────────────────
 ini_set('session.cookie_httponly', '1');
 ini_set('session.use_strict_mode', '1');
 session_name('GUNPLA_SESS');
 
-// ─── Xử lý lỗi ───────────────────────────────────────
 if (APP_DEBUG) {
     error_reporting(E_ALL);
     ini_set('display_errors', '1');

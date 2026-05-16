@@ -52,14 +52,20 @@ if ($controllerName === '' || $controllerName === 'index.php') {
     $seg3 = $parts[3] ?? null;                                      // "42" | null (4th segment)
 
     if ($seg2 !== null && !is_numeric($seg2)) {
-        // seg2 is a sub-action word (e.g. "store", "detail", "create")
-        // Combine seg1 + seg2 into camelCase action: products + store → productStore
-        $action = $seg1 . ucfirst($seg2);
-        $param  = $seg3; // optional numeric param after sub-action
+        // Chuyển đổi $seg1 từ số nhiều sang số ít để map đúng với tên hàm trong Controller
+        // Ví dụ: products -> product, categories -> category, orders -> order
+        $singleEntity = rtrim($seg1, 's');
+        if ($seg1 === 'categories') {
+            $singleEntity = 'category';
+        }
+        
+        // Nối thành camelCase. Ví dụ: product + create → productCreate
+        $action = $singleEntity . ucfirst($seg2);
+        $param = $seg3; // Tham số ID nếu có (ví dụ: edit/42)
     } else {
-        // seg2 is numeric (a param ID) or missing
+        // Trường hợp seg2 là ID số hoặc không có
         $action = $seg1;
-        $param  = $seg2;
+        $param = $seg2;
     }
 }
 

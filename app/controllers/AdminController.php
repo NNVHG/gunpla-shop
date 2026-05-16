@@ -426,6 +426,26 @@ class AdminController
         exit;
     }
 
+    public function markPaid(): void
+    {
+        $this->requireAdmin();
+        $this->requirePost();
+        
+        $orderId = (int) ($_POST['order_id'] ?? 0);
+        
+        if ($orderId > 0) {
+            // Gọi model để cập nhật trạng thái thanh toán thành 'paid'
+            $success = $this->orderModel->updatePaymentStatus($orderId, 'paid');
+        } else {
+            $success = false;
+        }
+
+        // Trả về JSON cho fetch API ở frontend
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['success' => $success]);
+        exit;
+    }
+
     public function inventory(): void
     {
         $this->requireAdmin();

@@ -251,7 +251,7 @@ class Product
         return $stmt->execute([':delta' => $delta, ':delta2' => $delta, ':id' => $id]);
     }
 
-    public function uploadImage(int $productId, array $fileData, bool $isPrimary = false): string|false
+public function uploadImage(int $productId, array $fileData, bool $isPrimary = false): string|false
     {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
         if (!in_array($fileData['type'], $allowedTypes)) return false;
@@ -259,7 +259,8 @@ class Product
 
         $ext      = pathinfo($fileData['name'], PATHINFO_EXTENSION);
         $filename = 'product_' . $productId . '_' . uniqid() . '.' . strtolower($ext);
-        $dest     = BASE_PATH . '/public/uploads/' . $filename;
+        
+        $dest     = BASE_PATH . '/public/uploads/img-gundam/' . $filename;
 
         if (!move_uploaded_file($fileData['tmp_name'], $dest)) return false;
 
@@ -268,17 +269,27 @@ class Product
                 ->execute([':id' => $productId]);
         }
 
+        $imagePath = 'uploads/img-gundam/' . $filename;
+
         $stmt = $this->db->prepare("
             INSERT INTO product_images (product_id, image_path, is_primary)
             VALUES (:product_id, :image_path, :is_primary)
         ");
         $stmt->execute([
             ':product_id' => $productId,
-            ':image_path' => '/public/uploads/' . $filename,
+            ':image_path' => $imagePath,
             ':is_primary' => $isPrimary ? 1 : 0,
         ]);
 
-        return '/public/uploads/' . $filename;
+        if ($isPrimary) {
+            $updateProduct = $this->db->prepare("UPDATE products SET thumbnail = :thumbnail WHERE id = :id");
+            $updateProduct->execute([
+                ':thumbnail' => $imagePath,
+                ':id' => $productId
+            ]);
+        }
+
+        return $imagePath;
     }
 
     private function makeSlug(string $name): string

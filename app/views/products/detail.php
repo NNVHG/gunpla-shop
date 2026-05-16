@@ -14,6 +14,13 @@ $images = $p['images'] ?? [];
 $stock  = (int) $p['stock'];
 $stockClass = $stock === 0 ? 'out' : ($stock <= 5 ? 'low' : 'ok');
 $stockText  = $stock === 0 ? 'Hết hàng' : ($stock <= 5 ? "Còn $stock sản phẩm" : "Còn hàng");
+
+// Hàm hỗ trợ ẩn (closure) giúp chuẩn hóa đường dẫn ảnh ngay trong file view
+$formatImg = function ($path) {
+  if (empty($path)) return '';
+  if (strpos($path, '/public/') === 0) $path = substr($path, 8);
+  return BASE_URL . '/' . ltrim($path, '/');
+};
 ?>
 <div class="container">
   <div class="breadcrumb">
@@ -25,7 +32,7 @@ $stockText  = $stock === 0 ? 'Hết hàng' : ($stock <= 5 ? "Còn $stock sản p
     <div class="detail-images">
       <div class="main-img" id="mainImgWrap">
         <?php if (!empty($images)): ?>
-          <img src="<?= htmlspecialchars($images[0]['image_path']) ?>" alt="<?= htmlspecialchars($p['name']) ?>" id="mainImg">
+          <img src="<?= htmlspecialchars($formatImg($images[0]['image_path'])) ?>" alt="<?= htmlspecialchars($p['name']) ?>" id="mainImg">
         <?php else: ?>
           <div class="img-placeholder"><?= htmlspecialchars($p['grade'] ?? '?') ?></div>
         <?php endif; ?>
@@ -33,8 +40,9 @@ $stockText  = $stock === 0 ? 'Hết hàng' : ($stock <= 5 ? "Còn $stock sản p
       <?php if (count($images) > 1): ?>
         <div class="thumb-strip">
           <?php foreach ($images as $i => $img): ?>
-            <div class="thumb-item<?= $i === 0 ? ' active' : '' ?>" onclick="switchImg('<?= htmlspecialchars($img['image_path']) ?>', this)">
-              <img src="<?= htmlspecialchars($img['image_path']) ?>" alt="">
+            <?php $thumbUrl = $formatImg($img['image_path']); ?>
+            <div class="thumb-item<?= $i === 0 ? ' active' : '' ?>" onclick="switchImg('<?= htmlspecialchars($thumbUrl) ?>', this)">
+              <img src="<?= htmlspecialchars($thumbUrl) ?>" alt="">
             </div>
           <?php endforeach; ?>
         </div>
@@ -78,7 +86,7 @@ $stockText  = $stock === 0 ? 'Hết hàng' : ($stock <= 5 ? "Còn $stock sản p
           <div class="product-card" onclick="window.location='<?= BASE_URL ?>/products/detail/<?= $r['id'] ?>'">
             <div class="product-img-wrap">
               <?php if (!empty($r['thumbnail_path'])): ?>
-                <img src="<?= htmlspecialchars($r['thumbnail_path']) ?>" alt="<?= htmlspecialchars($r['name']) ?>" loading="lazy">
+                <img src="<?= htmlspecialchars($formatImg($r['thumbnail_path'])) ?>" alt="<?= htmlspecialchars($r['name']) ?>" loading="lazy">
               <?php else: ?>
                 <div class="img-placeholder"><?= htmlspecialchars($r['grade'] ?? '?') ?></div>
               <?php endif; ?>
@@ -221,5 +229,4 @@ $stockText  = $stock === 0 ? 'Hết hàng' : ($stock <= 5 ? "Còn $stock sản p
     <?php endif; ?>
 
   </div>
-
 </div>

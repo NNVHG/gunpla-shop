@@ -1,18 +1,16 @@
 <?php
-// Lấy thông tin từ file .env
 $dbHost = $_ENV['DB_HOST'] ?? '127.0.0.1';
 $dbName = $_ENV['DB_NAME'] ?? 'gunpla_shop';
 $dbUser = $_ENV['DB_USER'] ?? 'root';
 $dbPass = $_ENV['DB_PASS'] ?? '';
 
-// Nếu dự án của bạn vẫn dùng define() thì sửa thành:
 if (!defined('DB_HOST')) define('DB_HOST', $dbHost);
 if (!defined('DB_NAME')) define('DB_NAME', $dbName);
 if (!defined('DB_USER')) define('DB_USER', $dbUser);
 if (!defined('DB_PASS')) define('DB_PASS', $dbPass);
 
-// Hàm kết nối DB (giữ nguyên logic cũ của bạn)
-function getDB() {
+function getDB()
+{
     static $db = null;
     if ($db === null) {
         try {

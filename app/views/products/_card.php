@@ -1,4 +1,5 @@
 <?php
+
 /** app/views/products/_card.php
  * @var array $p
  * @var int $i
@@ -6,13 +7,21 @@
 $stock      = (int) ($p['stock'] ?? 0);
 $stockClass = $stock === 0 ? 'out-stock' : ($stock <= 5 ? 'low-stock' : 'in-stock');
 $stockLabel = $stock === 0 ? 'HẾT HÀNG' : ($stock <= 5 ? "CÒN $stock" : 'CÒN HÀNG');
+
+// Xử lý chuẩn hóa đường dẫn ảnh
 $thumb      = $p['thumbnail_path'] ?? null;
+if ($thumb && strpos($thumb, '/public/') === 0) {
+  $thumb = substr($thumb, 8);
+}
+$thumbUrl   = $thumb ? BASE_URL . '/' . ltrim($thumb, '/') : null;
+
 $delay      = ($i % 8) * 0.05;
 ?>
 <div class="product-card fade-up" style="animation-delay:<?= $delay ?>s">
   <div class="product-img-wrap">
-    <?php if ($thumb): ?>
-      <img src="<?= htmlspecialchars($thumb) ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
+    <?php if ($thumbUrl): ?>
+      <img src="<?= htmlspecialchars($thumbUrl) ?>" alt="Thumbnail"
+        style="width:100%;border-radius:4px;border:1px solid var(--border);object-fit:cover;max-height:160px">
     <?php else: ?>
       <div class="img-placeholder"><?= htmlspecialchars($p['grade'] ?? '?') ?></div>
     <?php endif; ?>

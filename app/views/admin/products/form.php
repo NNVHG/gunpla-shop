@@ -13,27 +13,26 @@ unset($_SESSION['form_errors'], $_SESSION['form_data']);
 
 function fval(array $d, string $k, string $default = ''): string
 {
-  return htmlspecialchars($d[$k] ?? $default);
+  return htmlspecialchars((string) ($d[$k] ?? $default));
 }
+
 function ferr(array $e, string $k): string
 {
-  return isset($e[$k]) ? "<div class='form-error'>" . htmlspecialchars($e[$k]) . "</div>" : '';
+  return isset($e[$k]) ? "<div class='form-error' style='color:red;font-size:11px;margin-top:4px'>" . htmlspecialchars($e[$k]) . "</div>" : '';
 }
 ?>
 
-<form method="POST" action="<?= $action ?>" enctype="multipart/form-data">
+<div style="display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start">
+  
+  <form method="POST" action="<?= $action ?>" enctype="multipart/form-data" id="main-product-form">
+    <div style="display:grid;grid-template-columns:1fr;gap:24px;">
 
-  <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start">
-
-    <div>
-
-      <div class="admin-table-wrap" style="margin-bottom:20px">
+      <div class="admin-table-wrap">
         <div class="admin-table-head"><span class="admin-table-title">// Thông tin cơ bản</span></div>
         <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
           <div class="form-group full">
             <label>Tên sản phẩm *</label>
-            <input type="text" name="name" value="<?= fval($saved, 'name') ?>"
-              placeholder="HG 1/144 RX-78-2 Gundam (Revive)" required>
+            <input type="text" name="name" value="<?= fval($saved, 'name') ?>" placeholder="HG 1/144 RX-78-2 Gundam (Revive)" required>
             <?= ferr($errors, 'name') ?>
           </div>
           <div class="form-grid">
@@ -80,7 +79,7 @@ function ferr(array $e, string $k): string
         </div>
       </div>
 
-      <div class="admin-table-wrap" style="margin-bottom:20px">
+      <div class="admin-table-wrap">
         <div class="admin-table-head"><span class="admin-table-title">// Danh mục</span></div>
         <div style="padding:20px">
           <div class="form-group">
@@ -88,8 +87,7 @@ function ferr(array $e, string $k): string
             <select name="category_id" required>
               <option value="">-- Chọn danh mục --</option>
               <?php foreach ($categories as $cat): ?>
-                <option value="<?= $cat['id'] ?>"
-                  <?= (($saved['category_id'] ?? '')) == $cat['id'] ? ' selected' : '' ?>>
+                <option value="<?= $cat['id'] ?>" <?= (($saved['category_id'] ?? '')) == $cat['id'] ? ' selected' : '' ?>>
                   <?= ($cat['parent_name'] ?? null) ? htmlspecialchars($cat['parent_name']) . ' → ' : '' ?><?= htmlspecialchars($cat['name']) ?>
                 </option>
               <?php endforeach; ?>
@@ -98,65 +96,70 @@ function ferr(array $e, string $k): string
           </div>
         </div>
       </div>
-
+    </div>
+  </form>
+  <div>
+    <div class="admin-table-wrap" style="margin-bottom:16px">
+      <div class="admin-table-head"><span class="admin-table-title">// Trạng thái</span></div>
+      <div style="padding:16px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input form="main-product-form" type="checkbox" name="is_active" value="1" <?= ($saved['is_active'] ?? 1) ? 'checked' : '' ?> style="width:16px;height:16px;accent-color:var(--gold)">
+          <span style="color:var(--t1);font-size:12px;letter-spacing:.04em">Hiển thị trên cửa hàng</span>
+        </label>
+      </div>
     </div>
 
-    <div>
-
-      <div class="admin-table-wrap" style="margin-bottom:16px">
-        <div class="admin-table-head"><span class="admin-table-title">// Trạng thái</span></div>
-        <div style="padding:16px">
-          <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
-            <input type="checkbox" name="is_active" value="1"
-              <?= ($saved['is_active'] ?? 1) ? 'checked' : '' ?> style="width:16px;height:16px;accent-color:var(--gold)">
-            <span style="color:var(--t1);font-size:12px;letter-spacing:.04em">Hiển thị trên cửa hàng</span>
-          </label>
-        </div>
+    <div class="admin-table-wrap" style="margin-bottom:16px">
+      <div class="admin-table-head"><span class="admin-table-title">// Ảnh đại diện</span></div>
+      <div style="padding:16px">
+        <?php if (!empty($product['thumbnail_path'])): ?>
+          <div style="margin-bottom:12px">
+            <?php 
+                $imgPath = $product['thumbnail_path'];
+                // Chuẩn hóa đường dẫn ảnh (loại bỏ /public/ dư thừa nếu có)
+                if (strpos($imgPath, '/public/') === 0) {
+                    $imgPath = substr($imgPath, 8); 
+                }
+                // Nối BASE_URL
+                $fullImgUrl = BASE_URL . '/' . ltrim($imgPath, '/');
+            ?>
+            <img src="<?= $fullImgUrl ?>" alt="Thumbnail" style="width:100%;border-radius:4px;border:1px solid var(--border);object-fit:cover;max-height:160px">
+            <div style="font-size:10px;color:var(--text-3);margin-top:4px;font-family:var(--font-m)">Ảnh hiện tại</div>
+          </div>
+        <?php endif; ?>
+        <label style="margin-bottom:6px; font-size:12px;">Tải ảnh lên (jpg, png, webp — max 5MB)</label>
+        <input form="main-product-form" type="file" name="thumbnail" accept="image/jpeg,image/png,image/webp" style="font-size:11px;padding:6px 0;background:none;border:none">
+        <div style="font-size:10px;color:var(--text-3);margin-top:6px;font-family:var(--font-m)">Ảnh mới sẽ thay thế ảnh cũ</div>
       </div>
-
-      <div class="admin-table-wrap" style="margin-bottom:16px">
-        <div class="admin-table-head"><span class="admin-table-title">// Ảnh đại diện</span></div>
-        <div style="padding:16px">
-          <?php if (!empty($product['thumbnail_path'])): ?>
-            <div style="margin-bottom:12px">
-              <img src="<?= htmlspecialchars($product['thumbnail_path']) ?>" alt=""
-                style="width:100%;border-radius:4px;border:1px solid var(--border);object-fit:cover;max-height:160px">
-              <div style="font-size:10px;color:var(--text-3);margin-top:4px;font-family:var(--font-m)">Ảnh hiện tại</div>
-            </div>
-          <?php endif; ?>
-          <label style="margin-bottom:6px">Tải ảnh lên (jpg, png, webp — tối đa 5MB)</label>
-          <input type="file" name="thumbnail" accept="image/jpeg,image/png,image/webp"
-            style="font-size:11px;padding:6px 0;background:none;border:none">
-          <div style="font-size:10px;color:var(--text-3);margin-top:6px;font-family:var(--font-m)">
-            Ảnh mới sẽ thay thế ảnh cũ
-          </div>
-        </div>
-      </div>
-
-      <button type="submit" class="btn btn-gold" style="width:100%;padding:13px;font-size:18px;border-radius:5px">
-        <?= $isEdit ? 'CẬP NHẬT SẢN PHẨM' : 'THÊM SẢN PHẨM' ?>
-      </button>
-      <a href="<?= BASE_URL ?>/admin/products" style="display:block;text-align:center;margin-top:10px;font-family:var(--font-m);font-size:10px;color:var(--text-3);letter-spacing:.08em">
-        &larr; Quay lại danh sách
-      </a>
-
-      <?php if ($isEdit): ?>
-        <div style="margin-top:16px;background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;padding:14px">
-          <div style="font-family:var(--font-m);font-size:9px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px">// Thông tin hệ thống</div>
-          <div style="font-family:var(--font-m);font-size:10px;color:var(--text-3);line-height:1.8">
-            ID: <?= $product['id'] ?><br>
-            Slug: <?= htmlspecialchars($product['slug'] ?? '') ?><br>
-            Tạo lúc: <?= date('d/m/Y H:i', strtotime($product['created_at'] ?? 'now')) ?>
-          </div>
-          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
-            <form method="POST" action="<?= BASE_URL ?>/admin/products/delete/<?= $product['id'] ?>"
-              onsubmit="return confirm('Ẩn sản phẩm này khỏi cửa hàng?')">
-              <button type="submit" class="btn btn-danger btn-sm" style="width:100%">Ẩn sản phẩm này</button>
-            </form>
-          </div>
-        </div>
-      <?php endif; ?>
-
     </div>
+
+    <button form="main-product-form" type="submit" class="btn btn-gold" style="width:100%;padding:13px;font-size:18px;border-radius:5px">
+      <?= $isEdit ? 'CẬP NHẬT SẢN PHẨM' : 'THÊM SẢN PHẨM' ?>
+    </button>
+    
+    <a href="<?= BASE_URL ?>/admin/products" style="display:block;text-align:center;margin-top:10px;font-family:var(--font-m);font-size:10px;color:var(--text-3);letter-spacing:.08em">
+      &larr; Quay lại danh sách
+    </a>
+
+    <?php if ($isEdit): ?>
+      <div style="margin-top:16px;background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;padding:14px">
+        <div style="font-family:var(--font-m);font-size:9px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px">// Thông tin hệ thống</div>
+        <div style="font-family:var(--font-m);font-size:10px;color:var(--text-3);line-height:1.8">
+          ID: <?= $product['id'] ?><br>
+          Slug: <?= htmlspecialchars($product['slug'] ?? '') ?><br>
+          Tạo lúc: <?= date('d/m/Y H:i', strtotime($product['created_at'] ?? 'now')) ?>
+        </div>
+        
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <form method="POST" action="<?= BASE_URL ?>/admin/products/delete/<?= $product['id'] ?>" onsubmit="return confirm('Ẩn sản phẩm này khỏi cửa hàng?')">
+            <button type="submit" class="btn btn-danger btn-sm" style="width:100%; padding: 8px; font-size:12px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              Ẩn sản phẩm này
+            </button>
+          </form>
+        </div>
+
+      </div>
+    <?php endif; ?>
   </div>
-</form>
+
+</div>
