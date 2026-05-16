@@ -5,10 +5,10 @@
  * Xử lý tất cả request liên quan đến sản phẩm
  *
  * Routes:
- *   GET /                          → home()
- *   GET /products                  → index()
- *   GET /products/detail/{id}      → detail($id)
- *   GET /products/search           → search()
+ * GET /                          → home()
+ * GET /products                  → index()
+ * GET /products/detail/{id}      → detail($id)
+ * GET /products/search           → search()
  */
 
 declare(strict_types=1);
@@ -36,9 +36,9 @@ class ProductController
     public function home(): void
     {
         $data = [
-            'title'      => 'GUNPLA SHOP — Mô Hình Lắp Ráp Chính Hãng',
-            'featured'   => $this->productModel->getFeatured(8),
-            'categories' => $this->categoryModel->getTopLevel(),
+            'title'       => 'GUNPLA SHOP — Mô Hình Lắp Ráp Chính Hãng',
+            'featured'    => $this->productModel->getFeatured(8),
+            'categories'  => $this->categoryModel->getTopLevel(),
             'newArrivals' => $this->productModel->getAll([], 'newest', 1, 8)['items'],
             'favoriteIds' => $this->getFavoriteIds(),
         ];
@@ -50,18 +50,22 @@ class ProductController
         $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
         $perPage = 12;
 
-        // Nhận diện nhóm sản phẩm được chọn từ thanh Header điều hướng
-        $group = $_GET['group'] ?? 'all'; 
-        $grade = $_GET['grade'] ?? null;
+        // Nhận diện nhóm sản phẩm và các tham số lọc bổ sung (Scale, Series)
+        $group      = $_GET['group'] ?? 'all'; 
+        $grade      = $_GET['grade'] ?? null;
+        $scale      = $_GET['scale'] ?? null;
+        $series     = $_GET['series'] ?? null;
         $categoryId = isset($_GET['category_id']) ? (int)$_GET['category_id'] : null;
 
-        // Gọi hàm phân tách danh mục động đã viết ở Bước 2
+        // Gọi hàm phân tách danh mục động 
         $categories = $this->categoryModel->getByGroup($group);
 
-        // Đóng gói mảng tham số lọc để truyền vào Model dữ liệu
+        // Đóng gói mảng tham số lọc ĐẦY ĐỦ để truyền vào Model dữ liệu
         $filters = [
             'group'       => $group,
             'grade'       => $grade,
+            'scale'       => $scale,
+            'series'      => $series,
             'category_id' => $categoryId
         ];
 
@@ -122,13 +126,13 @@ class ProductController
             && $this->reviewModel->hasReviewed($product['id'], (int) $_SESSION['user']['id']);
 
         $data = [
-            'title'       => $product['name'] . ' — GUNPLA SHOP',
-            'product'     => $product,
-            'related'     => array_values($related),
-            'reviews'     => $reviews,
-            'avgRating'   => $ratingInfo['avg'],
+            'title'        => $product['name'] . ' — GUNPLA SHOP',
+            'product'      => $product,
+            'related'      => array_values($related),
+            'reviews'      => $reviews,
+            'avgRating'    => $ratingInfo['avg'],
             'totalReviews' => $ratingInfo['total'],
-            'hasReviewed' => $hasReviewed,
+            'hasReviewed'  => $hasReviewed,
         ];
 
         $this->render('products/detail', $data);

@@ -6,18 +6,27 @@
         <span class="logo-main">GUNPLA</span>
         <span class="logo-sub">SHOP</span>
       </a>
+      
       <ul class="nav-links">
         <?php
           $uri = $_SERVER['REQUEST_URI'];
-          $isTool = isset($_GET['type']) && $_GET['type'] === 'tool';
+          // Cập nhật điều kiện kiểm tra cho Dụng cụ: dựa vào tham số group=tools
+          $isTool = isset($_GET['group']) && $_GET['group'] === 'tools';
+          
+          // isProduct sẽ true nếu đang ở trang products nhưng không phải là Dụng cụ
           $isProduct = str_contains($uri, '/products') && !$isTool;
         ?>
-        <li><a href="<?= BASE_URL ?>/" <?= $uri==='/' || $uri==='/gunpla-shop/' ?'class="active"':'' ?>>Trang chủ</a></li>
-        <li><a href="<?= BASE_URL ?>/products" class="nav-link">Sản phẩm</a></li>
-        <li><a href="<?= BASE_URL ?>/products?group=gunpla" class="nav-link">Gunpla</a></li>
-        <li><a href="<?= BASE_URL ?>/products?type=tool" <?= $isTool ? 'class="active"' : '' ?>>Dụng cụ</a></li>
+        <li><a href="<?= BASE_URL ?>/" <?= $uri==='/' || $uri==='/gunpla-shop/' ? 'class="active"' : '' ?>>Trang chủ</a></li>
+        
+        <li><a href="<?= BASE_URL ?>/products" class="nav-link <?= ($isProduct && empty($_GET['group'])) ? 'active' : '' ?>">Sản phẩm</a></li>
+        
+        <li><a href="<?= BASE_URL ?>/products?group=gunpla" class="nav-link <?= (isset($_GET['group']) && $_GET['group'] === 'gunpla') ? 'active' : '' ?>">Gunpla</a></li>
+        
+        <li><a href="<?= BASE_URL ?>/products?group=tools&sort=newest" <?= $isTool ? 'class="active"' : '' ?>>Dụng cụ</a></li>
+        
         <li><a href="<?= BASE_URL ?>/news" <?= str_contains($uri, '/news') ? 'class="active"' : '' ?>>Tin tức</a></li>
       </ul>
+
       <div class="search-wrap" style="position:relative;flex:1;max-width:340px">
         <span class="search-icon">&#9906;</span>
         <input type="text" id="globalSearch" placeholder="Tìm HG, MG, RG..." autocomplete="off">
@@ -29,7 +38,6 @@
           🌓
         </button>
         <?php if (!empty($_SESSION['user'])): ?>
-          
           <a href="<?= BASE_URL ?>/user/profile?tab=wishlist" class="btn-icon" title="Sản phẩm yêu thích" style="text-decoration:none; display:flex; align-items:center; justify-content:center;">
             ♥
           </a>
@@ -57,6 +65,6 @@
           </span>
         </button>
       </div>
-      </div>
+    </div>
   </div>
 </nav>

@@ -1,9 +1,9 @@
 <?php
 function stockBadge(int $s): string
 {
-  if ($s === 0) return '<span class="stock-badge out-stock">HẾT</span>';
-  if ($s <= 5)  return "<span class='stock-badge low-stock'>CÒN $s</span>";
-  return '<span class="stock-badge in-stock">CÒN HÀNG</span>';
+    if ($s === 0) return '<span class="stock-badge out-stock">HẾT</span>';
+    if ($s <= 5)  return "<span class='stock-badge low-stock'>CÒN $s</span>";
+    return '<span class="stock-badge in-stock">CÒN HÀNG</span>';
 }
 
 /**
@@ -17,11 +17,17 @@ function stockBadge(int $s): string
  * @var array $favoriteIds
  * @var array $groupedCategories
  */
-$currentGrade = $filters['grade']  ?? '';
-$currentScale = $filters['scale']  ?? '';
-$currentSort  = $sort ?? 'newest';
-$currentGroup = $filters['group']  ?? '';
-$currentCat   = isset($filters['category_id']) ? (int)$filters['category_id'] : null;
+$currentGrade  = $filters['grade']  ?? '';
+$currentScale  = $filters['scale']  ?? '';
+$currentSeries = $filters['series'] ?? ''; // Thêm biến này cho đồng bộ mã bên dưới
+$currentSort   = $sort ?? 'newest';
+$currentGroup  = $filters['group']  ?? '';
+$currentCat    = isset($filters['category_id']) && $filters['category_id'] !== '' ? (int)$filters['category_id'] : null;
+
+// Xác định Tab hiện tại để hiển thị Sidebar chính xác
+$isGunpla = ($currentGroup === 'gunpla');
+$isTool   = ($currentGroup === 'tools' || $currentGroup === 'tool');
+$isAll    = (!$isGunpla && !$isTool); // Nếu không phải Gunpla hay Tool thì là trang "Tất cả"
 
 $buildUrl = function($newParams) use ($filters, $currentSort) {
     $merged = array_merge($filters ?? [], $newParams);
@@ -39,10 +45,10 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
   <div class="breadcrumb"><a href="<?= BASE_URL ?>/">Trang chủ</a><span>/</span>Sản phẩm</div>
   <div style="display:grid;grid-template-columns:220px 1fr;gap:32px;margin-top:28px">
 
-<aside>
+    <aside>
       <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:7px;padding:20px">
 
-        <?php if ($currentGroup !== 'tools'): ?>
+        <?php if ($isAll || $isGunpla): ?>
             
             <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px">// Cấp độ (Grade)</div>
             <a href="<?= $buildUrl(['grade' => null]) ?>"
@@ -54,42 +60,44 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
 
             <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:24px 0 10px">// Tỷ lệ (Scale)</div>
             <a href="<?= $buildUrl(['scale' => null]) ?>"
-               class="filter-link <?= empty($filters['scale']) ? 'active' : '' ?>">Tất cả Tỷ lệ</a>
+               class="filter-link <?= empty($currentScale) ? 'active' : '' ?>">Tất cả Tỷ lệ</a>
             <?php foreach (['1/144' => '1/144 Scale', '1/100' => '1/100 Scale', '1/60' => '1/60 Scale', '1/48' => '1/48 Scale', 'Non-scale' => 'Không tỷ lệ'] as $v => $l): ?>
                 <a href="<?= $buildUrl(['scale' => $v]) ?>" 
-                   class="filter-link <?= ($filters['scale'] ?? '') === $v ? 'active' : '' ?>"><?= $l ?></a>
+                   class="filter-link <?= $currentScale === $v ? 'active' : '' ?>"><?= $l ?></a>
             <?php endforeach; ?>
 
             <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:24px 0 10px">// Vũ trụ phim (Series)</div>
             <a href="<?= $buildUrl(['series' => null]) ?>"
-               class="filter-link <?= empty($filters['series']) ? 'active' : '' ?>">Tất cả Vũ trụ</a>
+               class="filter-link <?= empty($currentSeries) ? 'active' : '' ?>">Tất cả Vũ trụ</a>
             <?php foreach (['Gundam' => 'Gundam Gốc (UC)', 'SEED' => 'Gundam SEED (CE)', '00' => 'Gundam 00 (AD)', 'Orphans' => 'Iron-Blooded (PD)', 'Mercury' => 'Witch from Mercury (AS)'] as $v => $l): ?>
                 <a href="<?= $buildUrl(['series' => $v]) ?>" 
-                   class="filter-link <?= ($filters['series'] ?? '') === $v ? 'active' : '' ?>"><?= $l ?></a>
+                   class="filter-link <?= $currentSeries === $v ? 'active' : '' ?>"><?= $l ?></a>
             <?php endforeach; ?>
             
         <?php endif; ?>
 
 
-        <?php if ($currentGroup === 'tools' || $currentGroup === 'all'): ?>
+        <?php if ($isAll || $isTool): ?>
             
-            <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase; <?= $currentGroup === 'all' ? 'margin:24px 0 10px;' : 'margin-bottom:10px;' ?>">// Dụng cụ & Phụ kiện</div>
-            <a href="<?= $buildUrl(['category_id' => null]) ?>" 
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase; <?= $isAll ? 'margin:24px 0 10px;' : 'margin-bottom:10px;' ?>">// Dụng cụ & Phụ kiện</div>
+            <a href="<?= $buildUrl(['category_id' => null, 'group' => 'tools']) ?>" 
                class="filter-link <?= empty($currentCat) ? 'active' : '' ?>">Tất cả Dụng cụ</a>
                
             <?php 
             // Chỉ in ra các danh mục thuộc loại "Dụng cụ, hóa chất, phụ kiện"
             $toolTypes = ['tool', 'accessory', 'chemical', 'combo'];
-            foreach ($categories as $cat): 
-                if (in_array($cat['type'], $toolTypes)):
+            if (!empty($categories)) {
+                foreach ($categories as $cat): 
+                    if (in_array($cat['type'], $toolTypes)):
             ?>
-                <a href="<?= $buildUrl(['category_id' => $cat['id']]) ?>" 
-                   class="filter-link <?= $currentCat === (int)$cat['id'] ? 'active' : '' ?>">
-                   <?= htmlspecialchars($cat['name']) ?>
-                </a>
+                    <a href="<?= $buildUrl(['category_id' => $cat['id'], 'group' => 'tools']) ?>" 
+                       class="filter-link <?= $currentCat === (int)$cat['id'] ? 'active' : '' ?>">
+                       <?= htmlspecialchars($cat['name']) ?>
+                    </a>
             <?php 
-                endif;
-            endforeach; 
+                    endif;
+                endforeach; 
+            }
             ?>
             
         <?php endif; ?>
@@ -102,7 +110,15 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
         <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-hint)">
           <?= $total ?> sản phẩm<?= $currentGrade ? " · Grade: $currentGrade" : '' ?>
         </div>
-          <select class="sort-select" onchange="window.location='<?= BASE_URL ?>/products?<?= http_build_query(array_filter($filters ?? [], fn($v) => $v !== null && $v !== '')) ?>&sort=' + this.value">          <?php foreach (['newest' => 'Mới nhất', 'price_asc' => 'Giá tăng dần', 'price_desc' => 'Giá giảm dần', 'bestseller' => 'Bán chạy'] as $v => $l): ?>
+        
+        <?php
+        // Xử lý URL cho nút select Sort an toàn hơn
+        $sortFilters = array_filter($filters ?? [], fn($v) => $v !== null && $v !== '');
+        $sortBaseUrl = BASE_URL . '/products?' . http_build_query($sortFilters);
+        $sortConnector = empty($sortFilters) ? '' : '&';
+        ?>
+        <select class="sort-select" onchange="window.location='<?= $sortBaseUrl . $sortConnector ?>sort=' + this.value">
+          <?php foreach (['newest' => 'Mới nhất', 'price_asc' => 'Giá tăng dần', 'price_desc' => 'Giá giảm dần', 'bestseller' => 'Bán chạy'] as $v => $l): ?>
             <option value="<?= $v ?>" <?= $currentSort === $v ? ' selected' : '' ?>><?= $l ?></option>
           <?php endforeach; ?>
         </select>
@@ -154,11 +170,11 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
 
         <?php if ($pages > 1): ?>
           <div class="pagination">
-            <?php if ($page > 1): ?><a href="?<?= http_build_query(array_merge($filters ?? [], ['sort' => $sort, 'page' => $page - 1])) ?>" class="page-btn">&laquo;</a><?php endif; ?>
+            <?php if ($page > 1): ?><a href="<?= $buildUrl(['page' => $page - 1]) ?>" class="page-btn">&laquo;</a><?php endif; ?>
             <?php for ($i = max(1, $page - 2); $i <= min($pages, $page + 2); $i++): ?>
-              <a href="?<?= http_build_query(array_merge($filters ?? [], ['sort' => $sort, 'page' => $i])) ?>" class="page-btn<?= $i === $page ? ' active' : '' ?>"><?= $i ?></a>
+              <a href="<?= $buildUrl(['page' => $i]) ?>" class="page-btn<?= $i === $page ? ' active' : '' ?>"><?= $i ?></a>
             <?php endfor; ?>
-            <?php if ($page < $pages): ?><a href="?<?= http_build_query(array_merge($filters ?? [], ['sort' => $sort, 'page' => $page + 1])) ?>" class="page-btn">&raquo;</a><?php endif; ?>
+            <?php if ($page < $pages): ?><a href="<?= $buildUrl(['page' => $page + 1]) ?>" class="page-btn">&raquo;</a><?php endif; ?>
           </div>
         <?php endif; ?>
       <?php endif; ?>
