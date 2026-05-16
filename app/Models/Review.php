@@ -79,4 +79,22 @@ class Review
             ':comment'    => trim($comment),
         ]);
     }
+
+    public function getAllForAdmin(): array
+    {
+        $stmt = $this->db->query("
+            SELECT r.*, p.name as product_name, u.full_name as user_name 
+            FROM reviews r 
+            JOIN products p ON r.product_id = p.id 
+            JOIN users u ON r.user_id = u.id 
+            ORDER BY r.created_at DESC
+        ");
+        return $stmt->fetchAll();
+    }
+
+    public function updateStatus(int $id, string $status): bool
+    {
+        $stmt = $this->db->prepare("UPDATE reviews SET status = :status WHERE id = :id");
+        return $stmt->execute([':status' => $status, ':id' => $id]);
+    }
 }

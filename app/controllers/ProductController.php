@@ -47,44 +47,48 @@ class ProductController
 
     public function index(): void
     {
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $perPage = 12;
 
-        $filters = [];
-        if (!empty($_GET['grade']))       $filters['grade']       = htmlspecialchars($_GET['grade']);
-        if (!empty($_GET['scale']))       $filters['scale']       = htmlspecialchars($_GET['scale']);
-        if (!empty($_GET['series']))      $filters['series']      = htmlspecialchars($_GET['series']);
-        if (!empty($_GET['category_id'])) $filters['category_id'] = (int) $_GET['category_id'];
-        if (!empty($_GET['search']))      $filters['search']      = htmlspecialchars($_GET['search']);
-        if (!empty($_GET['type']))        $filters['type']        = htmlspecialchars($_GET['type']);
+        // Nhận diện nhóm sản phẩm được chọn từ thanh Header điều hướng
+        $group = $_GET['group'] ?? 'all'; 
+        $grade = $_GET['grade'] ?? null;
+        $categoryId = isset($_GET['category_id']) ? (int)$_GET['category_id'] : null;
 
-        $sort    = in_array($_GET['sort'] ?? '', ['newest', 'price_asc', 'price_desc', 'bestseller'])
-            ? $_GET['sort'] : 'newest';
-        $page    = max(1, (int) ($_GET['page'] ?? 1));
+        // Gọi hàm phân tách danh mục động đã viết ở Bước 2
+        $categories = $this->categoryModel->getByGroup($group);
 
-        $result  = $this->productModel->getAll($filters, $sort, $page, 12);
-
-        $categories = $this->categoryModel->getTopLevel();
-        $groupedCategories = $this->categoryModel->getGroupedByType();
-
-        $data = [
-            'title'      => 'Danh sách sản phẩm — GUNPLA SHOP',
-            'products'   => $result['items'],
-            'total'      => $result['total'],
-            'pages'      => $result['pages'],
-            'page'       => $result['page'],
-            'filters'    => $filters,
-            'sort'       => $sort,
-            'categories' => $categories,
-            'groupedCategories' => $groupedCategories,
-            'favoriteIds' => $this->getFavoriteIds(),
+        // Đóng gói mảng tham số lọc để truyền vào Model dữ liệu
+        $filters = [
+            'group'       => $group,
+            'grade'       => $grade,
+            'category_id' => $categoryId
         ];
 
-        if ($this->isAjax()) {
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode($result);
-            exit;
-        }
+        $data = $this->productModel->getFilteredProducts($filters, $page, $perPage);
 
-        $this->render('products/index', $data);
+        // Thiết lập tiêu đề động tương ứng cho từng trang điều hướng chuyên nghiệp
+        $title = 'Tất Cả Sản Phẩm';
+        if ($group === 'gunpla') $title = 'Mô Hình Gunpla Lắp Ráp Chính Hãng';
+        if ($group === 'tools')  $title = 'Dụng Cụ & Hóa Chất Phụ Trợ';
+
+        $sort = in_array($_GET['sort'] ?? '', ['newest', 'price_asc', 'price_desc', 'bestseller'])
+            ? $_GET['sort'] : 'newest';
+
+        $this->render('products/index', [
+            'title'        => $title,
+            'products'     => $data['items'],
+            'total'        => $data['total'],
+            'pages'        => $data['pages'],
+            'page'         => $page,
+            'filters'      => $filters,
+            'sort'         => $sort,
+            'categories'   => $categories,
+            'currentGroup' => $group,
+            'currentGrade' => $grade,
+            'currentCat'   => $categoryId,
+            'favoriteIds'  => $this->getFavoriteIds(),
+        ]);
     }
 
     public function detail(?string $param): void

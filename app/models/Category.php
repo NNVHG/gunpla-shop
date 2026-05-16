@@ -72,6 +72,42 @@ class Category
         return $grouped;
     }
 
+    public function getByType(string $type): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT c.*, COUNT(p.id) AS product_count 
+            FROM categories c 
+            LEFT JOIN products p ON p.category_id = c.id AND p.is_active = 1 
+            WHERE c.type = :type 
+            GROUP BY c.id 
+            ORDER BY c.sort_order ASC, c.name ASC
+        ");
+        $stmt->execute([':type' => $type]);
+        return $stmt->fetchAll();
+    }
+
+    public function getByGroup(string $group): array
+    {
+        if ($group === 'gunpla') {
+            $types = "('scale', 'grade', 'series')";
+        } elseif ($group === 'tools') {
+            $types = "('tool', 'accessory', 'chemical', 'combo')";
+        } else {
+            return $this->getTopLevel();
+        }
+
+        $stmt = $this->db->prepare("
+            SELECT c.*, COUNT(p.id) AS product_count 
+            FROM categories c 
+            LEFT JOIN products p ON p.category_id = c.id AND p.is_active = 1 
+            WHERE c.type IN $types 
+            GROUP BY c.id 
+            ORDER BY c.sort_order ASC, c.name ASC
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     public function cloneGroupedByType(): array
     {
         return $this->getGroupedByType();

@@ -134,19 +134,26 @@ class AdminController
 
     public function products(): void
     {
-        $this->requireAdmin();
-        $page    = max(1, (int) ($_GET['page'] ?? 1));
-        $search  = htmlspecialchars($_GET['search'] ?? '');
-        $filters = $search ? ['search' => $search] : [];
-        $result  = $this->productModel->getAll($filters, 'newest', $page, 15);
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+        $perPage = 10;
+        
+        $filters = [];
+        if ($search !== '') {
+            $filters['search'] = $search;
+        }
+
+        $data = $this->productModel->getAll($filters, 'newest', $page, $perPage);
+        $categories = $this->categoryModel->getAll();
 
         $this->renderAdmin('admin/products/index', [
-            'title'    => 'Quản lý sản phẩm',
-            'products' => $result['items'],
-            'total'    => $result['total'],
-            'pages'    => $result['pages'],
-            'page'     => $result['page'],
-            'search'   => $search,
+            'title'       => 'Quản lý Sản phẩm',
+            'products'    => $data['items'],
+            'categories'  => $categories,
+            'total'       => $data['total'] ?? 0,
+            'totalPages'  => $data['pages'] ?? 1,
+            'currentPage' => $page,
+            'search'      => $search
         ]);
     }
 
@@ -388,20 +395,20 @@ class AdminController
         ]);
     }
 
-    public function orderDetail(?string $id): void
+    public function orderDetail(?string $id = null): void
     {
-        $this->requireAdmin();
-        $orderId = (int) $id;
-        $order = $this->orderModel->getById($orderId);
+        if (!$id) {
+            header('Location: ' . BASE_URL . '/admin/orders');
+            exit;
+        }
 
+        $order = $this->orderModel->getById((int)$id);
         if (!$order) {
-            $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Không tìm thấy đơn hàng.'];
-            $this->redirect('/admin/orders');
-            return;
+            die('Không tìm thấy đơn hàng');
         }
 
         $this->renderAdmin('admin/orders/detail', [
-            'title' => 'Chi tiết Đơn hàng #' . $orderId,
+            'title' => 'Chi tiết đơn hàng #' . $id,
             'order' => $order
         ]);
     }
@@ -583,5 +590,26 @@ class AdminController
         } else {
             echo $content;
         }
+    }
+
+    public function reviews(): void
+    {
+        $reviewModel = new \App\Models\Review();
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = (int)($_POST['review_id'] ?? 0);
+            $status = $_POST['status'] ?? 'pending';
+            if ($id > 0) {
+                $reviewModel->updateStatus($id, $status);
+            }
+            header('Location: ' . BASE_URL . '/admin/reviews');
+            exit;
+        }
+
+        $reviews = $reviewModel->getAllForAdmin();
+        $this->renderAdmin('admin/reviews/index', [
+            'title' => 'Quản lý Đánh giá',
+            'reviews' => $reviews
+        ]);
     }
 }

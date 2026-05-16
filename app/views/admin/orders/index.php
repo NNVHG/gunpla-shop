@@ -78,6 +78,7 @@ $nextLabel = [
           </td>
           <td>
             <div style="display:flex;gap:6px;flex-wrap:nowrap">
+              <a href="<?= BASE_URL ?>/admin/orderDetail/<?= $order['id'] ?>" class="btn btn-sm btn-info">Chi tiết</a>
               <?php if (isset($nextStatus[$order['status']])): ?>
                 <button class="btn btn-gold btn-sm"
                   onclick="updateStatus(<?= $order['id'] ?>, '<?= $nextStatus[$order['status']] ?>', this)">

@@ -1,3 +1,4 @@
+
 <?php
 /**
  * Danh sách sản phẩm — Admin
@@ -85,12 +86,56 @@
       <?php endif; ?>
     </tbody>
   </table>
-  <?php if($pages>1): ?>
-    <div class="pagination" style="padding:14px 18px;justify-content:flex-start;border-top:1px solid var(--border)">
-      <?php for($i=1;$i<=$pages;$i++): ?>
-        <a href="<?= BASE_URL ?>/admin/products?search=<?=urlencode($search??'')?>&page=<?=$i?>"
-           class="page-btn<?=$i===$page?' active':''?>"><?=$i?></a>
-      <?php endfor; ?>
-    </div>
-  <?php endif; ?>
 </div>
+
+<?php if (isset($totalPages) && $totalPages > 1): $curr = $currentPage ?? 1; ?>
+<div class="pagination">
+    <?php if ($curr > 1): ?>
+        <a href="<?= BASE_URL ?>/admin/products?page=<?= $curr - 1 ?>" class="page-link">&laquo; Trước</a>
+    <?php endif; ?>
+
+    <?php
+    $maxVisible = 10;
+    
+    if ($totalPages <= $maxVisible) {
+        for ($i = 1; $i <= $totalPages; $i++) {
+            $active = ($curr === $i) ? 'active' : '';
+            echo '<a href="' . BASE_URL . '/admin/products?page=' . $i . '" class="page-link ' . $active . '">' . $i . '</a>';
+        }
+    } else {
+                $active = ($curr === 1) ? 'active' : '';
+        echo '<a href="' . BASE_URL . '/admin/products?page=1" class="page-link ' . $active . '">1</a>';
+
+        $start = max(2, $curr - 2);
+        $end = min($totalPages - 1, $curr + 2);
+
+        if ($curr <= 4) {
+            $end = 7;
+        }
+        if ($curr >= $totalPages - 3) {
+            $start = $totalPages - 6;
+        }
+
+        if ($start > 2) {
+            echo '<span class="page-ellipsis">...</span>';
+        }
+
+        for ($i = $start; $i <= $end; $i++) {
+            $active = ($curr === $i) ? 'active' : '';
+            echo '<a href="' . BASE_URL . '/admin/products?page=' . $i . '" class="page-link ' . $active . '">' . $i . '</a>';
+        }
+
+        if ($end < $totalPages - 1) {
+            echo '<span class="page-ellipsis">...</span>';
+        }
+
+        $active = ($curr === $totalPages) ? 'active' : '';
+        echo '<a href="' . BASE_URL . '/admin/products?page=' . $totalPages . '" class="page-link ' . $active . '">' . $totalPages . '</a>';
+    }
+    ?>
+
+    <?php if ($curr < $totalPages): ?>
+        <a href="<?= BASE_URL ?>/admin/products?page=<?= $curr + 1 ?>" class="page-link">Sau &raquo;</a>
+    <?php endif; ?>
+</div>
+<?php endif; ?>

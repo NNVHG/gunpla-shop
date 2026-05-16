@@ -41,6 +41,9 @@
     <a href="<?= BASE_URL ?>/admin/users" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'],'/admin/users') ? 'active' : '' ?>">
       <span class="nav-icon">👥</span> Khách hàng
     </a>
+    <a href="<?= BASE_URL ?>/admin/reviews" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/admin/reviews') ? 'active' : '' ?>">
+      <span class="nav-icon">★</span> Đánh giá khách hàng
+    </a>
     <div class="sidebar-label">Tài khoản</div>
     <a href="<?= BASE_URL ?>/" class="nav-item" target="_blank">
       <span class="nav-icon">↗</span> Xem cửa hàng

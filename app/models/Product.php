@@ -20,6 +20,12 @@ class Product
         $this->db = getDB();
     }
 
+    public function getFilteredProducts(array $filters, int $page = 1, int $perPage = 12): array
+    {
+        // Use the existing robust getAll method to fetch filtered products
+        return $this->getAll($filters, 'newest', $page, $perPage);
+    }
+
     public function getAll(
         array  $filters = [],
         string $sort    = 'newest',
@@ -56,8 +62,16 @@ class Product
         }
 
         if (!empty($filters['type'])) {
-            $where[] = 'p.category_id IN (SELECT id FROM categories WHERE type = :type)';
+            $where[] = 'c.type = :type';
             $params[':type'] = $filters['type'];
+        }
+
+        if (!empty($filters['group'])) {
+            if ($filters['group'] === 'gunpla') {
+                $where[] = "c.type IN ('scale', 'grade', 'series')";
+            } elseif ($filters['group'] === 'tools') {
+                $where[] = "c.type IN ('tool', 'accessory', 'chemical', 'combo')";
+            }
         }
 
         $whereSQL = 'WHERE ' . implode(' AND ', $where);
@@ -70,7 +84,7 @@ class Product
         };
 
         $countStmt = $this->db->prepare(
-            "SELECT COUNT(*) FROM products p $whereSQL"
+            "SELECT COUNT(*) FROM products p JOIN categories c ON p.category_id = c.id $whereSQL"
         );
         $countStmt->execute($params);
         $total = (int) $countStmt->fetchColumn();
@@ -80,9 +94,12 @@ class Product
         $sql = "
             SELECT
                 p.*,
+                c.name as category_name,
+                c.type as category_type,
                 pi.image_path AS thumbnail_path,
                 COALESCE(sold.qty, 0) AS sold_count
             FROM products p
+            JOIN categories c ON p.category_id = c.id
             LEFT JOIN product_images pi
                    ON pi.product_id = p.id AND pi.is_primary = 1
             LEFT JOIN (

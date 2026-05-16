@@ -7,8 +7,6 @@ function stockBadge(int $s): string
 }
 
 /**
- * Danh sách sản phẩm — có filter, sort, phân trang
- *
  * @var array $products
  * @var int $total
  * @var int $pages
@@ -22,87 +20,78 @@ function stockBadge(int $s): string
 $currentGrade = $filters['grade']  ?? '';
 $currentScale = $filters['scale']  ?? '';
 $currentSort  = $sort ?? 'newest';
+$currentGroup = $filters['group']  ?? '';
+$currentCat   = isset($filters['category_id']) ? (int)$filters['category_id'] : null;
+
+$buildUrl = function($newParams) use ($filters, $currentSort) {
+    $merged = array_merge($filters ?? [], $newParams);
+    if (!isset($newParams['sort'])) {
+        $merged['sort'] = $currentSort;
+    }
+    // Xóa các tham số rỗng để URL nhìn sạch sẽ
+    $merged = array_filter($merged, function($v) {
+        return $v !== null && $v !== '';
+    });
+    return BASE_URL . '/products?' . http_build_query($merged);
+};
 ?>
 <div class="container" style="padding-top:32px;padding-bottom:48px">
   <div class="breadcrumb"><a href="<?= BASE_URL ?>/">Trang chủ</a><span>/</span>Sản phẩm</div>
   <div style="display:grid;grid-template-columns:220px 1fr;gap:32px;margin-top:28px">
 
-    <aside>
+<aside>
       <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:7px;padding:20px">
 
-        <?php
+        <?php if ($currentGroup !== 'tools'): ?>
+            
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px">// Cấp độ (Grade)</div>
+            <a href="<?= $buildUrl(['grade' => null]) ?>"
+               class="filter-link <?= empty($currentGrade) ? 'active' : '' ?>">Tất cả Grade</a>
+            <?php foreach (['SD' => 'SD (Super Deformed)', 'EG' => 'EG (Entry Grade)', 'HG' => 'HG (High Grade)', 'RG' => 'RG (Real Grade)', 'MG' => 'MG (Master Grade)', 'MGSD' => 'MGSD', 'PG' => 'PG (Perfect Grade)'] as $v => $l): ?>
+                <a href="<?= $buildUrl(['grade' => $v]) ?>" 
+                   class="filter-link <?= $currentGrade === $v ? 'active' : '' ?>"><?= $l ?></a>
+            <?php endforeach; ?>
 
-        if (!isset($filters['type']) || $filters['type'] !== 'tool'):
-        ?>
-          <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px">// Cấp độ (Grade)</div>
-          <?php
-          $linkParams = array_merge($filters ?? [], ['page' => 1]);
-          unset($linkParams['grade']);
-          ?>
-          <a href="<?= BASE_URL ?>/products?<?= http_build_query($linkParams) ?>"
-            class="filter-link <?= empty($filters['grade']) ? 'active' : '' ?>">Tất cả Grade</a>
-          <?php foreach (['SD' => 'SD (Super Deformed)', 'EG' => 'EG (Entry Grade)', 'HG' => 'HG (High Grade)', 'RG' => 'RG (Real Grade)', 'MG' => 'MG (Master Grade)', 'MGSD' => 'MGSD', 'PG' => 'PG (Perfect Grade)'] as $v => $l): ?>
-            <a href="<?= BASE_URL ?>/products?<?= http_build_query(array_merge($filters ?? [], ['grade' => $v, 'page' => 1])) ?>"
-              class="filter-link <?= ($filters['grade'] ?? '') === $v ? 'active' : '' ?>"><?= $l ?></a>
-          <?php endforeach; ?>
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:24px 0 10px">// Tỷ lệ (Scale)</div>
+            <a href="<?= $buildUrl(['scale' => null]) ?>"
+               class="filter-link <?= empty($filters['scale']) ? 'active' : '' ?>">Tất cả Tỷ lệ</a>
+            <?php foreach (['1/144' => '1/144 Scale', '1/100' => '1/100 Scale', '1/60' => '1/60 Scale', '1/48' => '1/48 Scale', 'Non-scale' => 'Không tỷ lệ'] as $v => $l): ?>
+                <a href="<?= $buildUrl(['scale' => $v]) ?>" 
+                   class="filter-link <?= ($filters['scale'] ?? '') === $v ? 'active' : '' ?>"><?= $l ?></a>
+            <?php endforeach; ?>
 
-          <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:20px 0 10px">// Tỷ lệ (Scale)</div>
-          <?php
-          $linkParams = array_merge($filters ?? [], ['page' => 1]);
-          unset($linkParams['scale']);
-          ?>
-          <a href="<?= BASE_URL ?>/products?<?= http_build_query($linkParams) ?>"
-            class="filter-link <?= empty($filters['scale']) ? 'active' : '' ?>">Tất cả Tỷ lệ</a>
-          <?php foreach (['1/144' => '1/144 Scale', '1/100' => '1/100 Scale', '1/60' => '1/60 Scale', '1/48' => '1/48 Scale', 'Non-scale' => 'Không tỷ lệ'] as $v => $l): ?>
-            <a href="<?= BASE_URL ?>/products?<?= http_build_query(array_merge($filters ?? [], ['scale' => $v, 'page' => 1])) ?>"
-              class="filter-link <?= ($filters['scale'] ?? '') === $v ? 'active' : '' ?>"><?= $l ?></a>
-          <?php endforeach; ?>
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:24px 0 10px">// Vũ trụ phim (Series)</div>
+            <a href="<?= $buildUrl(['series' => null]) ?>"
+               class="filter-link <?= empty($filters['series']) ? 'active' : '' ?>">Tất cả Vũ trụ</a>
+            <?php foreach (['Gundam' => 'Gundam Gốc (UC)', 'SEED' => 'Gundam SEED (CE)', '00' => 'Gundam 00 (AD)', 'Orphans' => 'Iron-Blooded (PD)', 'Mercury' => 'Witch from Mercury (AS)'] as $v => $l): ?>
+                <a href="<?= $buildUrl(['series' => $v]) ?>" 
+                   class="filter-link <?= ($filters['series'] ?? '') === $v ? 'active' : '' ?>"><?= $l ?></a>
+            <?php endforeach; ?>
+            
+        <?php endif; ?>
 
-          <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:20px 0 10px">// Vũ trụ phim</div>
-          <?php
-          $linkParams = array_merge($filters ?? [], ['page' => 1]);
-          unset($linkParams['series']);
-          ?>
-          <a href="<?= BASE_URL ?>/products?<?= http_build_query($linkParams) ?>"
-            class="filter-link <?= empty($filters['series']) ? 'active' : '' ?>">Tất cả Vũ trụ</a>
-          <?php foreach (['Gundam' => 'Gundam Gốc (UC)', 'SEED' => 'Gundam SEED (CE)', '00' => 'Gundam 00 (AD)', 'Orphans' => 'Iron-Blooded (PD)', 'Mercury' => 'Witch from Mercury (AS)'] as $v => $l): ?>
-            <a href="<?= BASE_URL ?>/products?<?= http_build_query(array_merge($filters ?? [], ['series' => $v, 'page' => 1])) ?>"
-              class="filter-link <?= ($filters['series'] ?? '') === $v ? 'active' : '' ?>"><?= $l ?></a>
-          <?php endforeach; ?>
 
-        <?php
-
-        else:
-        ?>
-          <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px">// Dụng cụ & Phụ kiện</div>
-          <?php
-          $linkParams = array_merge($filters ?? [], ['page' => 1]);
-          unset($linkParams['category_id']);
-          ?>
-          <a href="<?= BASE_URL ?>/products?<?= http_build_query($linkParams) ?>"
-            class="filter-link <?= empty($filters['category_id']) ? 'active' : '' ?>">Tất cả Phụ kiện</a>
-
-          <?php
-          if (isset($groupedCategories)):
-            $equipments = array_merge(
-              $groupedCategories['tool'] ?? [],
-              $groupedCategories['chemical'] ?? [],
-              $groupedCategories['accessory'] ?? [],
-              $groupedCategories['combo'] ?? []
-            );
-            foreach ($equipments as $c):
-              if ($c['parent_id'] !== null || $c['type'] === 'combo'):
-          ?>
-                <a href="<?= BASE_URL ?>/products?<?= http_build_query(array_merge($filters ?? [], ['category_id' => $c['id'], 'page' => 1])) ?>"
-                  class="filter-link <?= ((int)($filters['category_id'] ?? 0)) === $c['id'] ? 'active' : '' ?>">
-                  <?= htmlspecialchars($c['name']) ?>
+        <?php if ($currentGroup === 'tools' || $currentGroup === 'all'): ?>
+            
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase; <?= $currentGroup === 'all' ? 'margin:24px 0 10px;' : 'margin-bottom:10px;' ?>">// Dụng cụ & Phụ kiện</div>
+            <a href="<?= $buildUrl(['category_id' => null]) ?>" 
+               class="filter-link <?= empty($currentCat) ? 'active' : '' ?>">Tất cả Dụng cụ</a>
+               
+            <?php 
+            // Chỉ in ra các danh mục thuộc loại "Dụng cụ, hóa chất, phụ kiện"
+            $toolTypes = ['tool', 'accessory', 'chemical', 'combo'];
+            foreach ($categories as $cat): 
+                if (in_array($cat['type'], $toolTypes)):
+            ?>
+                <a href="<?= $buildUrl(['category_id' => $cat['id']]) ?>" 
+                   class="filter-link <?= $currentCat === (int)$cat['id'] ? 'active' : '' ?>">
+                   <?= htmlspecialchars($cat['name']) ?>
                 </a>
-          <?php
-              endif;
-            endforeach;
-          endif;
-          ?>
-
+            <?php 
+                endif;
+            endforeach; 
+            ?>
+            
         <?php endif; ?>
 
       </div>
@@ -113,8 +102,7 @@ $currentSort  = $sort ?? 'newest';
         <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-hint)">
           <?= $total ?> sản phẩm<?= $currentGrade ? " · Grade: $currentGrade" : '' ?>
         </div>
-        <select class="sort-select" onchange="window.location='<?= BASE_URL ?>/products?<?= http_build_query(array_merge($filters ?? [])) ?>&sort='+this.value">
-          <?php foreach (['newest' => 'Mới nhất', 'price_asc' => 'Giá tăng dần', 'price_desc' => 'Giá giảm dần', 'bestseller' => 'Bán chạy'] as $v => $l): ?>
+          <select class="sort-select" onchange="window.location='<?= BASE_URL ?>/products?<?= http_build_query(array_filter($filters ?? [], fn($v) => $v !== null && $v !== '')) ?>&sort=' + this.value">          <?php foreach (['newest' => 'Mới nhất', 'price_asc' => 'Giá tăng dần', 'price_desc' => 'Giá giảm dần', 'bestseller' => 'Bán chạy'] as $v => $l): ?>
             <option value="<?= $v ?>" <?= $currentSort === $v ? ' selected' : '' ?>><?= $l ?></option>
           <?php endforeach; ?>
         </select>

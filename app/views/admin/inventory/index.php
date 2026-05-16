@@ -47,7 +47,7 @@
             </div>
             <div style="font-family:var(--font-m);font-size:9px;color:var(--text-3)"><?= htmlspecialchars($p['series'] ?? '') ?></div>
           </td>
-          <td><span class="badge badge-confirmed" style="font-size:9px"><?= htmlspecialchars($p['grade']) ?></span></td>
+          <td><span class="badge badge-confirmed" style="font-size:9px"><?= htmlspecialchars($p['grade'] ?? '') ?></span></td>
           <td style="font-family:var(--font-m);font-size:11px;color:var(--text-2)"><?= htmlspecialchars($p['scale'] ?? '—') ?></td>
           <td style="font-family:var(--font-d);font-size:15px;color:var(--gold)"><?= number_format($p['price'], 0, ',', '.') ?>đ</td>
           <td>
