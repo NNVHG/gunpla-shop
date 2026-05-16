@@ -1,4 +1,3 @@
-```markdown
 # 🤖 Gunpla Shop - Nền tảng Thương mại Điện tử Mô hình Gundam
 
 Dự án **Gunpla Shop** là một hệ thống website thương mại điện tử chuyên cung cấp mô hình lắp ráp (Gunpla) và dụng cụ/phụ kiện mô hình. Hệ thống được phát triển dựa trên mô hình MVC (Model-View-Controller) tùy chỉnh bằng PHP thuần, tích hợp giao diện hiện đại với cơ chế Dark/Light Mode tự động và quản lý dữ liệu với hiệu suất cao.
