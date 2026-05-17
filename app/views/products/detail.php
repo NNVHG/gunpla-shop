@@ -15,7 +15,6 @@ $stock  = (int) $p['stock'];
 $stockClass = $stock === 0 ? 'out' : ($stock <= 5 ? 'low' : 'ok');
 $stockText  = $stock === 0 ? 'Hết hàng' : ($stock <= 5 ? "Còn $stock sản phẩm" : "Còn hàng");
 
-// Hàm hỗ trợ ẩn (closure) giúp chuẩn hóa đường dẫn ảnh ngay trong file view
 $formatImg = function ($path) {
   if (empty($path)) return '';
   if (strpos($path, '/public/') === 0) $path = substr($path, 8);

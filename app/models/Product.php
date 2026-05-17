@@ -22,7 +22,6 @@ class Product
 
     public function getFilteredProducts(array $filters, int $page = 1, int $perPage = 12): array
     {
-        // Use the existing robust getAll method to fetch filtered products
         return $this->getAll($filters, 'newest', $page, $perPage);
     }
 
@@ -96,12 +95,16 @@ class Product
                 p.*,
                 c.name as category_name,
                 c.type as category_type,
-                pi.image_path AS thumbnail_path,
+                (
+                    SELECT image_path 
+                    FROM product_images 
+                    WHERE product_id = p.id 
+                    ORDER BY is_primary DESC, id ASC 
+                    LIMIT 1
+                ) AS image_path,
                 COALESCE(sold.qty, 0) AS sold_count
             FROM products p
             JOIN categories c ON p.category_id = c.id
-            LEFT JOIN product_images pi
-                   ON pi.product_id = p.id AND pi.is_primary = 1
             LEFT JOIN (
                 SELECT oi.product_id, SUM(oi.quantity) AS qty
                 FROM order_items oi

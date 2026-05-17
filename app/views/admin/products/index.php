@@ -27,33 +27,56 @@
     </span>
   </div>
   <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Sản phẩm</th>
-        <th>Grade / Scale</th>
+<thead>
+    <tr>
+        <th style="width: 60px; text-align: center;">ID</th>
+        <th style="width: 80px; text-align: center;">Hình ảnh</th> <th>Tên sản phẩm</th>
+        <th>Danh mục</th>
         <th>Giá bán</th>
-        <th>Tồn kho</th>
-        <th>Trạng thái</th>
-        <th>Thao tác</th>
-      </tr>
-    </thead>
+        <th>Số lượng</th>
+        <th style="text-align: center;">Thao tác</th>
+    </tr>
+</thead>
     <tbody>
-      <?php foreach($products as $p): ?>
+        <?php foreach ($products as $item): ?>
         <tr>
-          <td style="font-family:var(--font-m);color:var(--text-2);font-size:11px"><?=$p['id']?></td>
+          <td style="text-align: center;"><?= $item['id'] ?></td>
+            
+            <td style="text-align: center; vertical-align: middle;">
+                <?php 
+                if (!empty($item['image'])): 
+                ?>
+                    <img src="<?= BASE_URL . '/' . htmlspecialchars($item['image']) ?>" 
+                         alt="Product Image" 
+                         style="width: 55px; height: 55px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border, #e2e8f0); display: block; margin: 0 auto;">
+                
+                <?php 
+                elseif (!empty($item['image_path'])): 
+                ?>
+                    <img src="<?= BASE_URL . '/' . htmlspecialchars($item['image_path']) ?>" 
+                         alt="Product Image" 
+                         style="width: 55px; height: 55px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border, #e2e8f0); display: block; margin: 0 auto;">
+                
+                <?php else: ?>
+                    <span style="color: var(--text-3, #999); font-size: 11px; font-style: italic; display: block; text-align: center;">
+                        Chưa có hình
+                    </span>
+                <?php endif; ?>
+            </td>
+          <td><?= htmlspecialchars($item['name'] ?? $item['title'] ?? '') ?></td>
+          <td style="font-family:var(--font-m);color:var(--text-2);font-size:11px"><?=$item['id']?></td>
           <td>
-            <div style="font-size:12px;font-weight:500;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?=htmlspecialchars($p['name'])?></div>
-            <div style="font-family:var(--font-m);font-size:9px;color:var(--text-3)"><?=htmlspecialchars($p['series']??'')?></div>
+            <div style="font-size:12px;font-weight:500;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?=htmlspecialchars($item['name'])?></div>
+            <div style="font-family:var(--font-m);font-size:9px;color:var(--text-3)"><?=htmlspecialchars($item['series']??'')?></div>
           </td>
           <td>
-            <?php if($p['grade']): ?><span class="badge badge-confirmed" style="font-size:9px"><?=htmlspecialchars($p['grade'])?></span><?php endif; ?>
-            <div style="font-family:var(--font-m);font-size:10px;color:var(--text-2);margin-top:3px"><?=htmlspecialchars($p['scale']??'')?></div>
+            <?php if($item['grade']): ?><span class="badge badge-confirmed" style="font-size:9px"><?=htmlspecialchars($item['grade'])?></span><?php endif; ?>
+            <div style="font-family:var(--font-m);font-size:10px;color:var(--text-2);margin-top:3px"><?=htmlspecialchars($item['scale']??'')?></div>
           </td>
-          <td style="font-family:var(--font-d);font-size:16px;color:var(--gold)"><?=number_format($p['price'],0,',','.')?>đ</td>
+          <td style="font-family:var(--font-d);font-size:16px;color:var(--gold)"><?=number_format($item['price'],0,',','.')?>đ</td>
           <td>
             <?php
-              $s=(int)$p['stock'];
+              $s=(int)$item['stock'];
               $c=$s===0?'var(--red)':($s<=5?'var(--amber)':'var(--green)');
             ?>
             <span style="font-family:var(--font-m);font-size:12px;color:<?=$c?>">
@@ -61,7 +84,7 @@
             </span>
           </td>
           <td>
-            <?php if($p['is_active']): ?>
+            <?php if($item['is_active']): ?>
               <span class="badge badge-delivered">Đang bán</span>
             <?php else: ?>
               <span class="badge badge-cancelled">Đã ẩn</span>
@@ -69,9 +92,9 @@
           </td>
           <td>
             <div style="display:flex;gap:6px">
-              <a href="/products/detail/<?=$p['id']?>" target="_blank" class="btn btn-sm" title="Xem trên shop">↗</a>
-              <a href="<?= BASE_URL ?>/admin/products/edit/<?=$p['id']?>" class="btn btn-sm">Sửa</a>
-              <form method="POST" action="<?= BASE_URL ?>/admin/products/delete/<?=$p['id']?>" style="display:inline"
+              <a href="/products/detail/<?=$item['id']?>" target="_blank" class="btn btn-sm" title="Xem trên shop">↗</a>
+              <a href="<?= BASE_URL ?>/admin/products/edit/<?=$item['id']?>" class="btn btn-sm">Sửa</a>
+              <form method="POST" action="<?= BASE_URL ?>/admin/products/delete/<?=$item['id']?>" style="display:inline"
                     onsubmit="return confirm('Ẩn sản phẩm này?')">
                 <button type="submit" class="btn btn-sm btn-danger">Ẩn</button>
               </form>

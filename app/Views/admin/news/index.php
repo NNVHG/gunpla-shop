@@ -25,8 +25,8 @@
                 <?php foreach ($allNews as $item): ?>
                     <tr>
                         <td>
-                           <?php if (!empty($item['image_path'])): ?>
-                                <img src="<?= BASE_URL . '/' . $item['image_path'] ?>" style="width: 80px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);">
+                           <?php if (!empty($item['thumbnail'])): ?>
+                                <img src="<?= BASE_URL . '/' . $item['thumbnail'] ?>" style="width: 80px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);">
                             <?php else: ?>
                                 <div style="width: 80px; height: 50px; background: var(--bg-hover); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--text-3); border-radius: 4px; border: 1px solid var(--border);">No Img</div>
                             <?php endif; ?>
@@ -34,8 +34,10 @@
                         <td style="font-weight: 500; color: var(--text-1); max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             <?= htmlspecialchars($item['title'] ?? '') ?>
                         </td>
-                        <td>
-                            <?php if (!empty($item['is_published']) && $item['is_published'] == 1): ?>
+                        <td style="text-align: center;">
+                            <?php 
+                            if (isset($item['is_active']) && $item['is_active'] == 1): 
+                            ?>
                                 <span class="badge badge-delivered">Hiển thị</span>
                             <?php else: ?>
                                 <span class="badge badge-cancelled">Đang ẩn</span>
