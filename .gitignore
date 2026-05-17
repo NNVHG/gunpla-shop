@@ -8,7 +8,7 @@ composer.phar
 .env.production
 
 # 3. Thư mục chứa ảnh người dùng tải lên (Tránh đẩy ảnh test lên server thật)
-/public/uploads/
+
 
 # 4. Các file cấu hình của Hệ điều hành (Windows/Mac)
 Thumbs.db
