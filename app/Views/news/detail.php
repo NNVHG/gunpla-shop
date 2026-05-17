@@ -1,86 +1,45 @@
 <?php
-/**
- * @var array $newsItem
- * @var array $latestNews
- * @var array $categories
- */
+// Đảm bảo dữ liệu bài viết tồn tại trước khi render tránh lỗi hệ thống
+$article = $article ?? null;
 ?>
-<div class="container my-5">
-    <div class="row">
-        <!-- Main Content -->
-        <div class="col-lg-8 mb-4">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="<?= BASE_URL ?>/">Trang chủ</a></li>
-                    <li class="breadcrumb-item"><a href="<?= BASE_URL ?>/news">Tin tức</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><?= htmlspecialchars($newsItem['title']) ?></li>
-                </ol>
-            </nav>
 
-            <article class="bg-white p-4 p-md-5 rounded shadow-sm">
-                <h1 class="mb-3"><?= htmlspecialchars($newsItem['title']) ?></h1>
-                
-                <div class="text-muted mb-4 pb-3 border-bottom">
-                    <i class="far fa-calendar-alt me-2"></i> <?= date('d/m/Y H:i', strtotime($newsItem['created_at'])) ?>
-                </div>
-
-                <?php if (!empty($newsItem['image_path'])): ?>
-                    <img src="<?= BASE_URL . htmlspecialchars($newsItem['image_path']) ?>" class="img-fluid rounded mb-4 w-100" alt="<?= htmlspecialchars($newsItem['title']) ?>" style="max-height: 500px; object-fit: cover;">
-                <?php endif; ?>
-
-                <?php if (!empty($newsItem['summary'])): ?>
-                    <div class="lead mb-4 fw-bold">
-                        <?= nl2br(htmlspecialchars($newsItem['summary'])) ?>
-                    </div>
-                <?php endif; ?>
-
-                <div class="news-content">
-                    <?= $newsItem['content'] // Raw HTML allowed for content ?>
-                </div>
-            </article>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Tin tức mới nhất</h5>
-                </div>
-                <div class="card-body p-0">
-                    <ul class="list-group list-group-flush">
-                        <?php foreach ($latestNews as $item): ?>
-                            <?php if ($item['id'] !== $newsItem['id']): ?>
-                                <li class="list-group-item p-3">
-                                    <a href="<?= BASE_URL ?>/news/detail/<?= htmlspecialchars($item['slug'] ?: $item['id']) ?>" class="text-decoration-none d-flex align-items-center">
-                                        <?php if (!empty($item['image_path'])): ?>
-                                            <img src="<?= BASE_URL . htmlspecialchars($item['image_path']) ?>" alt="" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                                        <?php endif; ?>
-                                        <div>
-                                            <h6 class="mb-1 text-dark text-truncate-2" style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                                <?= htmlspecialchars($item['title']) ?>
-                                            </h6>
-                                            <small class="text-muted"><?= date('d/m/Y', strtotime($item['created_at'])) ?></small>
-                                        </div>
-                                    </a>
-                                </li>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card shadow-sm">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">Danh mục sản phẩm</h5>
-                </div>
-                <div class="list-group list-group-flush">
-                    <?php foreach ($categories as $cat): ?>
-                        <a href="<?= BASE_URL ?>/products?category_id=<?= $cat['id'] ?>" class="list-group-item list-group-item-action">
-                            <?= htmlspecialchars($cat['name']) ?>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
+<?php if ($article): ?>
+<div class="news-detail-container" style="max-width: 800px; margin: 0 auto; padding: 40px 20px; font-family: var(--font-m, 'Segoe UI', sans-serif); color: var(--text-1); background: transparent;">
+    
+    <div style="margin-bottom: 24px;">
+        <a href="<?= BASE_URL ?>/news" style="color: var(--gold, #d69e2e); text-decoration: none; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+            ← Quay lại danh sách tin tức
+        </a>
     </div>
+
+    <header class="article-header" style="margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 20px;">
+        <h1 style="font-size: 30px; line-height: 1.3; margin: 0 0 12px 0; font-family: var(--font-b, inherit); color: var(--text-1);">
+            <?= htmlspecialchars($article['title']) ?>
+        </h1>
+        
+        <div class="article-meta" style="font-size: 13px; color: var(--text-3); display: flex; align-items: center; gap: 6px;">
+            <span>📅</span>
+            <span>Đăng ngày: <?= date('d/m/Y', strtotime($article['created_at'])) ?></span>
+        </div>
+    </header>
+
+    <?php if (!empty($article['thumbnail']) && file_exists(__DIR__ . '/../../../public/' . $article['thumbnail'])): ?>
+        <div class="article-thumbnail" style="width: 100%; max-height: 450px; border-radius: 12px; overflow: hidden; margin-bottom: 35px; border: 1px solid var(--border);">
+            <img src="<?= BASE_URL . '/' . htmlspecialchars($article['thumbnail']) ?>" 
+                 alt="<?= htmlspecialchars($article['title']) ?>" 
+                 style="width: 100%; height: 100%; object-fit: cover; display: block;">
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($article['summary'])): ?>
+        <div class="article-summary" style="font-size: 16px; font-style: italic; color: var(--text-2); line-height: 1.6; padding-left: 16px; border-left: 4px solid var(--gold, #d69e2e); margin-bottom: 30px;">
+            <?= htmlspecialchars($article['summary']) ?>
+        </div>
+    <?php endif; ?>
+
+    <div class="article-content" style="font-size: 15px; color: var(--text-1); line-height: 1.8; letter-spacing: 0.3px; word-wrap: break-word;">
+        <?= $article['content'] ?>
+    </div>
+
 </div>
+<?php endif; ?>

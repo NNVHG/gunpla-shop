@@ -4,19 +4,15 @@
  */
 declare(strict_types=1);
 
-// 1. ĐỊNH NGHĨA ĐƯỜNG DẪN (dirname(__DIR__) để lùi ra thư mục gunpla-shop)
 define('BASE_PATH', dirname(__DIR__));
 define('APP_PATH',  BASE_PATH . '/app');
 define('BASE_URL', '/gunpla-shop');
 
-// 2. NẠP AUTOLOAD CỦA COMPOSER (BẮT BUỘC PHẢI NẰM Ở ĐÂY, TRÊN DOTENV)
 require_once BASE_PATH . '/vendor/autoload.php';
 
-// 3. KÍCH HOẠT DOTENV 
 $dotenv = Dotenv\Dotenv::createImmutable(BASE_PATH);
 $dotenv->load();
 
-// 4. NẠP CẤU HÌNH HỆ THỐNG
 require_once BASE_PATH . '/config/database.php';
 require_once BASE_PATH . '/config/app.php';
 
@@ -24,13 +20,22 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ── Parse URL ──────────────────────────────────────────────────────
 $rawUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $base = rtrim(BASE_URL, '/');
 if ($base !== '' && str_starts_with($rawUri, $base)) {
     $rawUri = substr($rawUri, strlen($base));
 }
 $uri   = trim($rawUri, '/');
+
+if (preg_match('/^news\/([a-zA-Z0-9-]+)$/', $uri, $matches)) {
+    // Trích xuất chuỗi slug từ URL
+    $slug = $matches[1];
+    $controller = new \App\Controllers\NewsController();
+    // Gọi đến phương thức hiển thị chi tiết bài viết
+    $controller->detail($slug);
+    exit;
+}
+
 $parts = $uri !== '' ? explode('/', $uri) : [];
 
 $controllerName = !empty($parts[0]) ? strtolower($parts[0]) : '';
@@ -62,15 +67,14 @@ if ($controllerName === '' || $controllerName === 'index.php') {
         }
 }
 
-// ── Routing ────────────────────────────────────────────────────────
 $routes = [
     'products' => \App\Controllers\ProductController::class,
     'cart'     => \App\Controllers\CartController::class,
-    'orders'   => \App\Controllers\OrderController::class,    // Quản lý Checkout (thanh toán)
+    'orders'   => \App\Controllers\OrderController::class,
     'admin'    => \App\Controllers\AdminController::class,
-    'user'     => \App\Controllers\UserController::class,     // Quản lý Profile (hồ sơ)
-    'favorite' => \App\Controllers\FavoriteController::class, // Quản lý Yêu thích
-    'news'     => \App\Controllers\NewsController::class,     // Quản lý Tin tức
+    'user'     => \App\Controllers\UserController::class,
+    'favorite' => \App\Controllers\FavoriteController::class,
+    'news'     => \App\Controllers\NewsController::class,
 ];
 
 if (!isset($routes[$controllerName])) {

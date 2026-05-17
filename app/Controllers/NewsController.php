@@ -33,34 +33,30 @@ class NewsController
         ]);
     }
 
-    public function detail(?string $param): void
+    /**
+     * Hiển thị trang chi tiết bài viết tin tức dựa trên chuỗi Slug
+     * @param string $slug
+     */
+    public function detail(string $slug)
     {
-        if (!$param) {
-            $this->redirect('/news');
-            return;
+        $article = $this->newsModel->findBySlug($slug);
+
+        if (!$article) {
+            if (file_exists(__DIR__ . '/../Views/errors/404.php')) {
+                $this->render('errors/404', [
+                    'title' => 'Bài viết không tồn tại — Gunpla Shop'
+                ]);
+            } else {
+                header("HTTP/1.0 404 Not Found");
+                echo "Bài viết này không tồn tại hoặc đã bị gỡ bỏ khỏi hệ thống.";
+            }
+            exit();
         }
 
-        $newsItem = is_numeric($param) 
-            ? $this->newsModel->findById((int) $param)
-            : $this->newsModel->findBySlug($param);
-
-        if (!$newsItem) {
-            http_response_code(404);
-            $this->render('errors/404', ['title' => 'Không tìm thấy tin tức']);
-            return;
-        }
-
-        $latestNews = $this->newsModel->getLatest(5);
-        $categories = $this->categoryModel->getTopLevel();
-
-        $data = [
-            'title'      => $newsItem['title'] . ' — GUNPLA SHOP',
-            'newsItem'   => $newsItem,
-            'latestNews' => $latestNews,
-            'categories' => $categories
-        ];
-
-        $this->render('news/detail', $data);
+        $this->render('news/detail', [
+            'title'   => htmlspecialchars($article['title']) . ' — Gunpla Shop',
+            'article' => $article
+        ]);
     }
 
     private function render(string $view, array $data = []): void
@@ -84,4 +80,5 @@ class NewsController
         header("Location: " . BASE_URL . $url);
         exit;
     }
+    
 }
