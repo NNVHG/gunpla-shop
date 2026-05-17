@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 16, 2026 lúc 04:41 PM
+-- Thời gian đã tạo: Th5 17, 2026 lúc 12:31 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -85,7 +85,8 @@ INSERT INTO `categories` (`id`, `name`, `slug`, `parent_id`, `type`, `sort_order
 (82, 'Giá đỡ (Action Base)', 'acc-action-base', 80, 'accessory', 2),
 (83, 'Khay đựng linh kiện', 'acc-parts-tray', 80, 'accessory', 3),
 (90, 'Combo khởi đầu (Starter Kit)', 'combo-starter', NULL, 'combo', 6),
-(91, 'Test Cat', 'test-cat', NULL, 'grade', 0);
+(91, 'Test Cat', 'test-cat', NULL, 'grade', 0),
+(93, 'Giá đỡ', 'giá-đỡ', 40, 'tool', 0);
 
 -- --------------------------------------------------------
 
@@ -122,8 +123,8 @@ CREATE TABLE `news` (
 --
 
 INSERT INTO `news` (`id`, `title`, `slug`, `summary`, `content`, `thumbnail`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'Gunpla Expo 2026 sắp diễn ra', 'gunpla-expo-2026-sap-dien-ra', 'Sự kiện lớn nhất năm dành cho tín đồ Gunpla sẽ được tổ chức vào tháng sau.', '<p>Sự kiện Gunpla Expo 2026 hứa hẹn sẽ mang đến nhiều mẫu mô hình mới, các cuộc thi độ mô hình hấp dẫn và nhiều phần quà giá trị. Đừng bỏ lỡ!</p>', NULL, 1, '2026-05-14 11:13:06', '2026-05-14 18:13:06'),
-(2, 'Mẫu Gundam MGEX Strike Freedom đã về hàng', 'gundam-mgex-strike-freedom-da-ve-hang', 'Siêu phẩm MGEX Strike Freedom với khung xương vàng óng ánh đã có mặt tại shop.', '<p>Phiên bản MGEX (Master Grade Extreme) của Strike Freedom Gundam là một trong những bộ mô hình chi tiết và đắt giá nhất hiện nay. Điểm nhấn của bộ mô hình này là khung xương được mạ vàng vô cùng tinh xảo.</p>', NULL, 1, '2026-05-14 11:13:06', '2026-05-14 18:13:06');
+(1, 'Gunpla Expo 2026 sắp diễn ra', 'gunpla-expo-2026-s-p-di-n-ra', 'Sự kiện lớn nhất năm dành cho tín đồ Gunpla sẽ được tổ chức vào tháng sau.', '<p>Sự kiện Gunpla Expo 2026 hứa hẹn sẽ mang đến nhiều mẫu mô hình mới, các cuộc thi độ mô hình hấp dẫn và nhiều phần quà giá trị. Đừng bỏ lỡ!</p>', 'uploads/img/1779009264_6a0986f0cdd74.jpg', 1, '2026-05-14 11:13:06', '2026-05-17 16:34:00'),
+(2, 'Mẫu Gundam MGEX Strike Freedom đã về hàng', 'm-u-gundam-mgex-strike-freedom-v-h-ng', 'Siêu phẩm MGEX Strike Freedom với khung xương vàng óng ánh đã có mặt tại shop.', '<p>Phiên bản MGEX (Master Grade Extreme) của Strike Freedom Gundam là một trong những bộ mô hình chi tiết và đắt giá nhất hiện nay. Điểm nhấn của bộ mô hình này là khung xương được mạ vàng vô cùng tinh xảo.</p>', 'uploads/img/1779011177_6a098e690fc27.jpg', 1, '2026-05-14 11:13:06', '2026-05-17 16:46:17');
 
 -- --------------------------------------------------------
 
@@ -393,7 +394,7 @@ INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `
 (5629, 'Super Fumina Axis Angel version', 'super-fumina-axis-angel-version-143', 484000, 10, 6, '', 'HG', 'Gundam Build Fighters Try', 'Mô hình lắp ráp Super Fumina Axis Angel version', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5630, 'Gundam Schwarzritter', 'gundam-schwarzritter-144', 440000, 10, 6, '', 'HG', 'Gundam Build Fighters Try', 'Mô hình lắp ráp Gundam Schwarzritter', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5631, 'Chinagguy', 'chinagguy-145', 484000, 10, 6, '', 'HG', 'Gundam Build Fighters Try', 'Mô hình lắp ráp Chinagguy', NULL, 200, 1, '2026-05-14 10:49:10'),
-(5632, 'Ninpulse Gundam', 'ninpulse-gundam-146', 440000, 10, 6, '', 'HG', 'Gundam Build Fighters Try', 'Mô hình lắp ráp Ninpulse Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
+(5632, 'Ninpulse Gundam', 'ninpulse-gundam-146', 440000, 10, 6, '', 'HG', 'Gundam Build Fighters Try', 'Mô hình lắp ráp Ninpulse Gundam', 'uploads/img-gundam/product_5632_6a0997ba14424.jpg', 200, 1, '2026-05-14 10:49:10'),
 (5633, 'Star Burning Gundam', 'star-burning-gundam-147', 352000, 10, 6, '', 'HG', 'Gundam Build Fighters Try', 'Mô hình lắp ráp Star Burning Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5634, 'GM/GM', 'gm-gm-148', 352000, 10, 6, '', 'HG', 'Gundam Build Fighters Try', 'Mô hình lắp ráp GM/GM', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5635, 'Hyper Gyanko', 'hyper-gyanko-149', 528000, 10, 6, '', 'HG', 'Gundam Build Fighters Try', 'Mô hình lắp ráp Hyper Gyanko', NULL, 200, 1, '2026-05-14 10:49:10'),
@@ -407,7 +408,7 @@ INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `
 (5643, 'Gundam 00 Diver', 'gundam-00-diver-157', 220000, 10, 6, '', 'HG', 'Gundam Build Divers', 'Mô hình lắp ráp Gundam 00 Diver', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5644, 'Gundam Age II Magnum', 'gundam-age-ii-magnum-158', 396000, 10, 6, '', 'HG', 'Gundam Build Divers', 'Mô hình lắp ráp Gundam Age II Magnum', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5645, 'GM III Beam Master', 'gm-iii-beam-master-159', 396000, 10, 6, '', 'HG', 'Gundam Build Divers', 'Mô hình lắp ráp GM III Beam Master', NULL, 200, 1, '2026-05-14 10:49:10'),
-(5646, 'Grimoire Red Beret', 'grimoire-red-beret-160', 396000, 10, 6, '', 'HG', 'Gundam Build Divers', 'Mô hình lắp ráp Grimoire Red Beret', NULL, 200, 1, '2026-05-14 10:49:10'),
+(5646, 'Grimoire Red Beret', 'grimoire-red-beret-160', 396000, 10, 6, '', 'HG', 'Gundam Build Divers', 'Mô hình lắp ráp Grimoire Red Beret', 'uploads/img-gundam/product_5646_6a0998276e9d9.jpg', 200, 1, '2026-05-14 10:49:10'),
 (5647, 'Momokapool', 'momokapool-161', 396000, 10, 6, '', 'HG', 'Gundam Build Divers', 'Mô hình lắp ráp Momokapool', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5648, 'Ogre GN-X', 'ogre-gn-x-162', 440000, 10, 6, '', 'HG', 'Gundam Build Divers', 'Mô hình lắp ráp Ogre GN-X', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5649, 'Seravee Gundam Scheherezade', 'seravee-gundam-scheherezade-163', 484000, 10, 6, '', 'HG', 'Gundam Build Divers', 'Mô hình lắp ráp Seravee Gundam Scheherezade', NULL, 200, 1, '2026-05-14 10:49:10'),
@@ -520,8 +521,7 @@ INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `
 (5756, '00 Gundam', '00-gundam-270', 220000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam 00', 'Mô hình lắp ráp 00 Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5757, 'GN-X III A-Laws Type', 'gn-x-iii-a-laws-type-271', 264000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam 00', 'Mô hình lắp ráp GN-X III A-Laws Type', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5758, 'Cherudim Gundam', 'cherudim-gundam-272', 264000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam 00', 'Mô hình lắp ráp Cherudim Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
-(5759, 'Ahead', 'ahead-273', 264000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam 00', 'Mô hình lắp ráp Ahead', NULL, 200, 1, '2026-05-14 10:49:10');
-INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `scale`, `grade`, `series`, `description`, `thumbnail`, `weight_gram`, `is_active`, `created_at`) VALUES
+(5759, 'Ahead', 'ahead-273', 264000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam 00', 'Mô hình lắp ráp Ahead', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5760, 'Seravee Gundam', 'seravee-gundam-274', 352000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam 00', 'Mô hình lắp ráp Seravee Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5761, 'Mr. Bushido’s Ahead', 'mr-bushido-s-ahead-275', 264000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam 00', 'Mô hình lắp ráp Mr. Bushido’s Ahead', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5762, 'Arios Gundam', 'arios-gundam-276', 330000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam 00', 'Mô hình lắp ráp Arios Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
@@ -650,7 +650,7 @@ INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `
 (5885, 'Schwalbe Custom', 'schwalbe-custom-399', 352000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam: Iron Blooded Orphans Urdr-Hunt', 'Mô hình lắp ráp Schwalbe Custom', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5886, 'Sigrún', 'sigr-n-400', 352000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam: Iron Blooded Orphans MSV', 'Mô hình lắp ráp Sigrún', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5887, 'Gundam G-Self (Atmospheric Pack)', 'gundam-g-self-atmospheric-pack-401', 352000, 10, 6, '1/144', 'HG', 'Gundam Reconguista in G', 'Mô hình lắp ráp Gundam G-Self (Atmospheric Pack)', NULL, 200, 1, '2026-05-14 10:49:10'),
-(5888, 'Grimoire', 'grimoire-402', 308000, 10, 6, '1/144', 'HG', 'Gundam Reconguista in G', 'Mô hình lắp ráp Grimoire', NULL, 200, 1, '2026-05-14 10:49:10'),
+(5888, 'Grimoire', 'grimoire-402', 308000, 10, 6, '1/144', 'HG', 'Gundam Reconguista in G', 'Mô hình lắp ráp Grimoire', 'uploads/img-gundam/product_5888_6a099802a35f0.jpg', 200, 1, '2026-05-14 10:49:10'),
 (5889, 'Montero', 'montero-403', 352000, 10, 6, '1/144', 'HG', 'Gundam Reconguista in G', 'Mô hình lắp ráp Montero', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5890, 'Gundam G-Arcane', 'gundam-g-arcane-404', 352000, 10, 6, '1/144', 'HG', 'Gundam Reconguista in G', 'Mô hình lắp ráp Gundam G-Arcane', NULL, 200, 1, '2026-05-14 10:49:10'),
 (5891, 'Space Backpack for Gundam G-Self', 'space-backpack-for-gundam-g-self-405', 264000, 10, 6, '1/144', 'HG', 'Gundam Reconguista in G', 'Mô hình lắp ráp Space Backpack for Gundam G-Self', NULL, 200, 1, '2026-05-14 10:49:10'),
@@ -907,7 +907,7 @@ INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `
 (6141, 'Kämpfer', 'k-mpfer-655', 396000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam 0080: War in the Pocket', 'Mô hình lắp ráp Kämpfer', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6142, 'Rick Dom II (Colony Attack Colors)', 'rick-dom-ii-colony-attack-colors-656', 330000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam 0080: War in the Pocket', 'Mô hình lắp ráp Rick Dom II (Colony Attack Colors)', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6143, 'Geara Doga', 'geara-doga-657', 396000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam: Char’s Counterattack', 'Mô hình lắp ráp Geara Doga', NULL, 200, 1, '2026-05-14 10:49:10'),
-(6144, 'Geara Doga (Rezin Schnyder Custom)', 'geara-doga-rezin-schnyder-custom-658', 396000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam: Char’s Counterattack', 'Mô hình lắp ráp Geara Doga (Rezin Schnyder Custom)', NULL, 200, 1, '2026-05-14 10:49:10'),
+(6144, 'Geara Doga (Rezin Schnyder Custom)', 'geara-doga-rezin-schnyder-custom-658', 396000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam: Char’s Counterattack', 'Mô hình lắp ráp Geara Doga (Rezin Schnyder Custom)', 'uploads/img-gundam/product_6144_6a09984f854f3.webp', 200, 1, '2026-05-14 10:49:10'),
 (6145, 'Nu Gundam HWS', 'nu-gundam-hws-659', 616000, 10, 6, '1/144', 'HG', 'Char’s Counterattack Mobile Suit Variations', 'Mô hình lắp ráp Nu Gundam HWS', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6146, 'Schuzrum Dias', 'schuzrum-dias-660', 374000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam ZZ', 'Mô hình lắp ráp Schuzrum Dias', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6147, 'Hi-Nu Gundam', 'hi-nu-gundam-661', 484000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam: Beltorchika’s Children', 'Mô hình lắp ráp Hi-Nu Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
@@ -1037,8 +1037,7 @@ INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `
 (6271, 'Dijeh', 'dijeh-785', 418000, 10, 6, '1/144', 'HG', 'Mobile Suit Zeta Gundam', 'Mô hình lắp ráp Dijeh', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6272, 'R-Jarja', 'r-jarja-786', 418000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam ZZ', 'Mô hình lắp ráp R-Jarja', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6273, 'Gustav Karl Type-13 (Unicorn version)', 'gustav-karl-type-13-unicorn-version-787', 528000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam Unicorn', 'Mô hình lắp ráp Gustav Karl Type-13 (Unicorn version)', NULL, 200, 1, '2026-05-14 10:49:10'),
-(6274, 'Narrative Gundam C-Packs', 'narrative-gundam-c-packs-788', 506000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam Narrative', 'Mô hình lắp ráp Narrative Gundam C-Packs', NULL, 200, 1, '2026-05-14 10:49:10');
-INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `scale`, `grade`, `series`, `description`, `thumbnail`, `weight_gram`, `is_active`, `created_at`) VALUES
+(6274, 'Narrative Gundam C-Packs', 'narrative-gundam-c-packs-788', 506000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam Narrative', 'Mô hình lắp ráp Narrative Gundam C-Packs', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6275, 'Maganac', 'maganac-789', 264000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam Wing', 'Mô hình lắp ráp Maganac', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6276, 'Destiny Gundam', 'destiny-gundam-790', 484000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam SEED Destiny', 'Mô hình lắp ráp Destiny Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6277, 'Silver Bullet Suppressor', 'silver-bullet-suppressor-791', 594000, 10, 6, '1/144', 'HG', 'Mobile Suit Gundam Narrative', 'Mô hình lắp ráp Silver Bullet Suppressor', NULL, 200, 1, '2026-05-14 10:49:10'),
@@ -1164,8 +1163,8 @@ INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `
 (6397, 'Ball Type K', 'ball-type-k-911', 528000, 10, 9, '1/100', 'MG', 'Mobile Suit Gundam: The 08th MS Team', 'Mô hình lắp ráp Ball Type K', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6398, 'Acguy', 'acguy-912', 880000, 10, 9, '1/100', 'MG', 'Mobile Suit Gundam', 'Mô hình lắp ráp Acguy', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6399, 'Hyaku-Shiki + Ballute System', 'hyaku-shiki-ballute-system-913', 880000, 10, 9, '1/100', 'MG', 'Mobile Suit Zeta Gundam', 'Mô hình lắp ráp Hyaku-Shiki + Ballute System', NULL, 200, 1, '2026-05-14 10:49:10'),
-(6400, 'Gundam Mk-II (AEUG) (2.0)', 'gundam-mk-ii-aeug-2-0-914', 880000, 10, 9, '1/100', 'MG', 'Mobile Suit Zeta Gundam', 'Mô hình lắp ráp Gundam Mk-II (AEUG) (2.0)', NULL, 200, 1, '2026-05-14 10:49:10'),
-(6401, 'Zeta Gundam (2.0)', 'zeta-gundam-2-0-915', 1100000, 10, 9, '1/100', 'MG', 'Mobile Suit Zeta Gundam', 'Mô hình lắp ráp Zeta Gundam (2.0)', NULL, 200, 1, '2026-05-14 10:49:10'),
+(6400, 'Gundam Mk-II (AEUG) (2.0)', 'gundam-mk-ii-aeug-2-0-914', 880000, 10, 9, '1/100', 'MG', 'Mobile Suit Zeta Gundam', 'Mô hình lắp ráp Gundam Mk-II (AEUG) (2.0)', 'uploads/img-gundam/product_6400_6a099777a22f7.jpg', 200, 1, '2026-05-14 10:49:10'),
+(6401, 'Zeta Gundam (2.0)', 'zeta-gundam-2-0-915', 1100000, 10, 9, '1/100', 'MG', 'Mobile Suit Zeta Gundam', 'Mô hình lắp ráp Zeta Gundam (2.0)', 'uploads/img-gundam/product_6401_6a0996eff2c11.jpg', 200, 1, '2026-05-14 10:49:10'),
 (6402, 'Nemo', 'nemo-916', 616000, 10, 9, '1/100', 'MG', 'Mobile Suit Zeta Gundam', 'Mô hình lắp ráp Nemo', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6403, 'Gundam Mk-II (Titans) (2.0)', 'gundam-mk-ii-titans-2-0-917', 770000, 10, 9, '1/100', 'MG', 'Mobile Suit Zeta Gundam', 'Mô hình lắp ráp Gundam Mk-II (Titans) (2.0)', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6404, 'Gyan', 'gyan-918', 792000, 10, 9, '1/100', 'MG', 'Mobile Suit Gundam', 'Mô hình lắp ráp Gyan', NULL, 200, 1, '2026-05-14 10:49:10'),
@@ -1183,7 +1182,7 @@ INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `
 (6416, 'Zaku II Commander Type (Char Aznable) (2.0)', 'zaku-ii-commander-type-char-aznable-2-0-930', 770000, 10, 9, '1/100', 'MG', 'Mobile Suit Gundam', 'Mô hình lắp ráp Zaku II Commander Type (Char Aznable) (2.0)', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6417, 'Gelgoog Commander Type (Char Aznable) (2.0)', 'gelgoog-commander-type-char-aznable-2-0-931', 990000, 10, 9, '1/100', 'MG', 'Mobile Suit Gundam', 'Mô hình lắp ráp Gelgoog Commander Type (Char Aznable) (2.0)', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6418, 'Turn A Gundam', 'turn-a-gundam-932', 836000, 10, 9, '1/100', 'MG', 'Turn A Gundam', 'Mô hình lắp ráp Turn A Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
-(6419, 'Destiny Gundam', 'destiny-gundam-933', 1056000, 10, 9, '1/100', 'MG', 'Mobile Suit Gundam SEED Destiny', 'Mô hình lắp ráp Destiny Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
+(6419, 'Destiny Gundam', 'destiny-gundam-933', 1056000, 10, 9, '1/100', 'MG', 'Mobile Suit Gundam SEED Destiny', 'Mô hình lắp ráp Destiny Gundam', 'uploads/img-gundam/product_6419_6a09974fedd0e.jpg', 200, 1, '2026-05-14 10:49:10'),
 (6420, 'Unicorn Gundam (Ver. Ka)', 'unicorn-gundam-ver-ka-934', 1100000, 10, 9, '1/100', 'MG', 'Mobile Suit Gundam Unicorn', 'Mô hình lắp ráp Unicorn Gundam (Ver. Ka)', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6421, 'Zaku II High Mobility Type (Black Tri-Stars) (2.0)', 'zaku-ii-high-mobility-type-black-tri-stars-2-0-935', 990000, 10, 9, '1/100', 'MG', 'Mobile Suit Variation', 'Mô hình lắp ráp Zaku II High Mobility Type (Black Tri-Stars) (2.0)', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6422, 'Strike E + I.W.S.P. (Lukas O’Donnell Custom)', 'strike-e-i-w-s-p-lukas-o-donnell-custom-936', 990000, 10, 9, '1/100', 'MG', 'Mobile Suit Gundam SEED C.E. 73 Δ Astray', 'Mô hình lắp ráp Strike E + I.W.S.P. (Lukas O’Donnell Custom)', NULL, 200, 1, '2026-05-14 10:49:10'),
@@ -1311,7 +1310,7 @@ INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `
 (6543, 'Zaku II (Mass Production Type)', 'zaku-ii-mass-production-type-1057', 2640000, 10, 11, '1/60', 'PG', 'Mobile Suit Gundam', 'Mô hình lắp ráp Zaku II (Mass Production Type)', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6544, 'Zaku II Commander Type (Char Aznable Custom)', 'zaku-ii-commander-type-char-aznable-custom-1058', 2640000, 10, 11, '1/60', 'PG', 'Mobile Suit Gundam', 'Mô hình lắp ráp Zaku II Commander Type (Char Aznable Custom)', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6545, 'Zeta Gundam', 'zeta-gundam-1059', 4400000, 10, 11, '1/60', 'PG', 'Mobile Suit Zeta Gundam', 'Mô hình lắp ráp Zeta Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
-(6546, 'Wing Gundam Zero Custom', 'wing-gundam-zero-custom-1060', 3300000, 10, 11, '1/60', 'PG', 'Mobile Suit Gundam Wing: Endless Waltz', 'Mô hình lắp ráp Wing Gundam Zero Custom', NULL, 200, 1, '2026-05-14 10:49:10'),
+(6546, 'Wing Gundam Zero Custom', 'wing-gundam-zero-custom-1060', 3300000, 10, 11, '1/60', 'PG', 'Mobile Suit Gundam Wing: Endless Waltz', 'Mô hình lắp ráp Wing Gundam Zero Custom', 'uploads/img-gundam/product_6546_6a0998b7bb8a4.jpg', 200, 1, '2026-05-14 10:49:10'),
 (6547, 'Gundam Mk-II (AEUG)', 'gundam-mk-ii-aeug-1061', 3300000, 10, 11, '1/60', 'PG', 'Mobile Suit Zeta Gundam', 'Mô hình lắp ráp Gundam Mk-II (AEUG)', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6548, 'Gundam Mk-II (Titans)', 'gundam-mk-ii-titans-1062', 3300000, 10, 11, '1/60', 'PG', 'Mobile Suit Zeta Gundam', 'Mô hình lắp ráp Gundam Mk-II (Titans)', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6549, 'Gundam Zephyrantes/Fb', 'gundam-zephyrantes-fb-1063', 4400000, 10, 11, '1/60', 'PG', 'Mobile Suit Gundam 0083: Stardust Memory', 'Mô hình lắp ráp Gundam Zephyrantes/Fb', NULL, 200, 1, '2026-05-14 10:49:10'),
@@ -1421,7 +1420,7 @@ INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `
 (6653, 'Zeta Gundam', 'zeta-gundam-1167', 110000, 10, 12, '', 'SD', 'Mobile Suit Zeta Gundam', 'Mô hình lắp ráp Zeta Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6654, 'Gundam', 'gundam-1168', 110000, 10, 12, '', 'SD', 'Mobile Suit Gundam', 'Mô hình lắp ráp Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6655, 'Gundam GP02A', 'gundam-gp02a-1169', 176000, 10, 12, '', 'SD', 'Mobile Suit Gundam 0083: Stardust Memory', 'Mô hình lắp ráp Gundam GP02A', NULL, 200, 1, '2026-05-14 10:49:10'),
-(6656, 'Wing Gundam Zero Custom', 'wing-gundam-zero-custom-1170', 110000, 10, 12, '', 'SD', 'Mobile Suit Gundam Wing', 'Mô hình lắp ráp Wing Gundam Zero Custom', NULL, 200, 1, '2026-05-14 10:49:10'),
+(6656, 'Wing Gundam Zero Custom', 'wing-gundam-zero-custom-1170', 110000, 10, 12, '', 'SD', 'Mobile Suit Gundam Wing', 'Mô hình lắp ráp Wing Gundam Zero Custom', 'uploads/img-gundam/product_6656_6a09989c2905d.jpg', 200, 1, '2026-05-14 10:49:10'),
 (6657, 'Dendrobium', 'dendrobium-1171', 220000, 10, 12, '', 'SD', 'Mobile Suit Gundam 0083: Stardust Memory', 'Mô hình lắp ráp Dendrobium', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6658, 'Nu Gundam', 'nu-gundam-1172', 110000, 10, 12, '', 'SD', 'Mobile Suit Gundam: Char’s Counterattack', 'Mô hình lắp ráp Nu Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6659, 'ZZ Gundam', 'zz-gundam-1173', 176000, 10, 12, '', 'SD', 'Mobile Suit Gundam ZZ', 'Mô hình lắp ráp ZZ Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
@@ -1573,8 +1572,7 @@ INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `
 (6805, 'Gundam Heavyarms', 'gundam-heavyarms-1319', 88000, 10, 12, '', 'SD', 'Mobile Suit Gundam Wing', 'Mô hình lắp ráp Gundam Heavyarms', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6806, 'Gundam Sandrock', 'gundam-sandrock-1320', 88000, 10, 12, '', 'SD', 'Mobile Suit Gundam Wing', 'Mô hình lắp ráp Gundam Sandrock', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6807, 'Shenlong Gundam', 'shenlong-gundam-1321', 88000, 10, 12, '', 'SD', 'Mobile Suit Gundam Wing', 'Mô hình lắp ráp Shenlong Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
-(6808, 'Gundam Ez-8', 'gundam-ez-8-1322', 88000, 10, 12, '', 'SD', 'Mobile Suit Gundam: The 08th MS Team', 'Mô hình lắp ráp Gundam Ez-8', NULL, 200, 1, '2026-05-14 10:49:10');
-INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `scale`, `grade`, `series`, `description`, `thumbnail`, `weight_gram`, `is_active`, `created_at`) VALUES
+(6808, 'Gundam Ez-8', 'gundam-ez-8-1322', 88000, 10, 12, '', 'SD', 'Mobile Suit Gundam: The 08th MS Team', 'Mô hình lắp ráp Gundam Ez-8', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6809, 'Turn A Gundam', 'turn-a-gundam-1323', 88000, 10, 12, '', 'SD', 'Turn A Gundam', 'Mô hình lắp ráp Turn A Gundam', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6810, 'Wing Gundam Zero', 'wing-gundam-zero-1324', 110000, 10, 12, '', 'SD', 'Mobile Suit Gundam Wing', 'Mô hình lắp ráp Wing Gundam Zero', NULL, 200, 1, '2026-05-14 10:49:10'),
 (6811, 'Dom', 'dom-1325', 88000, 10, 12, '', 'SD', 'Mobile Suit Gundam', 'Mô hình lắp ráp Dom', NULL, 200, 1, '2026-05-14 10:49:10'),
@@ -1602,11 +1600,11 @@ INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `
 (6833, 'Kềm cắt GodHand SPN-120 Ultimate Nipper', 'godhand-spn-120-ultimate-nipper', 1350000, 20, 41, NULL, NULL, NULL, 'Kềm cắt lưỡi đơn huyền thoại GodHand SPN-120, cho vết cắt ngọt, không để lại ghẻ nhựa (nub mark).', 'images/tools/godhand-spn120.jpg', 150, 1, '2026-05-14 10:49:16'),
 (6834, 'Kềm cắt Tamiya 74123 Sharp Pointed Side Cutter', 'tamiya-74123-sharp-pointed-nipper', 780000, 30, 41, NULL, NULL, NULL, 'Kềm cắt Tamiya mũi nhọn cao cấp, độ bền cao, thích hợp để cắt các part nhỏ và sát runner.', 'images/tools/tamiya-74123.jpg', 180, 1, '2026-05-14 10:49:16'),
 (6835, 'Dao trổ Tamiya Design Knife 74020', 'tamiya-design-knife-74020', 190000, 50, 42, NULL, NULL, NULL, 'Dao trổ kỹ thuật Tamiya, đi kèm 30 lưỡi dao dự phòng, dụng cụ không thể thiếu để gọt ghẻ nhựa.', 'uploads/img-dungcu/d-Tamiya-Design-Knife-74020.jpg', 50, 1, '2026-05-14 10:49:16'),
-(6836, 'Nhíp gắp Tamiya Angled Tweezers 74003', 'tamiya-angled-tweezers-74003', 250000, 40, 43, NULL, NULL, NULL, 'Nhíp mũi cong Tamiya, độ chụm hoàn hảo để gắp và dán các loại decal nước, decal sticker siêu nhỏ.', 'images/tools/tamiya-74003.jpg', 30, 1, '2026-05-14 10:49:16'),
-(6837, 'Bộ dũa thủy tinh Gunprimer Raser', 'gunprimer-raser-glass-file', 650000, 15, 44, NULL, NULL, NULL, 'Dũa thủy tinh cao cấp Gunprimer Raser, xóa dấu ghẻ nhựa mà không làm xước bề mặt chi tiết.', 'images/tools/gunprimer-raser.jpg', 80, 1, '2026-05-14 10:49:16'),
-(6838, 'Giấy nhám xốp GodHand Kamiyasu (Set 400-1000)', 'godhand-kamiyasu-sponge-set', 180000, 50, 44, NULL, NULL, NULL, 'Set nhám xốp GodHand dày 3mm/5mm, linh hoạt chà nhám trên cả bề mặt cong và phẳng.', 'images/tools/godhand-sponge.jpg', 50, 1, '2026-05-14 10:49:16'),
-(6839, 'Tamiya Panel Line Accent Color (Black)', 'tamiya-panel-line-accent-black', 120000, 100, 51, NULL, NULL, NULL, 'Dung dịch kẻ lằn chìm Tamiya màu đen, có sẵn cọ nhỏ ở nắp, giúp chi tiết mô hình nổi bật hơn.', 'images/tools/tamiya-panel-black.jpg', 100, 1, '2026-05-14 10:49:16'),
-(6840, 'Bút kẻ viền Gundam Marker GM01 Black (Fine)', 'gundam-marker-gm01-black', 650000, 100, 51, NULL, NULL, NULL, 'Bút kẻ viền đầu nhỏ GM01 cơ bản của Mr.Hobby, dễ sử dụng cho người mới chơi.', 'images/tools/marker-gm01.jpg', 30, 1, '2026-05-14 10:49:16'),
+(6836, 'Nhíp gắp Tamiya Angled Tweezers 74003', 'tamiya-angled-tweezers-74003', 250000, 40, 50, '', '', '', 'Nhíp mũi cong Tamiya, độ chụm hoàn hảo để gắp và dán các loại decal nước, decal sticker siêu nhỏ.', 'uploads/img-gundam/product_6836_6a099089f1135.jpg', 30, 1, '2026-05-14 10:49:16'),
+(6837, 'Bộ dũa thủy tinh Gunprimer Raser', 'gunprimer-raser-glass-file', 650000, 15, 50, '', '', '', 'Dũa thủy tinh cao cấp Gunprimer Raser, xóa dấu ghẻ nhựa mà không làm xước bề mặt chi tiết.', 'uploads/img-gundam/product_6837_6a0996415e29b.jpg', 80, 1, '2026-05-14 10:49:16'),
+(6838, 'Giấy nhám xốp GodHand Kamiyasu (Set 400-1000)', 'godhand-kamiyasu-sponge-set', 180000, 50, 50, '', '', '', 'Set nhám xốp GodHand dày 3mm/5mm, linh hoạt chà nhám trên cả bề mặt cong và phẳng.', 'uploads/img-gundam/product_6838_6a09966683666.jpg', 50, 1, '2026-05-14 10:49:16'),
+(6839, 'Tamiya Panel Line Accent Color (Black)', 'tamiya-panel-line-accent-black', 120000, 100, 50, '', '', '', 'Dung dịch kẻ lằn chìm Tamiya màu đen, có sẵn cọ nhỏ ở nắp, giúp chi tiết mô hình nổi bật hơn.', 'uploads/img-gundam/product_6839_6a09969a728ee.jpg', 100, 1, '2026-05-14 10:49:16'),
+(6840, 'Bút kẻ viền Gundam Marker GM01 Black (Fine)', 'gundam-marker-gm01-black', 650000, 100, 50, '', '', '', 'Bút kẻ viền đầu nhỏ GM01 cơ bản của Mr.Hobby, dễ sử dụng cho người mới chơi.', 'uploads/img-gundam/product_6840_6a0996be0b1f2.jpg', 30, 1, '2026-05-14 10:49:16'),
 (6841, 'Bút sơn Gundam Marker EX White Gold (XGM01)', 'gundam-marker-ex-white-gold', 850000, 60, 52, NULL, NULL, NULL, 'Bút sơn Marker dòng EX màu vàng trắng kim loại, độ che phủ cực tốt.', 'images/tools/marker-xgm01.jpg', 30, 1, '2026-05-14 10:49:16'),
 (6842, 'Dung dịch làm mềm Decal Mr. Mark Softer', 'mr-mark-softer', 90000, 80, 53, NULL, NULL, NULL, 'Dung dịch Mr. Mark Softer giúp decal nước mềm ra và ôm sát vào các bề mặt gồ ghề của Gunpla.', 'images/tools/mr-mark-softer.jpg', 80, 1, '2026-05-14 10:49:16'),
 (6843, 'Dụng cụ tách part Wave Part Separator', 'wave-part-separator', 95000, 40, 54, NULL, NULL, NULL, 'Dụng cụ giúp tách các mảnh nhựa lỡ lắp sai mà không làm gãy chốt hay mẻ góc chi tiết.', 'images/tools/wave-separator.jpg', 40, 1, '2026-05-14 10:49:16'),
@@ -1656,7 +1654,7 @@ INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `
 (6887, 'Gundam Marker GM02 (Gray Fine)', 'gundam-marker-gm02-gray', 65000, 150, 51, NULL, NULL, NULL, 'Bút kẻ viền ngòi kim màu xám GM02, mực ra đều, dễ dùng cho newbie.', 'images/tools/marker-gm02.jpg', 30, 1, '2026-05-14 10:49:16'),
 (6888, 'Gundam Marker GM03 (Brown Fine)', 'gundam-marker-gm03-brown', 65000, 150, 51, NULL, NULL, NULL, 'Bút kẻ viền ngòi kim màu nâu GM03.', 'images/tools/marker-gm03.jpg', 30, 1, '2026-05-14 10:49:16'),
 (6889, 'Gundam Marker GM302 (Gray Pour Type)', 'gundam-marker-gm302-gray-pour', 75000, 150, 51, NULL, NULL, NULL, 'Bút kẻ lằn chảy GM302 màu Xám, mực tự động loang theo rãnh nhựa.', 'images/tools/marker-gm302.jpg', 30, 1, '2026-05-14 10:49:16'),
-(6890, 'Gundam Marker GM303 (Brown Pour Type)', 'gundam-marker-gm303-brown-pour', 75000, 150, 51, NULL, NULL, NULL, 'Bút kẻ lằn chảy GM303 màu Nâu.', 'images/tools/marker-gm303.jpg', 30, 1, '2026-05-14 10:49:16'),
+(6890, 'Gundam Marker GM303 (Brown Pour Type)', 'gundam-marker-gm303-brown-pour', 75000, 150, 50, '', '', '', 'Bút kẻ lằn chảy GM303 màu Nâu.', 'uploads/img-gundam/product_6890_6a09972720d51.jpg', 30, 1, '2026-05-14 10:49:16'),
 (6891, 'Gundam Marker EX Shine Silver (XGM02)', 'marker-ex-shine-silver', 85000, 80, 52, NULL, NULL, NULL, 'Bút sơn Marker EX màu bạc sáng bóng, sơn lên ống đồng hoặc khung xương cực đẹp.', 'images/tools/marker-xgm02.jpg', 30, 1, '2026-05-14 10:49:16'),
 (6892, 'Gundam Marker EX Heavy Gun Metallic (XGM03)', 'marker-ex-heavy-gun-metallic', 85000, 80, 52, NULL, NULL, NULL, 'Bút sơn Marker EX màu kim loại súng (Gunmetal), màu tối nhám.', 'images/tools/marker-xgm03.jpg', 30, 1, '2026-05-14 10:49:16'),
 (6893, 'Gundam Marker EX Cosmo M Blue (XGM04)', 'marker-ex-cosmo-blue', 85000, 60, 52, NULL, NULL, NULL, 'Bút sơn Marker EX màu xanh biển ánh kim Metallic.', 'images/tools/marker-xgm04.jpg', 30, 1, '2026-05-14 10:49:16'),
@@ -1678,11 +1676,11 @@ INSERT INTO `products` (`id`, `name`, `slug`, `price`, `stock`, `category_id`, `
 (6909, 'Mũi khắc rãnh DSPIAE Push Broach 0.3mm', 'dspiae-push-broach-030', 350000, 20, 71, NULL, NULL, NULL, 'Mũi dao khắc lằn chìm Tungsten DSPIAE cỡ 0.3mm (Dùng cho tỷ lệ 1/100).', 'images/tools/dspiae-broach-030.jpg', 30, 1, '2026-05-14 10:49:16'),
 (6910, 'Băng dính dẫn hướng khắc rãnh Madworks 3mm', 'madworks-carving-tape-3mm', 140000, 50, 71, NULL, NULL, NULL, 'Băng dính Carving Tape cứng và dày dặn, giúp mũi dao khắc đi theo đường thẳng tuyệt đối không bị trượt.', 'images/tools/madworks-tape.jpg', 40, 1, '2026-05-14 10:49:16'),
 (6911, 'Thảm cắt DSPIAE A4 Cutting Mat (Black)', 'dspiae-a4-cutting-mat', 250000, 40, 81, NULL, NULL, NULL, 'Thảm cắt tự liền DSPIAE khổ A4 màu đen sang trọng, chất liệu PVC đàn hồi cao.', 'images/tools/dspiae-a4-mat.jpg', 300, 1, '2026-05-14 10:49:16'),
-(6912, 'Action Base 2 (Black)', 'action-base-2-black', 130000, 150, 82, NULL, NULL, NULL, 'Giá đỡ Action Base 2 chuyên dụng cho mô hình tỷ lệ nhỏ gọn (HG/RG 1/144).', 'images/tools/action-base-2-black.jpg', 150, 1, '2026-05-14 10:49:16'),
-(6913, 'Action Base 6 (Clear)', 'action-base-6-clear', 180000, 120, 82, NULL, NULL, NULL, 'Action Base 6 (Bộ 2 đế) siêu gọn nhẹ của Bandai, thiết kế mới nhất tối ưu hiển thị, tàng hình hoàn hảo.', 'images/tools/action-base-6-clear.jpg', 180, 1, '2026-05-14 10:49:16'),
-(6914, 'Đế cắm kẹp sơn mô hình (Paint Clip Base)', 'paint-clip-base', 80000, 100, 83, NULL, NULL, NULL, 'Đế xốp carton chuyên dụng có đục lỗ sẵn để cắm que kẹp phơi khô các part sau khi xịt sơn.', 'images/tools/paint-clip-base.jpg', 200, 1, '2026-05-14 10:49:16'),
-(6918, 'go win', 'go-win', 300, 200, 1, '1/144', 'HG', 'test', 'test', 'uploads/img-gundam/product_6918_6a0876c320920.png', 200, 1, '2026-05-16 13:53:07'),
-(6919, 'go win 2', 'go-win-2', 300, 0, 1, '1/144', 'HG', 'test', 'test', 'uploads/img-gundam/product_6919_6a087dd107cf6.png', 200, 1, '2026-05-16 14:23:13');
+(6912, 'Action Base 2 (Black)', 'action-base-2-black', 130000, 150, 40, '', '', '', 'Giá đỡ Action Base 2 chuyên dụng cho mô hình tỷ lệ nhỏ gọn (HG/RG 1/144).', 'uploads/img-gundam/product_6912_6a098f99b640a.jpg', 150, 1, '2026-05-14 10:49:16'),
+(6913, 'Action Base 6 (Clear)', 'action-base-6-clear', 180000, 120, 40, '', '', '', 'Action Base 6 (Bộ 2 đế) siêu gọn nhẹ của Bandai, thiết kế mới nhất tối ưu hiển thị, tàng hình hoàn hảo.', 'uploads/img-gundam/product_6913_6a098fd408e63.jpg', 180, 1, '2026-05-14 10:49:16'),
+(6914, 'Đế cắm kẹp sơn mô hình (Paint Clip Base)', 'paint-clip-base', 80000, 100, 80, '', '', '', 'Đế xốp carton chuyên dụng có đục lỗ sẵn để cắm que kẹp phơi khô các part sau khi xịt sơn.', 'uploads/img-gundam/product_6914_6a0990047effa.jpg', 200, 1, '2026-05-14 10:49:16'),
+(6918, 'go win', 'go-win', 300, 200, 1, '1/144', 'HG', 'test', 'test', 'uploads/img-gundam/product_6918_6a0876c320920.png', 200, 0, '2026-05-16 13:53:07'),
+(6919, 'go win 2', 'go-win-2', 300, 0, 1, '1/144', 'HG', 'test', 'test', 'uploads/img-gundam/product_6919_6a087dd107cf6.png', 200, 0, '2026-05-16 14:23:13');
 
 -- --------------------------------------------------------
 
@@ -1708,7 +1706,26 @@ INSERT INTO `product_images` (`id`, `product_id`, `image_path`, `is_primary`, `s
 (7, 6834, 'uploads/img-dungcu/kc-Tamiya-74123-Sharp-Pointed-Side-Cutter.webp', 1, 0),
 (8, 6833, 'uploads/img-dungcu/kc-GodHand-SPN-120-Ultimate-Nipper.webp', 1, 0),
 (10, 5597, 'uploads/img-gundam/Beargguy-F.jpg', 1, 0),
-(11, 6919, 'uploads/img-gundam/product_6919_6a087dd107cf6.png', 1, 0);
+(11, 6919, 'uploads/img-gundam/product_6919_6a087dd107cf6.png', 1, 0),
+(12, 6912, 'uploads/img-gundam/product_6912_6a098f99b640a.jpg', 1, 0),
+(13, 6913, 'uploads/img-gundam/product_6913_6a098fd408e63.jpg', 1, 0),
+(14, 6914, 'uploads/img-gundam/product_6914_6a0990047effa.jpg', 1, 0),
+(15, 6836, 'uploads/img-gundam/product_6836_6a099089f1135.jpg', 1, 0),
+(16, 6837, 'uploads/img-gundam/product_6837_6a0996415e29b.jpg', 1, 0),
+(17, 6838, 'uploads/img-gundam/product_6838_6a09966683666.jpg', 1, 0),
+(18, 6839, 'uploads/img-gundam/product_6839_6a09969a728ee.jpg', 1, 0),
+(19, 6840, 'uploads/img-gundam/product_6840_6a0996be0b1f2.jpg', 1, 0),
+(20, 6401, 'uploads/img-gundam/product_6401_6a0996eff2c11.jpg', 1, 0),
+(21, 6890, 'uploads/img-gundam/product_6890_6a09972720d51.jpg', 1, 0),
+(22, 6419, 'uploads/img-gundam/product_6419_6a09974fedd0e.jpg', 1, 0),
+(23, 6400, 'uploads/img-gundam/product_6400_6a099777a22f7.jpg', 1, 0),
+(24, 5632, 'uploads/img-gundam/product_5632_6a0997ba14424.jpg', 1, 0),
+(25, 5888, 'uploads/img-gundam/product_5888_6a0997d2c1636.jpg', 0, 0),
+(26, 5888, 'uploads/img-gundam/product_5888_6a099802a35f0.jpg', 1, 0),
+(27, 5646, 'uploads/img-gundam/product_5646_6a0998276e9d9.jpg', 1, 0),
+(28, 6144, 'uploads/img-gundam/product_6144_6a09984f854f3.webp', 1, 0),
+(29, 6656, 'uploads/img-gundam/product_6656_6a09989c2905d.jpg', 1, 0),
+(30, 6546, 'uploads/img-gundam/product_6546_6a0998b7bb8a4.jpg', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -1832,13 +1849,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
 
 --
 -- AUTO_INCREMENT cho bảng `news`
 --
 ALTER TABLE `news`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `orders`
@@ -1862,7 +1879,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT cho bảng `product_images`
 --
 ALTER TABLE `product_images`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT cho bảng `reviews`
