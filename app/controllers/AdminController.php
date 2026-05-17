@@ -652,21 +652,20 @@ class AdminController
             $title        = trim($_POST['title'] ?? '');
             $summary      = trim($_POST['summary'] ?? '');
             $content      = trim($_POST['content'] ?? '');
-            $is_published = isset($_POST['is_published']) ? 1 : 0;
-            
+            $is_active = isset($_POST['is_active']) ? 1 : 0;
+
             $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
 
-            $image_path = '';
-            if (isset($_FILES['image_path']) && $_FILES['image_path']['error'] === UPLOAD_ERR_OK) {
+            $thumbnail = '';
+            if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === UPLOAD_ERR_OK) {
                 $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-                if (in_array($_FILES['image_path']['type'], $allowedTypes)) {
-                    $ext = pathinfo($_FILES['image_path']['name'], PATHINFO_EXTENSION);
+                if (in_array($_FILES['thumbnail']['type'], $allowedTypes)) {
+                    $ext = pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION);
                     $filename = 'news_' . uniqid() . '.' . strtolower($ext);
                     
-                    // CHỈ ĐỊNH ĐÚNG THƯ MỤC public/uploads/img/
                     $dest = BASE_PATH . '/public/uploads/img/' . $filename;
-                    if (move_uploaded_file($_FILES['image_path']['tmp_name'], $dest)) {
-                        $image_path = 'uploads/img/' . $filename;
+                    if (move_uploaded_file($_FILES['thumbnail']['tmp_name'], $dest)) {
+                        $thumbnail = 'uploads/img/' . $filename;
                     }
                 }
             }
@@ -681,8 +680,8 @@ class AdminController
                     'slug'         => $slug,
                     'summary'      => $summary,
                     'content'      => $content,
-                    'image_path'   => $image_path,
-                    'is_published' => $is_published
+                    'thumbnail'    => $thumbnail,
+                    'is_active'    => $is_active
                 ]);
                 $this->redirect('admin/news');
                 return;
@@ -697,63 +696,83 @@ class AdminController
         ]);
     }
 
-    public function newsEdit(string $id): void
+    public function newsEdit(string $id)
     {
-        $this->requireAdmin();
-        $newsId = (int)$id;
-        $news = $this->newsModel->findById($newsId);
-
+        $news = $this->newsModel->findById((int)$id);
         if (!$news) {
-            $this->redirect('admin/news');
-            return;
+            header('Location: ' . BASE_URL . '/admin/news');
+            exit();
         }
 
         $errors = [];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $title        = trim($_POST['title'] ?? '');
-            $summary      = trim($_POST['summary'] ?? '');
-            $content      = trim($_POST['content'] ?? '');
-            $is_published = isset($_POST['is_published']) ? 1 : 0;
-            $slug         = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
+            $title     = trim($_POST['title'] ?? '');
+            $summary   = trim($_POST['summary'] ?? '');
+            $content   = trim($_POST['content'] ?? '');
+            $is_active = isset($_POST['is_active']) ? 1 : 0;
+            
+            $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
 
-            $image_path = $news['image_path']; // Giữ ảnh cũ nếu không up ảnh mới
+            $thumbnail = $news['thumbnail'] ?? ''; 
+
             if (isset($_FILES['image_path']) && $_FILES['image_path']['error'] === UPLOAD_ERR_OK) {
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-                if (in_array($_FILES['image_path']['type'], $allowedTypes)) {
-                    $ext = pathinfo($_FILES['image_path']['name'], PATHINFO_EXTENSION);
-                    $filename = 'news_' . uniqid() . '.' . strtolower($ext);
+                $fileTmpPath = $_FILES['image_path']['tmp_name'];
+                $fileName    = $_FILES['image_path']['name'];
+                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                
+                if (in_array($fileExtension, $allowedExtensions)) {
+                    $newFileName = time() . '_' . uniqid() . '.' . $fileExtension;
+                    $uploadFileDir = __DIR__ . '/../../public/uploads/img/';
                     
-                    // CHỈ ĐỊNH ĐÚNG THƯ MỤC public/uploads/img/
-                    $dest = BASE_PATH . '/public/uploads/img/' . $filename;
-                    if (move_uploaded_file($_FILES['image_path']['tmp_name'], $dest)) {
-                        $image_path = 'uploads/img/' . $filename;
+                    if (!is_dir($uploadFileDir)) {
+                        mkdir($uploadFileDir, 0755, true);
                     }
+                    
+                    $destPath = $uploadFileDir . $newFileName;
+                    if (move_uploaded_file($fileTmpPath, $destPath)) {
+                        $thumbnail = 'uploads/img/' . $newFileName;
+                    }
+                } else {
+                    $errors[] = 'Định dạng tệp ảnh không hợp lệ. Hệ thống chỉ chấp nhận tệp JPG, JPEG, PNG, GIF, hoặc WEBP.';
                 }
             }
 
             if (empty($title)) {
-                $errors[] = 'Tiêu đề tin tức không được để trống.';
+                $errors[] = 'Tiêu đề bài viết không được phép để trống.';
+            }
+            if (empty($content)) {
+                $errors[] = 'Nội dung chi tiết bài viết không được phép để trống.';
             }
 
             if (empty($errors)) {
-                $this->newsModel->update($newsId, [
-                    'title'        => $title,
-                    'slug'         => $slug,
-                    'summary'      => $summary,
-                    'content'      => $content,
-                    'image_path'   => $image_path,
-                    'is_published' => $is_published
-                ]);
-                $this->redirect('admin/news');
-                return;
+                $updateData = [
+                    'title'     => $title,
+                    'slug'      => $slug,
+                    'summary'   => $summary,
+                    'content'   => $content,
+                    'thumbnail' => $thumbnail,
+                    'is_active' => $is_active
+                ];
+
+                $isUpdated = $this->newsModel->update((int)$id, $updateData);
+                $this->newsModel->update((int)$id, $updateData);
+
+                if ($isUpdated) {
+                    header('Location: ' . BASE_URL . '/admin/news');
+                    exit();
+                } else {
+                    $errors[] = 'Hệ thống gặp sự cố. Không thể lưu dữ liệu vào cơ sở dữ liệu.';
+                }
             }
         }
 
         $this->renderAdmin('admin/news/form', [
             'title'  => 'Cập nhật bài viết — Admin Panel',
-            'errors' => $errors, 
-            'isEdit' => true, 
+            'errors' => $errors,
+            'isEdit' => true,
             'news'   => $news
         ]);
     }

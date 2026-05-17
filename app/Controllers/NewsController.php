@@ -23,23 +23,14 @@ class NewsController
         $this->categoryModel = new Category();
     }
 
-    public function index(): void
+    public function index()
     {
-        $page = max(1, (int) ($_GET['page'] ?? 1));
-        $result = $this->newsModel->getAll($page, 10);
-        
-        $categories = $this->categoryModel->getTopLevel();
+        $newsList = $this->newsModel->getAllActive();
 
-        $data = [
-            'title'      => 'Tin tức — GUNPLA SHOP',
-            'news'       => $result['items'] ?? [],
-            'total'      => $result['total'] ?? 0,
-            'pages'      => $result['pages'] ?? 1,
-            'page'       => $result['page'] ?? $page,
-            'categories' => $categories
-        ];
-
-        $this->render('news/index', $data);
+        $this->render('news/index', [
+            'title'    => 'Tin tức & Hoạt động — Gunpla Shop',
+            'newsList' => $newsList
+        ]);
     }
 
     public function detail(?string $param): void

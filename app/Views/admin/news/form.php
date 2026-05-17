@@ -48,7 +48,11 @@ $errors = $errors ?? [];
 
     <div class="form-group" style="margin-bottom: 24px;">
         <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; text-transform: none; color: var(--text-1); font-size: 13px;">
-            <input type="checkbox" name="is_published" value="1" <?= (!isset($news['is_published']) || $news['is_published'] == 1) ? 'checked' : '' ?> style="width: 17px; height: 17px; accent-color: var(--gold); cursor: pointer;">
+    
+            <input type="checkbox" name="is_active" value="1" 
+                <?= ($isEdit ? (isset($news['is_active']) && $news['is_active'] == 1 ? 'checked' : '') : 'checked') ?> 
+                style="width: 17px; height: 17px; accent-color: var(--gold); cursor: pointer;">
+                
             Cho phép hiển thị công khai bài viết này ngoài trang chủ
         </label>
     </div>

@@ -1,123 +1,75 @@
-<link rel="stylesheet" href="/gunpla-shop/public/css/shop.css">
+<?php
+// Kiểm tra biến truyền từ Controller
+$newsList = $newsList ?? [];
+?>
 
-<main class="news-page">
-    <div class="container">
-        
-        <section class="hero-article">
-            <div class="hero-image">
-                <img src="https://images.unsplash.com/photo-1612450538622-c32ab5d3f828?q=80&w=1200&auto=format&fit=crop" alt="Bandai RG 2.0">
-                <span class="category-badge">Thông báo</span>
-            </div>
-            <div class="hero-content">
-                <div class="meta-info">
-                    <span class="author">Bởi Admin</span> • <span class="date">14 Tháng 5, 2026</span>
-                </div>
-                <h1 class="hero-title">Bandai chính thức công bố RG 2.0 RX-78-2 với bộ khung xương đúc liền thế hệ mới</h1>
-                <p class="hero-excerpt">Phiên bản Real Grade thứ 2 của cụ tổ RX-78-2 hứa hẹn khắc phục hoàn toàn điểm yếu lỏng khớp của thế hệ đầu tiên, mang đến biên độ cử động hoàn hảo cho người chơi hệ 1/144.</p>
-                <a href="#" class="read-more">Đọc tiếp →</a>
-            </div>
-        </section>
-
-        <div class="news-layout">
-            <div class="articles-grid">
-                
-                <article class="news-card">
-                    <div class="card-image">
-                        <img src="https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=600&auto=format&fit=crop" alt="Dụng cụ">
-                        <span class="category-badge">Hướng dẫn</span>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title"><a href="#">Top 5 dụng cụ không thể thiếu cho người mới bắt đầu chơi Gunpla</a></h3>
-                        <p class="card-excerpt">Từ kềm cắt cơ bản đến nhíp gắp decal, đây là những trợ thủ đắc lực giúp bạn có một mô hình hoàn thiện và sạch sẽ.</p>
-                        <div class="meta-info">
-                            <span class="date">12 Tháng 5, 2026</span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="news-card">
-                    <div class="card-image">
-                        <img src="https://images.unsplash.com/photo-1608155686393-8fdd966d784d?q=80&w=600&auto=format&fit=crop" alt="Review">
-                        <span class="category-badge">Đánh giá</span>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title"><a href="#">Đánh giá chi tiết MGEX Strike Freedom: Xứng đáng với danh xưng Masterpiece?</a></h3>
-                        <p class="card-excerpt">Cùng soi kỹ các chi tiết kim loại và hệ thống LED đỉnh cao trên mẫu MGEX thứ hai của Bandai.</p>
-                        <div class="meta-info">
-                            <span class="date">10 Tháng 5, 2026</span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="news-card">
-                    <div class="card-image">
-                        <img src="https://images.unsplash.com/photo-1543330623-1ce557ea68bf?q=80&w=600&auto=format&fit=crop" alt="Sơn phết">
-                        <span class="category-badge">Kỹ thuật</span>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title"><a href="#">Kỹ thuật kẻ lằn chìm (Panel Lining) cơ bản giúp mô hình nổi bật</a></h3>
-                        <p class="card-excerpt">Tìm hiểu sự khác biệt giữa Gundam Marker, dung dịch Tamiya và bút chảy tự động.</p>
-                        <div class="meta-info">
-                            <span class="date">08 Tháng 5, 2026</span>
-                        </div>
-                    </div>
-                </article>
-                
-                <article class="news-card">
-                    <div class="card-image">
-                        <img src="https://images.unsplash.com/photo-1620336655052-b57986f5a26a?q=80&w=600&auto=format&fit=crop" alt="Custom">
-                        <span class="category-badge">Sự kiện</span>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title"><a href="#">Tổng hợp giải đấu Gunpla Builders World Cup (GBWC) Việt Nam 2026</a></h3>
-                        <p class="card-excerpt">Chiêm ngưỡng những tác phẩm độ chế ngoạn mục nhất đến từ cộng đồng modder trong nước.</p>
-                        <div class="meta-info">
-                            <span class="date">05 Tháng 5, 2026</span>
-                        </div>
-                    </div>
-                </article>
-
-            </div>
-
-            <aside class="sidebar">
-                <div class="widget search-widget">
-                    <h3>Tìm kiếm</h3>
-                    <form action="#" method="GET">
-                        <input type="text" placeholder="Nhập từ khóa..." class="search-input">
-                        <button type="submit" class="search-btn">🔍</button>
-                    </form>
-                </div>
-
-                <div class="widget trending-widget">
-                    <h3>Đọc nhiều nhất</h3>
-                    <ul class="trending-list">
-                        <li>
-                            <span class="rank">1</span>
-                            <a href="#">Phân biệt các cấp độ Gunpla: SD, HG, RG, MG và PG</a>
-                        </li>
-                        <li>
-                            <span class="rank">2</span>
-                            <a href="#">Cách khắc phục chốt nhựa bị gãy bằng keo Tamiya</a>
-                        </li>
-                        <li>
-                            <span class="rank">3</span>
-                            <a href="#">Lịch phát hành Gunpla P-Bandai tháng 6/2026</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="widget categories-widget">
-                    <h3>Chủ đề</h3>
-                    <div class="tags-cloud">
-                        <a href="#" class="tag">Thông báo</a>
-                        <a href="#" class="tag">Hướng dẫn</a>
-                        <a href="#" class="tag">Đánh giá</a>
-                        <a href="#" class="tag">Kỹ thuật</a>
-                        <a href="#" class="tag">Sự kiện</a>
-                        <a href="#" class="tag">P-Bandai</a>
-                    </div>
-                </div>
-            </aside>
-        </div>
+<div class="news-page-wrapper" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px; font-family: var(--font-m, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);">
+    
+    <div class="news-header" style="text-align: center; margin-bottom: 40px; border-bottom: 2px solid var(--border); padding-bottom: 20px;">
+        <h1 style="font-size: 32px; color: var(--text-1); text-transform: uppercase; margin: 0 0 10px 0; letter-spacing: 1px; font-family: var(--font-b, inherit);">
+            Tin tức & Sự kiện
+        </h1>
+        <p style="color: var(--text-2); font-size: 15px; margin: 0;">
+            Cập nhật những thông tin mới nhất về mô hình Gunpla và các chương trình khuyến mãi
+        </p>
     </div>
-</main>
+
+    <?php if (!empty($newsList) && is_array($newsList)): ?>
+        <div class="news-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px;">
+            
+            <?php foreach ($newsList as $item): ?>
+                <article class="news-card" style="background: var(--bg-2, var(--bg-content, transparent)); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                    
+                    <div class="card-thumbnail" style="position: relative; width: 100%; height: 220px; background: var(--border); overflow: hidden;">
+                        <?php if (!empty($item['thumbnail']) && file_exists(__DIR__ . '/../../../public/' . $item['thumbnail'])): ?>
+                            <img src="<?= BASE_URL . '/' . htmlspecialchars($item['thumbnail']) ?>" 
+                                 alt="<?= htmlspecialchars($item['title']) ?>" 
+                                 style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                        <?php else: ?>
+                            <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-3); background: var(--bg-2);">
+                                <span style="font-size: 40px; margin-bottom: 8px;">📰</span>
+                                <span style="font-size: 12px;">Không có hình ảnh</span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="card-body" style="padding: 24px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div class="card-meta" style="font-size: 12px; color: var(--text-3); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                <span>📅</span>
+                                <span><?= isset($item['created_at']) ? date('d/m/Y', strtotime($item['created_at'])) : 'Chưa rõ ngày' ?></span>
+                            </div>
+
+                            <h2 class="card-title" style="font-size: 18px; line-height: 1.4; margin: 0 0 12px 0; font-family: var(--font-b, inherit);">
+                                <a href="<?= BASE_URL . '/news/' . htmlspecialchars($item['slug'] ?? '') ?>" 
+                                   style="color: var(--text-1); text-decoration: none; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    <?= htmlspecialchars($item['title'] ?? 'Tiêu đề trống') ?>
+                                </a>
+                            </h2>
+
+                            <p class="card-summary" style="font-size: 14px; color: var(--text-2); line-height: 1.6; margin: 0 0 20px 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                <?= htmlspecialchars($item['summary'] ?? 'Chưa có tóm tắt cho bài viết này.') ?>
+                            </p>
+                        </div>
+
+                        <div class="card-footer" style="margin-top: auto; padding-top: 15px; border-top: 1px solid var(--border);">
+                            <a href="<?= BASE_URL . '/news/' . htmlspecialchars($item['slug'] ?? '') ?>" 
+                               style="display: inline-flex; align-items: center; color: var(--gold, #d69e2e); text-decoration: none; font-weight: 600; font-size: 14px; gap: 5px;">
+                                Đọc bài viết <span style="font-size: 16px;">→</span>
+                            </a>
+                        </div>
+                    </div>
+
+                </article>
+            <?php endforeach; ?>
+
+        </div>
+    <?php else: ?>
+        <div class="no-news" style="text-align: center; padding: 60px 20px; background: var(--bg-2, transparent); border-radius: 8px; border: 1px dashed var(--border);">
+            <span style="font-size: 48px; display: block; margin-bottom: 16px;">📂</span>
+            <h3 style="color: var(--text-1); margin: 0 0 8px 0; font-size: 18px;">Hiện chưa có bài viết nào</h3>
+            <p style="color: var(--text-3); margin: 0; font-size: 14px;">Vui lòng quay lại sau hoặc bổ sung bài viết mới từ trang quản trị hệ thống.</p>
+        </div>
+    <?php endif; ?>
+
+</div>
