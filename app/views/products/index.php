@@ -132,11 +132,26 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
         <div class="product-grid">
           <?php foreach ($products as $p): ?>
             <div class="product-card" onclick="window.location='<?= BASE_URL ?>/products/detail/<?= $p['id'] ?>'">
-              <div class="product-img-wrap">
-                <?php if (!empty($p['thumbnail_path'])): ?>
-                  <img src="<?= htmlspecialchars($p['thumbnail_path']) ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy">
+              <div class="product-img-wrap" style="position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background-color: var(--bg-2, #f8f9fa); border-radius: 4px; border: 1px solid var(--border);">
+                
+                <?php 
+                // Xử lý lấy đúng tên biến và chuẩn hóa đường dẫn URL ảnh
+                $thumb = $p['image_path'] ?? $p['thumbnail_path'] ?? null;
+                if ($thumb && strpos($thumb, '/public/') === 0) {
+                    $thumb = substr($thumb, 8);
+                }
+                $thumbUrl = $thumb ? BASE_URL . '/' . ltrim($thumb, '/') : null;
+                ?>
+
+                <?php if ($thumbUrl): ?>
+                  <img src="<?= htmlspecialchars($thumbUrl) ?>" 
+                       alt="<?= htmlspecialchars($p['name']) ?>" 
+                       loading="lazy" 
+                       style="width: 100%; height: 100%; object-fit: cover; display: block;">
                 <?php else: ?>
-                  <div class="img-placeholder"><?= htmlspecialchars($p['grade'] ?? '?') ?></div>
+                  <div class="img-placeholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-3, #999); font-weight: bold; font-family: var(--font-mono, sans-serif);">
+                      <?= htmlspecialchars($p['grade'] ?? 'NO IMG') ?>
+                  </div>
                 <?php endif; ?>
 
                 <?= stockBadge((int)$p['stock']) ?>
