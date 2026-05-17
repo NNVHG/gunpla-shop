@@ -689,7 +689,12 @@ class AdminController
             }
         }
 
-        $this->render('admin/news/form', ['errors' => $errors, 'isEdit' => false, 'news' => []]);
+        $this->renderAdmin('admin/news/form', [
+            'title'  => 'Thêm bài viết mới — Admin Panel',
+            'errors' => $errors, 
+            'isEdit' => false, 
+            'news'   => []
+        ]);
     }
 
     public function newsEdit(string $id): void
@@ -745,7 +750,12 @@ class AdminController
             }
         }
 
-        $this->render('admin/news/form', ['errors' => $errors, 'isEdit' => true, 'news' => $news]);
+        $this->renderAdmin('admin/news/form', [
+            'title'  => 'Cập nhật bài viết — Admin Panel',
+            'errors' => $errors, 
+            'isEdit' => true, 
+            'news'   => $news
+        ]);
     }
 
     protected function render(string $view, array $data = []): void
