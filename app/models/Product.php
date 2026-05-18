@@ -20,9 +20,9 @@ class Product
         $this->db = getDB();
     }
 
-    public function getFilteredProducts(array $filters, int $page = 1, int $perPage = 12): array
+    public function getFilteredProducts(array $filters, string $sort = 'newest', int $page = 1, int $perPage = 12): array
     {
-        return $this->getAll($filters, 'newest', $page, $perPage);
+        return $this->getAll($filters, $sort, $page, $perPage);
     }
 
     public function getAll(

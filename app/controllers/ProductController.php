@@ -69,15 +69,15 @@ class ProductController
             'category_id' => $categoryId
         ];
 
-        $data = $this->productModel->getFilteredProducts($filters, $page, $perPage);
+        $sort = in_array($_GET['sort'] ?? '', ['newest', 'price_asc', 'price_desc', 'bestseller'])
+            ? $_GET['sort'] : 'newest';
+
+        $data = $this->productModel->getFilteredProducts($filters, $sort, $page, $perPage);
 
         // Thiết lập tiêu đề động tương ứng cho từng trang điều hướng chuyên nghiệp
         $title = 'Tất Cả Sản Phẩm';
         if ($group === 'gunpla') $title = 'Mô Hình Gunpla Lắp Ráp Chính Hãng';
         if ($group === 'tools')  $title = 'Dụng Cụ & Hóa Chất Phụ Trợ';
-
-        $sort = in_array($_GET['sort'] ?? '', ['newest', 'price_asc', 'price_desc', 'bestseller'])
-            ? $_GET['sort'] : 'newest';
 
         $this->render('products/index', [
             'title'        => $title,
