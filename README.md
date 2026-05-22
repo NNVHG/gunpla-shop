@@ -35,7 +35,7 @@ Hệ thống được nâng cấp toàn diện với những tính năng nâng c
 
 ### 🤖 3. Trợ Lý AI Chatbot Gemini & FAQ Thông Minh
 *   Khung chat bóng bẩy (Glassmorphism UI) hỗ trợ tư vấn 24/7.
-*   Tích hợp trực tiếp API của **Google Gemini API (`gemini-1.5-flash`)** với prompt hướng dẫn chuyên môn sâu về Gunpla.
+*   Tích hợp trực tiếp API của **Google Gemini API (`gemini-2.0-flash`)** với prompt hướng dẫn chuyên môn sâu về Gunpla.
 *   **Cơ chế dự phòng (Local FAQ Fallback):** Tự động chuyển sang đối sánh từ khóa địa phương để trả lời nếu mất kết nối API hoặc Admin chưa cấu hình Key.
 *   Trang quản lý cấu hình Chatbot AI trong Admin Panel cho phép bật/tắt AI Mode và cập nhật API Key bất kỳ lúc nào.
 

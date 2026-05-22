@@ -61,6 +61,27 @@
         </div>
       </div>
 
+      <!-- API Key Status Display -->
+      <?php if (isset($keyStatus)): ?>
+      <div style="padding: 16px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-family: var(--font-m); font-size: 13px; font-weight: bold; text-transform: uppercase; color: var(--text-1);">
+          Trạng thái kết nối API hiện tại
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <?php
+            $dotColor = '#ffc107'; // warning
+            if ($keyStatusClass === 'status-success') $dotColor = '#28a745';
+            if ($keyStatusClass === 'status-danger') $dotColor = '#dc3545';
+          ?>
+          <span style="height: 10px; width: 10px; background-color: <?= $dotColor ?>; border-radius: 50%; display: inline-block;"></span>
+          <span style="font-family: var(--font-m); font-size: 14px; font-weight: 600; color: <?= $dotColor ?>;"><?= htmlspecialchars($keyStatus) ?></span>
+        </div>
+        <div style="font-size: 13px; color: var(--text-2); line-height: 1.5; background: rgba(0,0,0,0.25); padding: 10px; border-radius: 4px; border-left: 3px solid <?= $dotColor ?>;">
+          <?= htmlspecialchars($keyStatusMsg) ?>
+        </div>
+      </div>
+      <?php endif; ?>
+
       <!-- Submit button -->
       <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
         <button type="submit" class="btn btn-gold" style="padding: 12px 30px; font-size:13px; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-m);">

@@ -179,7 +179,9 @@
                 <?php else: ?>
                     <div class="notifications-list" style="display:flex; flex-direction:column; gap:12px;">
                         <?php foreach ($notifications as $n): ?>
-                            <div class="notification-item <?= $n['is_read'] == 0 ? 'unread' : '' ?>" style="background:var(--bg-card, rgba(30,30,30,0.6)); border:1px solid <?= $n['is_read'] == 0 ? 'var(--gold)' : 'var(--border, #333)' ?>; padding:16px; border-radius:6px; transition:0.3s; position:relative; <?= $n['is_read'] == 0 ? 'box-shadow: 0 0 10px rgba(200, 168, 90, 0.1);' : '' ?>">
+                            <div class="notification-item <?= $n['is_read'] == 0 ? 'unread' : '' ?> <?= !empty($n['link']) ? 'has-link' : '' ?>" 
+                                 style="background:var(--bg-card, rgba(30,30,30,0.6)); border:1px solid <?= $n['is_read'] == 0 ? 'var(--gold)' : 'var(--border, #333)' ?>; padding:16px; border-radius:6px; transition:0.3s; position:relative; <?= $n['is_read'] == 0 ? 'box-shadow: 0 0 10px rgba(200, 168, 90, 0.1);' : '' ?> <?= !empty($n['link']) ? 'cursor:pointer;' : '' ?>"
+                                 <?= !empty($n['link']) ? 'onclick="window.location=\'' . BASE_URL . $n['link'] . '\'"' : '' ?>>
                                 <?php if ($n['is_read'] == 0): ?>
                                     <span style="position:absolute; top:16px; right:16px; width:8px; height:8px; background:#e63946; border-radius:50%"></span>
                                 <?php endif; ?>
@@ -192,7 +194,7 @@
                                 <div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; color:#777; font-family:var(--font-mono);">
                                     <span><?= date('d/m/Y H:i', strtotime($n['created_at'])) ?></span>
                                     <?php if (!empty($n['link'])): ?>
-                                        <a href="<?= BASE_URL . $n['link'] ?>" class="btn-ghost" style="padding:4px 8px; font-size:13px; text-decoration:none; color:var(--gold);">Xem chi tiết &rarr;</a>
+                                        <span class="btn-ghost-text" style="padding:4px 8px; font-size:13px; text-decoration:none; color:var(--gold); font-weight: 500;">Xem chi tiết &rarr;</span>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -210,6 +212,21 @@
     .user-nav-btn.active { background: rgba(200, 168, 90, 0.1); color: var(--gold); border-left: 3px solid var(--gold); font-weight: bold; }
     .user-tab-content { display: none; }
     .user-tab-content.active { display: block; animation: fadeIn 0.4s; }
+
+    .notification-item { transition: all 0.25s ease-in-out; }
+    .notification-item.has-link:hover {
+        border-color: var(--gold) !important;
+        background: rgba(200, 168, 90, 0.06) !important;
+        transform: translateY(-2px);
+    }
+    .notification-item.unread.has-link:hover {
+        background: rgba(200, 168, 90, 0.12) !important;
+        box-shadow: 0 4px 15px rgba(200, 168, 90, 0.15) !important;
+    }
+    .notification-item.has-link:hover .btn-ghost-text {
+        color: #fff !important;
+        text-shadow: 0 0 5px var(--gold);
+    }
 </style>
 
 <script>

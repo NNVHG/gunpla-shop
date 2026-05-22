@@ -961,9 +961,48 @@ class AdminController
 
         $settings = $settingModel->getAll();
 
+        $customKey = $settings['chatbot_gemini_key'] ?? '';
+        $envKey = $_ENV['GEMINI_API_KEY'] ?? getenv('GEMINI_API_KEY') ?? '';
+        $apiKey = !empty($customKey) ? $customKey : $envKey;
+
+        $keyStatus = 'Chưa cấu hình';
+        $keyStatusClass = 'status-warning';
+        $keyStatusMsg = 'Vui lòng cấu hình API Key để kích hoạt AI Chatbot.';
+
+        if (!empty($apiKey)) {
+            $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" . $apiKey;
+            $payload = [
+                'contents' => [['parts' => [['text' => 'hi']]]],
+                'generationConfig' => ['maxOutputTokens' => 1]
+            ];
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+            curl_setopt($ch, CURLOPT_TIMEOUT, 4);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($httpCode === 200) {
+                $keyStatus = 'Hoạt động';
+                $keyStatusClass = 'status-success';
+                $keyStatusMsg = 'API Key hoạt động tốt. Hệ thống sẵn sàng chạy chế độ AI.';
+            } else {
+                $keyStatus = 'Lỗi kết nối / Hết hạn';
+                $keyStatusClass = 'status-danger';
+                $resData = json_decode($response, true);
+                $keyStatusMsg = $resData['error']['message'] ?? 'Không thể kết nối đến Gemini API. Vui lòng kiểm tra lại khóa hoặc kết nối mạng.';
+            }
+        }
+
         $this->renderAdmin('admin/settings', [
             'title'    => 'Cấu hình AI & Chatbot',
-            'settings' => $settings
+            'settings' => $settings,
+            'keyStatus' => $keyStatus,
+            'keyStatusClass' => $keyStatusClass,
+            'keyStatusMsg' => $keyStatusMsg
         ]);
     }
 
