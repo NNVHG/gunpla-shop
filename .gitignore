@@ -22,3 +22,4 @@ Desktop.ini
 *.ntvs*
 *.njsproj
 *.sln
+extract_project.py
