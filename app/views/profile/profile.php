@@ -57,6 +57,9 @@
                             <div class="form-group">
                                 <label class="form-label">Họ và tên</label>
                                 <input type="text" name="full_name" class="form-input" value="<?= htmlspecialchars($user['full_name']) ?>" required>
+                                <?php if(isset($errors['full_name'])): ?>
+                                    <span class="form-error"><?= $errors['full_name'] ?></span>
+                                <?php endif; ?>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Số điện thoại</label>
@@ -128,8 +131,12 @@
                         <?php foreach($favorites as $p): ?>
                             <div class="product-card" onclick="window.location='<?= BASE_URL ?>/products/detail/<?=$p['id']?>'">
                                 <div class="product-img-wrap">
-                                    <?php if(!empty($p['thumbnail'])): ?>
-                                        <img src="<?= BASE_URL ?>/<?= htmlspecialchars($p['thumbnail']) ?>" alt="">
+                                    <?php 
+                                    $displayImg = !empty($p['image_path']) ? $p['image_path'] : (!empty($p['thumbnail']) ? $p['thumbnail'] : '');
+                                    $displayImg = ltrim($displayImg, '/');
+                                    if(!empty($displayImg)): 
+                                    ?>
+                                        <img src="<?= BASE_URL ?>/<?= htmlspecialchars($displayImg) ?>" alt="">
                                     <?php else: ?>
                                         <div class="img-placeholder"><?= htmlspecialchars($p['grade'] ?? '?') ?></div>
                                     <?php endif; ?>

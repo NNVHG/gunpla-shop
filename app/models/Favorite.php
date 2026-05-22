@@ -41,7 +41,15 @@ class Favorite
 
     public function getUserFavorites(int $userId): array
     {
-        $sql = "SELECT p.* FROM products p 
+        $sql = "SELECT p.*,
+                (
+                    SELECT image_path 
+                    FROM product_images 
+                    WHERE product_id = p.id 
+                    ORDER BY is_primary DESC, id ASC 
+                    LIMIT 1
+                ) AS image_path
+                FROM products p 
                 INNER JOIN favorites f ON p.id = f.product_id 
                 WHERE f.user_id = ? 
                 ORDER BY f.created_at DESC";

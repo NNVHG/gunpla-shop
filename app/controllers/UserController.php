@@ -147,6 +147,13 @@ class UserController
         $this->requirePost();
         $userId = (int) $_SESSION['user']['id'];
 
+        $fullName = trim($_POST['full_name'] ?? '');
+        if (empty($fullName)) {
+            $_SESSION['profile_errors'] = ['full_name' => 'Họ và tên không được để trống'];
+            $this->redirect('/user/profile');
+            return;
+        }
+
         $this->userModel->updateProfile($userId, $_POST);
 
         if (!empty($_POST['new_password'])) {
@@ -158,7 +165,7 @@ class UserController
             $this->userModel->changePassword($userId, $_POST['new_password']);
         }
 
-        $_SESSION['user']['name'] = trim($_POST['full_name']);
+        $_SESSION['user']['name'] = $fullName;
         $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Đã cập nhật thông tin tài khoản'];
         $this->redirect('/user/profile');
     }
