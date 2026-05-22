@@ -18,7 +18,7 @@ function fval(array $d, string $k, string $default = ''): string
 
 function ferr(array $e, string $k): string
 {
-  return isset($e[$k]) ? "<div class='form-error' style='color:red;font-size:11px;margin-top:4px'>" . htmlspecialchars($e[$k]) . "</div>" : '';
+  return isset($e[$k]) ? "<div class='form-error' style='color:red;font-size:13px;margin-top:4px'>" . htmlspecialchars($e[$k]) . "</div>" : '';
 }
 ?>
 
@@ -118,7 +118,7 @@ function ferr(array $e, string $k): string
       <div style="padding:16px">
         <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
           <input form="main-product-form" type="checkbox" name="is_active" value="1" <?= ($saved['is_active'] ?? 1) ? 'checked' : '' ?> style="width:16px;height:16px;accent-color:var(--gold)">
-          <span style="color:var(--t1);font-size:12px;letter-spacing:.04em">Hiển thị trên cửa hàng</span>
+          <span style="color:var(--t1);font-size:14px;letter-spacing:.04em">Hiển thị trên cửa hàng</span>
         </label>
       </div>
     </div>
@@ -138,27 +138,27 @@ function ferr(array $e, string $k): string
                 $fullImgUrl = BASE_URL . '/' . ltrim($imgPath, '/');
             ?>
             <img src="<?= $fullImgUrl ?>" alt="Thumbnail" style="width:100%;border-radius:4px;border:1px solid var(--border);object-fit:cover;max-height:160px">
-            <div style="font-size:10px;color:var(--text-3);margin-top:4px;font-family:var(--font-m)">Ảnh hiện tại</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:4px;font-family:var(--font-m)">Ảnh hiện tại</div>
           </div>
         <?php endif; ?>
-        <label style="margin-bottom:6px; font-size:12px;">Tải ảnh lên (jpg, png, webp — max 5MB)</label>
-        <input form="main-product-form" type="file" name="thumbnail" accept="image/jpeg,image/png,image/webp" style="font-size:11px;padding:6px 0;background:none;border:none">
-        <div style="font-size:10px;color:var(--text-3);margin-top:6px;font-family:var(--font-m)">Ảnh mới sẽ thay thế ảnh cũ</div>
+        <label style="margin-bottom:6px; font-size:14px;">Tải ảnh lên (jpg, png, webp — max 5MB)</label>
+        <input form="main-product-form" type="file" name="thumbnail" accept="image/jpeg,image/png,image/webp" style="font-size:13px;padding:6px 0;background:none;border:none">
+        <div style="font-size:12px;color:var(--text-3);margin-top:6px;font-family:var(--font-m)">Ảnh mới sẽ thay thế ảnh cũ</div>
       </div>
     </div>
 
-    <button form="main-product-form" type="submit" class="btn btn-gold" style="width:100%;padding:13px;font-size:18px;border-radius:5px">
+    <button form="main-product-form" type="submit" class="btn btn-gold" style="width:100%;padding:13px;font-size:20px;border-radius:5px">
       <?= $isEdit ? 'CẬP NHẬT SẢN PHẨM' : 'THÊM SẢN PHẨM' ?>
     </button>
     
-    <a href="<?= BASE_URL ?>/admin/products" style="display:block;text-align:center;margin-top:10px;font-family:var(--font-m);font-size:10px;color:var(--text-3);letter-spacing:.08em">
+    <a href="<?= BASE_URL ?>/admin/products" style="display:block;text-align:center;margin-top:10px;font-family:var(--font-m);font-size:12px;color:var(--text-3);letter-spacing:.08em">
       &larr; Quay lại danh sách
     </a>
 
     <?php if ($isEdit): ?>
       <div style="margin-top:16px;background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;padding:14px">
-        <div style="font-family:var(--font-m);font-size:9px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px">// Thông tin hệ thống</div>
-        <div style="font-family:var(--font-m);font-size:10px;color:var(--text-3);line-height:1.8">
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px">// Thông tin hệ thống</div>
+        <div style="font-family:var(--font-m);font-size:12px;color:var(--text-3);line-height:1.8">
           ID: <?= $product['id'] ?><br>
           Slug: <?= htmlspecialchars($product['slug'] ?? '') ?><br>
           Tạo lúc: <?= date('d/m/Y H:i', strtotime($product['created_at'] ?? 'now')) ?>
@@ -166,7 +166,7 @@ function ferr(array $e, string $k): string
         
         <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
           <form method="POST" action="<?= BASE_URL ?>/admin/products/delete/<?= $product['id'] ?>" onsubmit="return confirm('Ẩn sản phẩm này khỏi cửa hàng?')">
-            <button type="submit" class="btn btn-danger btn-sm" style="width:100%; padding: 8px; font-size:12px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            <button type="submit" class="btn btn-danger btn-sm" style="width:100%; padding: 8px; font-size:14px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">
               Ẩn sản phẩm này
             </button>
           </form>

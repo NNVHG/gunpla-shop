@@ -428,6 +428,27 @@ class AdminController
         $status  = $_POST['status'] ?? '';
         $success = $this->orderModel->updateStatus($orderId, $status);
 
+        if ($success) {
+            $order = $this->orderModel->getById($orderId);
+            if ($order && !empty($order['user_id'])) {
+                require_once APP_PATH . '/Models/Notification.php';
+                $notifyModel = new \App\Models\Notification();
+                
+                $statusLabels = [
+                    'pending'   => 'Chờ xác nhận',
+                    'confirmed' => 'Đã xác nhận',
+                    'shipping'  => 'Đang giao hàng',
+                    'delivered' => 'Đã giao hàng thành công',
+                    'cancelled' => 'Đã hủy'
+                ];
+                $statusText = $statusLabels[$status] ?? $status;
+                
+                $title = 'Cập nhật trạng thái đơn hàng';
+                $msg = "Đơn hàng #{$orderId} của bạn đã được chuyển sang trạng thái: {$statusText}.";
+                $notifyModel->create((int)$order['user_id'], $title, $msg, '/orders/detail/' . $orderId);
+            }
+        }
+
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode(['success' => $success]);
         exit;
@@ -942,6 +963,101 @@ class AdminController
             'title'    => 'Cấu hình AI & Chatbot',
             'settings' => $settings
         ]);
+    }
+
+    public function defects(): void
+    {
+        $this->requireAdmin();
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $perPage = 15;
+
+        require_once APP_PATH . '/Models/DefectReport.php';
+        $defectModel = new \App\Models\DefectReport();
+        $data = $defectModel->getAllForAdmin($page, $perPage);
+
+        $this->renderAdmin('admin/defects/index', [
+            'title' => 'Quản lý Báo Cáo Lỗi Sản Phẩm',
+            'items' => $data['items'],
+            'total' => $data['total'],
+            'pages' => $data['pages'],
+            'page'  => $page
+        ]);
+    }
+
+    public function defectDetail(?string $param): void
+    {
+        $this->requireAdmin();
+        $id = (int)($param ?? 0);
+        if ($id <= 0) {
+            $this->redirect('/admin/defects');
+            return;
+        }
+
+        require_once APP_PATH . '/Models/DefectReport.php';
+        $defectModel = new \App\Models\DefectReport();
+        $report = $defectModel->getById($id);
+
+        if (!$report) {
+            $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Báo cáo lỗi không tồn tại hoặc đã bị xóa.'];
+            $this->redirect('/admin/defects');
+            return;
+        }
+
+        $this->renderAdmin('admin/defects/detail', [
+            'title'  => 'Chi tiết Báo Cáo Lỗi #' . $id,
+            'report' => $report
+        ]);
+    }
+
+    public function confirmDefectReshipment(): void
+    {
+        $this->requireAdmin();
+        $this->requirePost();
+
+        $id = (int)($_POST['id'] ?? 0);
+        $action = $_POST['action'] ?? ''; // 'approve' or 'reject'
+        $adminComment = trim($_POST['admin_comment'] ?? '');
+
+        if ($id <= 0 || !in_array($action, ['approve', 'reject'])) {
+            $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Dữ liệu yêu cầu không hợp lệ.'];
+            $this->redirect('/admin/defects');
+            return;
+        }
+
+        require_once APP_PATH . '/Models/DefectReport.php';
+        $defectModel = new \App\Models\DefectReport();
+        $report = $defectModel->getById($id);
+
+        if (!$report) {
+            $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Báo cáo lỗi không tồn tại.'];
+            $this->redirect('/admin/defects');
+            return;
+        }
+
+        $status = $action === 'approve' ? 'approved' : 'rejected';
+        $success = $defectModel->updateStatus($id, $status, $adminComment);
+
+        if ($success) {
+            // Gửi thông báo đến tài khoản khách hàng
+            require_once APP_PATH . '/Models/Notification.php';
+            $notifyModel = new \App\Models\Notification();
+
+            if ($status === 'approved') {
+                $title = 'Báo cáo lỗi sản phẩm được xác nhận';
+                $msg = "Báo cáo lỗi sản phẩm \"{$report['product_name']}\" (Đơn hàng #{$report['order_id']}) của bạn đã được xác nhận. Chúng tôi đang chuẩn bị gửi sản phẩm mới thay thế.";
+                $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Đã xác nhận báo cáo lỗi và phê duyệt gửi hàng thay thế.'];
+            } else {
+                $title = 'Báo cáo lỗi sản phẩm bị từ chối';
+                $msg = "Báo cáo lỗi sản phẩm \"{$report['product_name']}\" (Đơn hàng #{$report['order_id']}) của bạn đã bị từ chối. Lý do: " . ($adminComment ?: 'Hình ảnh hoặc video không đáp ứng yêu cầu.');
+                $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Đã từ chối báo cáo lỗi sản phẩm.'];
+            }
+
+            $notifyModel->create((int)$report['user_id'], $title, $msg, '/orders/detail/' . $report['order_id'] . '#defect-report-' . $report['id']);
+        } else {
+            $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Không thể cập nhật trạng thái báo cáo lỗi.'];
+        }
+
+        $this->redirect('/admin/defects/detail/' . $id);
     }
 }
 

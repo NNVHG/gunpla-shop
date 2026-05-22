@@ -54,7 +54,7 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
 
         <?php if ($isAll || $isGunpla): ?>
             
-            <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px">// Cấp độ (Grade)</div>
+            <div style="font-family:var(--font-mono);font-size:12px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px">// Cấp độ (Grade)</div>
             <a href="<?= $buildUrl(['grade' => null]) ?>"
                class="filter-link <?= empty($currentGrade) ? 'active' : '' ?>">Tất cả Grade</a>
             <?php foreach (['SD' => 'SD (Super Deformed)', 'EG' => 'EG (Entry Grade)', 'HG' => 'HG (High Grade)', 'RG' => 'RG (Real Grade)', 'MG' => 'MG (Master Grade)', 'MGSD' => 'MGSD', 'PG' => 'PG (Perfect Grade)'] as $v => $l): ?>
@@ -62,7 +62,7 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
                    class="filter-link <?= $currentGrade === $v ? 'active' : '' ?>"><?= $l ?></a>
             <?php endforeach; ?>
 
-            <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:24px 0 10px">// Tỷ lệ (Scale)</div>
+            <div style="font-family:var(--font-mono);font-size:12px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:24px 0 10px">// Tỷ lệ (Scale)</div>
             <a href="<?= $buildUrl(['scale' => null]) ?>"
                class="filter-link <?= empty($currentScale) ? 'active' : '' ?>">Tất cả Tỷ lệ</a>
             <?php foreach (['1/144' => '1/144 Scale', '1/100' => '1/100 Scale', '1/60' => '1/60 Scale', '1/48' => '1/48 Scale', 'Non-scale' => 'Không tỷ lệ'] as $v => $l): ?>
@@ -70,7 +70,7 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
                    class="filter-link <?= $currentScale === $v ? 'active' : '' ?>"><?= $l ?></a>
             <?php endforeach; ?>
 
-            <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:24px 0 10px">// Vũ trụ phim (Series)</div>
+            <div style="font-family:var(--font-mono);font-size:12px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:24px 0 10px">// Vũ trụ phim (Series)</div>
             <a href="<?= $buildUrl(['series' => null]) ?>"
                class="filter-link <?= empty($currentSeries) ? 'active' : '' ?>">Tất cả Vũ trụ</a>
             <?php foreach (['Gundam' => 'Gundam Gốc (UC)', 'SEED' => 'Gundam SEED (CE)', '00' => 'Gundam 00 (AD)', 'Orphans' => 'Iron-Blooded (PD)', 'Mercury' => 'Witch from Mercury (AS)'] as $v => $l): ?>
@@ -83,7 +83,7 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
 
         <?php if ($isAll || $isTool): ?>
             
-            <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase; <?= $isAll ? 'margin:24px 0 10px;' : 'margin-bottom:10px;' ?>">// Dụng cụ & Phụ kiện</div>
+            <div style="font-family:var(--font-mono);font-size:12px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase; <?= $isAll ? 'margin:24px 0 10px;' : 'margin-bottom:10px;' ?>">// Dụng cụ & Phụ kiện</div>
             <a href="<?= $buildUrl(['category_id' => null, 'group' => 'tools']) ?>" 
                class="filter-link <?= empty($currentCat) ? 'active' : '' ?>">Tất cả Dụng cụ</a>
                
@@ -107,7 +107,7 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
         <?php endif; ?>
 
         <!-- Bộ lọc tình trạng kho -->
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:24px 0 10px">// Tình trạng hàng</div>
+        <div style="font-family:var(--font-mono);font-size:12px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:24px 0 10px">// Tình trạng hàng</div>
         <a href="<?= $buildUrl(['stock_status' => null]) ?>"
            class="filter-link <?= empty($filters['stock_status']) ? 'active' : '' ?>">Tất cả tình trạng</a>
         <a href="<?= $buildUrl(['stock_status' => 'in_stock']) ?>"
@@ -116,15 +116,15 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
            class="filter-link <?= ($filters['stock_status'] ?? '') === 'out_stock' ? 'active' : '' ?>">Hết hàng</a>
 
         <!-- Bộ lọc khoảng giá -->
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:24px 0 15px">// Khoảng giá (VNĐ)</div>
+        <div style="font-family:var(--font-mono);font-size:12px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:24px 0 15px">// Khoảng giá (VNĐ)</div>
         <div style="padding:0 10px;margin-bottom:15px">
           <div id="price-slider" style="margin-bottom:20px;height:8px;border:none;background:var(--border);border-radius:4px"></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:10px;color:var(--text-hint);margin-bottom:15px">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:12px;color:var(--text-hint);margin-bottom:15px">
             <span id="price-min-val">0đ</span>
             <span>-</span>
             <span id="price-max-val">5.000.000đ</span>
           </div>
-          <button id="btn-apply-price" class="btn btn-gold" style="width:100%;padding:8px;font-size:11px;border-radius:4px;font-family:var(--font-mono);letter-spacing:0.05em">ÁP DỤNG</button>
+          <button id="btn-apply-price" class="btn btn-gold" style="width:100%;padding:8px;font-size:13px;border-radius:4px;font-family:var(--font-mono);letter-spacing:0.05em">ÁP DỤNG</button>
         </div>
 
       </div>
@@ -132,7 +132,7 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
 
     <div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-hint)">
+        <div style="font-family:var(--font-mono);font-size:13px;color:var(--text-hint)">
           <?= $total ?> sản phẩm<?= $currentGrade ? " · Grade: $currentGrade" : '' ?>
         </div>
         
@@ -150,7 +150,7 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
       </div>
 
       <?php if (empty($products)): ?>
-        <div style="text-align:center;padding:80px 0;color:var(--text-hint);font-family:var(--font-mono);font-size:12px">
+        <div style="text-align:center;padding:80px 0;color:var(--text-hint);font-family:var(--font-mono);font-size:14px">
           Không tìm thấy sản phẩm nào
         </div>
       <?php else: ?>
@@ -169,9 +169,9 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
                 ?>
 
                 <!-- Compare Checkbox -->
-                <label class="compare-checkbox-wrap" onclick="event.stopPropagation();" style="position:absolute;top:10px;left:10px;z-index:5;background:rgba(0,0,0,0.7);padding:4px 8px;border-radius:4px;display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;border:1px solid rgba(255,255,255,0.1)">
-                  <input type="checkbox" class="compare-checkbox" data-id="<?= $p['id'] ?>" data-name="<?= htmlspecialchars($p['name']) ?>" data-image="<?= htmlspecialchars($thumbUrl ?? '') ?>" style="width:14px;height:14px;accent-color:var(--gold);cursor:pointer">
-                  <span style="font-size:9px;color:#fff;font-family:var(--font-mono);font-weight:bold;letter-spacing:0.05em">SO SÁNH</span>
+                <label class="compare-checkbox-wrap" onclick="event.stopPropagation();">
+                  <input type="checkbox" class="compare-checkbox" data-id="<?= $p['id'] ?>" data-name="<?= htmlspecialchars($p['name']) ?>" data-image="<?= htmlspecialchars($thumbUrl ?? '') ?>">
+                  <span>SO SÁNH</span>
                 </label>
 
                 <?php if ($thumbUrl): ?>

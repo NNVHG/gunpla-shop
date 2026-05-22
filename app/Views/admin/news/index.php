@@ -28,7 +28,7 @@
                            <?php if (!empty($item['thumbnail'])): ?>
                                 <img src="<?= BASE_URL . '/' . $item['thumbnail'] ?>" style="width: 80px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);">
                             <?php else: ?>
-                                <div style="width: 80px; height: 50px; background: var(--bg-hover); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--text-3); border-radius: 4px; border: 1px solid var(--border);">No Img</div>
+                                <div style="width: 80px; height: 50px; background: var(--bg-hover); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--text-3); border-radius: 4px; border: 1px solid var(--border);">No Img</div>
                             <?php endif; ?>
                         </td>
                         <td style="font-weight: 500; color: var(--text-1); max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -43,7 +43,7 @@
                                 <span class="badge badge-cancelled">Đang ẩn</span>
                             <?php endif; ?>
                         </td>
-                        <td style="font-family: var(--font-m); font-size: 11px; color: var(--text-2);">
+                        <td style="font-family: var(--font-m); font-size:13px; color: var(--text-2);">
                             <?php 
                             if (!empty($item['created_at'])) {
                                 echo date('d/m/Y H:i', strtotime($item['created_at']));

@@ -60,20 +60,20 @@ $nextLabel = [
           <td style="font-family:var(--font-m);color:var(--text-2)">#<?= $order['id'] ?></td>
           <td>
             <div style="font-weight:500"><?= htmlspecialchars($order['full_name']) ?></div>
-            <div style="font-family:var(--font-m);font-size:10px;color:var(--text-2)"><?= htmlspecialchars($order['phone']) ?></div>
+            <div style="font-family:var(--font-m);font-size:12px;color:var(--text-2)"><?= htmlspecialchars($order['phone']) ?></div>
           </td>
-          <td style="font-size:11px;color:var(--text-2);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+          <td style="font-size:13px;color:var(--text-2);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
             <?= htmlspecialchars($order['address']) ?>, <?= htmlspecialchars($order['province']) ?>
           </td>
-          <td style="font-family:var(--font-m);font-size:11px;color:var(--text-2)"><?= number_format($order['subtotal'], 0, ',', '.') ?>đ</td>
-          <td style="font-family:var(--font-m);font-size:11px;color:var(--text-2)"><?= number_format($order['shipping_fee'], 0, ',', '.') ?>đ</td>
-          <td style="font-family:var(--font-d);font-size:16px;color:var(--gold)"><?= number_format($order['total'], 0, ',', '.') ?>đ</td>
+          <td style="font-family:var(--font-m);font-size:13px;color:var(--text-2)"><?= number_format($order['subtotal'], 0, ',', '.') ?>đ</td>
+          <td style="font-family:var(--font-m);font-size:13px;color:var(--text-2)"><?= number_format($order['shipping_fee'], 0, ',', '.') ?>đ</td>
+          <td style="font-family:var(--font-d);font-size:18px;color:var(--gold)"><?= number_format($order['total'], 0, ',', '.') ?>đ</td>
           <td>
             <span class="badge badge-<?= $order['status'] ?>" id="badge-<?= $order['id'] ?>">
               <?= $statusLabels[$order['status']] ?? $order['status'] ?>
             </span>
           </td>
-          <td style="font-family:var(--font-m);font-size:10px;color:var(--text-2);white-space:nowrap">
+          <td style="font-family:var(--font-m);font-size:12px;color:var(--text-2);white-space:nowrap">
             <?= date('d/m/Y H:i', strtotime($order['created_at'])) ?>
           </td>
           <td>
@@ -97,7 +97,7 @@ $nextLabel = [
       <?php endforeach; ?>
       <?php if (empty($orders)): ?>
         <tr>
-          <td colspan="9" style="text-align:center;padding:40px;color:var(--text-3);font-family:var(--font-m);font-size:11px">Không có đơn hàng nào</td>
+          <td colspan="9" style="text-align:center;padding:40px;color:var(--text-3);font-family:var(--font-m);font-size:13px">Không có đơn hàng nào</td>
         </tr>
       <?php endif; ?>
     </tbody>

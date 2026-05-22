@@ -31,13 +31,13 @@
                     <tr>
                         <td>#<?= $cat['id'] ?></td>
                         <td style="font-weight:600; color:var(--gold)"><?= htmlspecialchars($cat['name']) ?></td>
-                        <td><span style="padding:4px 8px; background:var(--bg-card); border:1px solid var(--border); border-radius:4px; font-size:11px; text-transform:uppercase"><?= htmlspecialchars($cat['type']) ?></span></td>
+                        <td><span style="padding:4px 8px; background:var(--bg-card); border:1px solid var(--border); border-radius:4px; font-size:13px; text-transform:uppercase"><?= htmlspecialchars($cat['type']) ?></span></td>
                         <td><?= $cat['parent_name'] ? htmlspecialchars($cat['parent_name']) : '<span style="color:var(--text-hint)">--</span>' ?></td>
                         <td style="text-align:right">
                             <div style="display:flex; gap:8px; justify-content:flex-end">
-                                <a href="<?= BASE_URL ?>/admin/categories/edit/<?= $cat['id'] ?>" class="btn-gold" style="padding:6px 12px; font-size:12px">Sửa</a>
+                                <a href="<?= BASE_URL ?>/admin/categories/edit/<?= $cat['id'] ?>" class="btn-gold" style="padding:6px 12px; font-size:14px">Sửa</a>
                                 <form method="POST" action="<?= BASE_URL ?>/admin/categories/delete/<?= $cat['id'] ?>" onsubmit="return confirm('Bạn có chắc muốn xóa danh mục này? Các sản phẩm thuộc danh mục này có thể bị ảnh hưởng.');">
-                                    <button type="submit" class="btn-gold" style="padding:6px 12px; font-size:12px; background:transparent; border-color:#ff4d4f; color:#ff4d4f">Xóa</button>
+                                    <button type="submit" class="btn-gold" style="padding:6px 12px; font-size:14px; background:transparent; border-color:#ff4d4f; color:#ff4d4f">Xóa</button>
                                 </form>
                             </div>
                         </td>

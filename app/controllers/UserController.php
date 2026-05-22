@@ -126,12 +126,17 @@ class UserController
         $favoriteModel = new Favorite(getDB());
         $favorites = $favoriteModel->getUserFavorites($userId);
 
+        require_once APP_PATH . '/Models/Notification.php';
+        $notifyModel = new \App\Models\Notification();
+        $notifications = $notifyModel->getByUser($userId);
+
         $this->render('profile/profile', [
-            'title'     => 'Trung tâm điều khiển Pilot — GUNPLA SHOP',
-            'user'      => $user,
-            'orders'    => $orders,
-            'favorites' => $favorites,
-            'errors'    => $_SESSION['profile_errors'] ?? []
+            'title'         => 'Trung tâm điều khiển Pilot — GUNPLA SHOP',
+            'user'          => $user,
+            'orders'        => $orders,
+            'favorites'     => $favorites,
+            'notifications' => $notifications,
+            'errors'        => $_SESSION['profile_errors'] ?? []
         ]);
         unset($_SESSION['profile_errors']);
     }
@@ -189,5 +194,22 @@ class UserController
 
         if ($withLayout) include APP_PATH . '/views/layouts/main.php';
         else echo $content;
+    }
+
+    public function markNotificationsRead(): void
+    {
+        $this->requireLogin();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            exit;
+        }
+        
+        require_once APP_PATH . '/Models/Notification.php';
+        $notifyModel = new \App\Models\Notification();
+        $success = $notifyModel->markAllAsRead((int)$_SESSION['user']['id']);
+        
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['success' => $success]);
+        exit;
     }
 }

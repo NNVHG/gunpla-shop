@@ -8,8 +8,8 @@
 
 <div class="admin-table-wrap" style="max-width: 720px; margin: 0 auto; padding: 28px; background: var(--bg-card); border-radius: 8px;">
   <div style="border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 24px;">
-    <h2 style="font-family: var(--font-d); font-size: 24px; color: var(--gold); letter-spacing: 0.05em; margin: 0;">// CẤU HÌNH AI & CHATBOT</h2>
-    <p style="font-family: var(--font-m); font-size: 11px; color: var(--text-2); margin-top: 4px;">Thiết lập trạng thái hoạt động và phương thức xử lý của trợ lý ảo</p>
+    <h2 style="font-family: var(--font-d); font-size:26px; color: var(--gold); letter-spacing: 0.05em; margin: 0;">// CẤU HÌNH AI & CHATBOT</h2>
+    <p style="font-family: var(--font-m); font-size:13px; color: var(--text-2); margin-top: 4px;">Thiết lập trạng thái hoạt động và phương thức xử lý của trợ lý ảo</p>
   </div>
 
   <form method="POST" action="<?= BASE_URL ?>/admin/settings">
@@ -18,10 +18,10 @@
       <!-- Chatbot Enabled Switch -->
       <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px;">
         <div>
-          <div style="font-family: var(--font-m); font-size: 12px; color: var(--text-1); text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">
+          <div style="font-family: var(--font-m); font-size:14px; color: var(--text-1); text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">
             Trạng thái Chatbot
           </div>
-          <div style="font-size: 12px; color: var(--text-2); margin-top: 4px;">
+          <div style="font-size:14px; color: var(--text-2); margin-top: 4px;">
             Bật/Tắt bong bóng chat và phản hồi khách hàng ở trang ngoài.
           </div>
         </div>
@@ -34,10 +34,10 @@
       <!-- Chatbot AI Mode Switch -->
       <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px;">
         <div>
-          <div style="font-family: var(--font-m); font-size: 12px; color: var(--text-1); text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">
+          <div style="font-family: var(--font-m); font-size:14px; color: var(--text-1); text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">
             Chế độ AI Mode (Gemini)
           </div>
-          <div style="font-size: 12px; color: var(--text-2); margin-top: 4px;">
+          <div style="font-size:14px; color: var(--text-2); margin-top: 4px;">
             Nếu tắt, hệ thống sẽ sử dụng bộ quy tắc Rule-based thủ công (phản hồi từ khóa) thay thế.
           </div>
         </div>
@@ -49,21 +49,21 @@
 
       <!-- Gemini API Key Input -->
       <div style="display: flex; flex-direction: column; gap: 8px; padding: 16px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 6px;">
-        <label style="font-family: var(--font-m); font-size: 11px; color: var(--text-1); text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">
+        <label style="font-family: var(--font-m); font-size:13px; color: var(--text-1); text-transform: uppercase; letter-spacing: 0.05em; font-weight: bold;">
           Khóa Gemini API Key (Ghi đè)
         </label>
         <input type="password" name="chatbot_gemini_key" class="form-input" 
                value="<?= htmlspecialchars($settings['chatbot_gemini_key'] ?? '') ?>" 
                placeholder="Nhập API Key để ghi đè cấu hình .env (bỏ trống nếu muốn dùng .env)"
                style="font-family: var(--font-m); letter-spacing: 0.05em; padding: 9px 12px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 4px; color: var(--text-1); width: 100%; outline: none;">
-        <div style="font-size: 11px; color: var(--text-2);">
+        <div style="font-size:13px; color: var(--text-2);">
           * Để trống để tiếp tục sử dụng API Key trong tệp `.env`. Cấu hình này hữu ích khi bạn muốn cập nhật nhanh API Key từ giao diện Admin.
         </div>
       </div>
 
       <!-- Submit button -->
       <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
-        <button type="submit" class="btn btn-gold" style="padding: 12px 30px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-m);">
+        <button type="submit" class="btn btn-gold" style="padding: 12px 30px; font-size:13px; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-m);">
           Lưu cấu hình hệ thống
         </button>
       </div>

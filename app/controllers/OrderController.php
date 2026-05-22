@@ -170,6 +170,16 @@ class OrderController
         }
 
         $orderData = $this->orderModel->getById($result['order_id']);
+        
+        // Gửi thông báo đặt hàng cho người dùng
+        if ($userId) {
+            require_once APP_PATH . '/Models/Notification.php';
+            $notifyModel = new \App\Models\Notification();
+            $title = 'Đặt hàng thành công';
+            $msg = 'Bạn đã đặt hàng thành công đơn hàng #' . $result['order_id'] . '. Tổng thanh toán: ' . number_format((float)$result['total'], 0, ',', '.') . 'đ.';
+            $notifyModel->create((int)$userId, $title, $msg, '/orders/detail/' . $result['order_id']);
+        }
+
         $this->sendConfirmationEmail($info, $orderData);
 
         $_SESSION['cart'] = [];
@@ -209,6 +219,17 @@ class OrderController
             if ($_GET['vnp_ResponseCode'] == '00') {
 
                 $this->orderModel->updatePaymentStatus($orderId, 'paid', $_GET['vnp_TransactionNo']);
+                
+                // Gửi thông báo thanh toán thành công
+                $userId = $_SESSION['user']['id'] ?? null;
+                if ($userId) {
+                    require_once APP_PATH . '/Models/Notification.php';
+                    $notifyModel = new \App\Models\Notification();
+                    $title = 'Thanh toán thành công';
+                    $msg = 'Đơn hàng #' . $orderId . ' đã được thanh toán thành công qua VNPay và đang chờ xác nhận.';
+                    $notifyModel->create((int)$userId, $title, $msg, '/orders/detail/' . $orderId);
+                }
+
                 $_SESSION['cart'] = [];
                 $_SESSION['last_order_id'] = $orderId;
                 $this->redirect('/orders/success');
@@ -264,9 +285,27 @@ class OrderController
             return;
         }
 
+        $reportsByProduct = [];
+        if ($userId) {
+            $db = getDB();
+            $stmt = $db->prepare("
+                SELECT dr.*, p.name AS product_name 
+                FROM defect_reports dr
+                JOIN products p ON dr.product_id = p.id
+                WHERE dr.order_id = ?
+            ");
+            $stmt->execute([$orderId]);
+            $reports = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            foreach ($reports as $r) {
+                $reportsByProduct[(int)$r['product_id']] = $r;
+            }
+        }
+
+
         $data = [
-            'title' => "Đơn hàng #{$orderId} — GUNPLA SHOP",
-            'order' => $order,
+            'title'            => "Đơn hàng #{$orderId} — GUNPLA SHOP",
+            'order'            => $order,
+            'reportsByProduct' => $reportsByProduct,
         ];
         $this->render('orders/detail', $data);
     }

@@ -8,7 +8,7 @@
 ?>
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
   <div>
-    <div style="font-family:var(--font-m);font-size:10px;color:var(--text-2)">
+    <div style="font-family:var(--font-m);font-size:12px;color:var(--text-2)">
       Quản lý tồn kho — click vào số lượng để điều chỉnh nhanh
     </div>
   </div>
@@ -20,7 +20,7 @@
     <span class="admin-table-title">Tồn kho toàn bộ sản phẩm</span>
     <div style="display:flex;align-items:center;gap:8px">
       <input type="text" id="stockSearch" placeholder="Tìm sản phẩm..."
-        style="padding:5px 10px;font-size:11px;width:200px" oninput="filterTable(this.value)">
+        style="padding:5px 10px;font-size:13px;width:200px" oninput="filterTable(this.value)">
     </div>
   </div>
   <table id="inventoryTable">
@@ -42,20 +42,20 @@
         ?>
         <tr id="inv-row-<?= $p['id'] ?>" data-name="<?= strtolower(htmlspecialchars($p['name'])) ?>">
           <td>
-            <div style="font-size:12px;font-weight:500;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+            <div style="font-size:14px;font-weight:500;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
               <?= htmlspecialchars($p['name']) ?>
             </div>
-            <div style="font-family:var(--font-m);font-size:9px;color:var(--text-3)"><?= htmlspecialchars($p['series'] ?? '') ?></div>
+            <div style="font-family:var(--font-m);font-size:11px;color:var(--text-3)"><?= htmlspecialchars($p['series'] ?? '') ?></div>
           </td>
-          <td><span class="badge badge-confirmed" style="font-size:9px"><?= htmlspecialchars($p['grade'] ?? '') ?></span></td>
-          <td style="font-family:var(--font-m);font-size:11px;color:var(--text-2)"><?= htmlspecialchars($p['scale'] ?? '—') ?></td>
-          <td style="font-family:var(--font-d);font-size:15px;color:var(--gold)"><?= number_format($p['price'], 0, ',', '.') ?>đ</td>
+          <td><span class="badge badge-confirmed" style="font-size:11px"><?= htmlspecialchars($p['grade'] ?? '') ?></span></td>
+          <td style="font-family:var(--font-m);font-size:13px;color:var(--text-2)"><?= htmlspecialchars($p['scale'] ?? '—') ?></td>
+          <td style="font-family:var(--font-d);font-size:17px;color:var(--gold)"><?= number_format($p['price'], 0, ',', '.') ?>đ</td>
           <td>
             <div class="stock-bar-wrap">
               <div class="stock-bar" style="height:6px">
                 <div class="stock-bar-fill" id="bar-<?= $p['id'] ?>" style="width:<?= $pct ?>%;background:<?= $color ?>"></div>
               </div>
-              <span class="stock-num" id="stock-num-<?= $p['id'] ?>" style="color:<?= $color ?>;font-family:var(--font-m);font-size:12px">
+              <span class="stock-num" id="stock-num-<?= $p['id'] ?>" style="color:<?= $color ?>;font-family:var(--font-m);font-size:14px">
                 <?= $p['stock'] === 0 ? 'Hết' : $p['stock'] ?>
               </span>
             </div>
@@ -83,8 +83,8 @@
 
 <div id="adjustModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center">
   <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:28px;width:380px">
-    <h3 style="font-family:var(--font-d);font-size:20px;letter-spacing:0.08em;margin-bottom:6px" id="modalTitle"></h3>
-    <div style="font-family:var(--font-m);font-size:10px;color:var(--text-2);margin-bottom:20px">
+    <h3 style="font-family:var(--font-d);font-size:22px;letter-spacing:0.08em;margin-bottom:6px" id="modalTitle"></h3>
+    <div style="font-family:var(--font-m);font-size:12px;color:var(--text-2);margin-bottom:20px">
       Tồn kho hiện tại: <span id="modalCurrentStock" style="color:var(--gold)"></span>
     </div>
     <div style="margin-bottom:14px">

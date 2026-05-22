@@ -102,34 +102,35 @@ $formatImg = function ($path) {
     </div>
   <?php endif; ?>
 
+
   <div id="reviews" style="padding-bottom:64px;">
 
     <div class="section-head" style="margin-bottom:24px;">
       <h2 class="section-title">Đánh giá</h2>
       <?php if ($totalReviews > 0): ?>
         <div style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);">
-          <span style="font-family:var(--font-display);font-size:38px;color:var(--gold);line-height:1;"><?= number_format($avgRating, 1) ?></span>
+          <span style="font-family:var(--font-display);font-size:40px;color:var(--gold);line-height:1;"><?= number_format($avgRating, 1) ?></span>
           <div>
-            <div style="color:var(--gold);font-size:18px;letter-spacing:2px;">
+            <div style="color:var(--gold);font-size:20px;letter-spacing:2px;">
               <?php for ($i = 1; $i <= 5; $i++): ?>
                 <?= $i <= round($avgRating) ? '★' : '☆' ?>
               <?php endfor; ?>
             </div>
-            <div style="font-size:10px;color:var(--text-hint);letter-spacing:.1em;"><?= $totalReviews ?> ĐÁNH GIÁ</div>
+            <div style="font-size:12px;color:var(--text-hint);letter-spacing:.1em;"><?= $totalReviews ?> ĐÁNH GIÁ</div>
           </div>
         </div>
       <?php endif; ?>
     </div>
 
     <?php if (!empty($_SESSION['review_success'])): ?>
-      <div style="background:rgba(58,158,106,.14);border:1px solid rgba(58,158,106,.35);color:#5cba88;padding:12px 16px;border-radius:6px;font-family:var(--font-mono);font-size:12px;margin-bottom:20px;">
+      <div style="background:rgba(58,158,106,.14);border:1px solid rgba(58,158,106,.35);color:#5cba88;padding:12px 16px;border-radius:6px;font-family:var(--font-mono);font-size:14px;margin-bottom:20px;">
         ✓ <?= htmlspecialchars($_SESSION['review_success']) ?>
       </div>
       <?php unset($_SESSION['review_success']); ?>
     <?php endif; ?>
 
     <?php if (!empty($_SESSION['review_errors'])): ?>
-      <div style="background:rgba(200,64,64,.12);border:1px solid rgba(200,64,64,.3);color:#e07070;padding:12px 16px;border-radius:6px;font-family:var(--font-mono);font-size:12px;margin-bottom:20px;">
+      <div style="background:rgba(200,64,64,.12);border:1px solid rgba(200,64,64,.3);color:#e07070;padding:12px 16px;border-radius:6px;font-family:var(--font-mono);font-size:14px;margin-bottom:20px;">
         <?php foreach ($_SESSION['review_errors'] as $err): ?>
           <div>✕ <?= htmlspecialchars($err) ?></div>
         <?php endforeach;
@@ -138,7 +139,7 @@ $formatImg = function ($path) {
     <?php endif; ?>
 
     <?php if (empty($reviews)): ?>
-      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:32px;text-align:center;color:var(--text-hint);font-family:var(--font-mono);font-size:11px;margin-bottom:32px;">
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:32px;text-align:center;color:var(--text-hint);font-family:var(--font-mono);font-size:13px;margin-bottom:32px;">
         Chưa có đánh giá nào. Hãy là người đầu tiên!
       </div>
     <?php else: ?>
@@ -148,17 +149,17 @@ $formatImg = function ($path) {
             <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
               <div>
                 <span style="font-weight:600;color:var(--text-primary);"><?= htmlspecialchars($rv['full_name']) ?></span>
-                <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-hint);margin-left:12px;">
+                <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-hint);margin-left:12px;">
                   <?= date('d/m/Y H:i', strtotime($rv['created_at'])) ?>
                 </span>
               </div>
-              <div style="color:var(--gold);font-size:16px;letter-spacing:2px;">
+              <div style="color:var(--gold);font-size:18px;letter-spacing:2px;">
                 <?php for ($i = 1; $i <= 5; $i++): ?>
                   <?= $i <= (int)$rv['rating'] ? '★' : '☆' ?>
                 <?php endfor; ?>
               </div>
             </div>
-            <p style="color:var(--text-secondary);font-size:14px;line-height:1.7;margin:0;">
+            <p style="color:var(--text-secondary);font-size:16px;line-height:1.7;margin:0;">
               <?= nl2br(htmlspecialchars($rv['comment'])) ?>
             </p>
           </div>
@@ -167,16 +168,16 @@ $formatImg = function ($path) {
     <?php endif; ?>
 
     <?php if (empty($_SESSION['user'])): ?>
-      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:28px;text-align:center;color:var(--text-hint);font-family:var(--font-mono);font-size:12px;">
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:28px;text-align:center;color:var(--text-hint);font-family:var(--font-mono);font-size:14px;">
         <a href="<?= BASE_URL ?>/user/login" style="color:var(--gold);">Đăng nhập</a> để viết đánh giá.
       </div>
     <?php elseif ($hasReviewed): ?>
-      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:28px;text-align:center;color:var(--text-hint);font-family:var(--font-mono);font-size:12px;">
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:28px;text-align:center;color:var(--text-hint);font-family:var(--font-mono);font-size:14px;">
         ✓ Bạn đã đánh giá sản phẩm này rồi.
       </div>
     <?php else: ?>
       <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:28px;">
-        <h3 style="font-family:var(--font-mono);font-size:12px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin-bottom:22px;">
+        <h3 style="font-family:var(--font-mono);font-size:14px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin-bottom:22px;">
           // VIẾT ĐÁNH GIÁ CỦA BẠN
         </h3>
 
@@ -184,12 +185,12 @@ $formatImg = function ($path) {
           <input type="hidden" name="product_id" value="<?= $p['id'] ?>">
 
           <div style="margin-bottom:20px;">
-            <label style="font-family:var(--font-mono);font-size:10px;color:var(--text-hint);letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:10px;">
+            <label style="font-family:var(--font-mono);font-size:12px;color:var(--text-hint);letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:10px;">
               Số sao *
             </label>
             <div style="display:flex;gap:6px;flex-direction:row-reverse;justify-content:flex-end;" class="star-rating">
               <?php for ($i = 5; $i >= 1; $i--): ?>
-                <label style="cursor:pointer;font-size:28px;color:var(--border-mid);transition:color .15s;" title="<?= $i ?> sao">
+                <label style="cursor:pointer;font-size:30px;color:var(--border-mid);transition:color .15s;" title="<?= $i ?> sao">
                   <input type="radio" name="rating" value="<?= $i ?>" required
                     style="position:absolute;opacity:0;width:0;height:0;">
                   ★
@@ -199,16 +200,16 @@ $formatImg = function ($path) {
           </div>
 
           <div style="margin-bottom:20px;">
-            <label style="font-family:var(--font-mono);font-size:10px;color:var(--text-hint);letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:8px;">
-              Nội dung đánh giá * <span style="color:var(--text-hint);font-size:9px;">(tối thiểu 10 ký tự)</span>
+            <label style="font-family:var(--font-mono);font-size:12px;color:var(--text-hint);letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:8px;">
+              Nội dung đánh giá * <span style="color:var(--text-hint);font-size:11px;">(tối thiểu 10 ký tự)</span>
             </label>
             <textarea name="comment" rows="4" required minlength="10" placeholder="Chia sẻ cảm nhận của bạn về sản phẩm..."
-              style="width:100%;padding:12px 16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:var(--font-body);font-size:14px;line-height:1.6;outline:none;resize:vertical;transition:border-color .2s;"
+              style="width:100%;padding:12px 16px;background:var(--bg-surface);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:var(--font-body);font-size:16px;line-height:1.6;outline:none;resize:vertical;transition:border-color .2s;"
               onfocus="this.style.borderColor='var(--gold-dim)'"
               onblur="this.style.borderColor='var(--border)'"></textarea>
           </div>
 
-          <button type="submit" class="btn-primary" style="padding:12px 32px;font-size:13px;">
+          <button type="submit" class="btn-primary" style="padding:12px 32px;font-size:15px;">
             GỬI ĐÁNH GIÁ
           </button>
         </form>

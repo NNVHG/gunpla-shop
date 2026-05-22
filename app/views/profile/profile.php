@@ -3,6 +3,7 @@
  * @var array $user
  * @var array $orders
  * @var array $favorites
+ * @var array $notifications
  */
 ?>
 <div class="container profile-container">
@@ -24,6 +25,17 @@
                 <button class="user-nav-btn active" data-tab="info" onclick="switchTab('info')">Thông tin cá nhân</button>
                 <button class="user-nav-btn" data-tab="orders" onclick="switchTab('orders')">Lịch sử đơn hàng</button>
                 <button class="user-nav-btn" data-tab="wishlist" onclick="switchTab('wishlist')">Sản phẩm yêu thích</button>
+                <button class="user-nav-btn" data-tab="notifications" onclick="switchTab('notifications')">
+                    Thông báo
+                    <?php 
+                    $unreadCount = array_reduce($notifications, function($carry, $item) {
+                        return $carry + ($item['is_read'] == 0 ? 1 : 0);
+                    }, 0);
+                    if ($unreadCount > 0): 
+                    ?>
+                        <span class="nav-badge" style="background:#e63946; color:#fff; border-radius:50%; padding: 2px 6px; font-size:12px; margin-left: 5px; font-family: var(--font-mono); font-weight: bold;"><?= $unreadCount ?></span>
+                    <?php endif; ?>
+                </button>
                 <button class="user-nav-btn" data-tab="policies" onclick="switchTab('policies')">Chính sách shop</button>
                 <a href="<?= BASE_URL ?>/user/logout" class="user-nav-btn logout-btn">⏏ Đăng xuất</a>
             </nav>
@@ -150,12 +162,50 @@
                     </ul>
                 </div>
             </div>
+
+            <div id="tab-notifications" class="user-tab-content">
+                <div class="notifications-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--gold-dim); padding-bottom:10px;">
+                    <h3 class="profile-section-title" style="margin:0;">// HỘP THƯ THÔNG BÁO</h3>
+                    <?php if ($unreadCount > 0): ?>
+                        <button onclick="markAllNotificationsAsRead()" class="btn-primary" style="font-size:13px; padding:6px 12px; font-family:var(--font-mono)">ĐÁNH DẤU ĐỌC TẤT CẢ</button>
+                    <?php endif; ?>
+                </div>
+
+                <?php if (empty($notifications)): ?>
+                    <div class="profile-empty-state">
+                        <div class="empty-icon">🔔</div>
+                        Bạn không có thông báo nào.
+                    </div>
+                <?php else: ?>
+                    <div class="notifications-list" style="display:flex; flex-direction:column; gap:12px;">
+                        <?php foreach ($notifications as $n): ?>
+                            <div class="notification-item <?= $n['is_read'] == 0 ? 'unread' : '' ?>" style="background:var(--bg-card, rgba(30,30,30,0.6)); border:1px solid <?= $n['is_read'] == 0 ? 'var(--gold)' : 'var(--border, #333)' ?>; padding:16px; border-radius:6px; transition:0.3s; position:relative; <?= $n['is_read'] == 0 ? 'box-shadow: 0 0 10px rgba(200, 168, 90, 0.1);' : '' ?>">
+                                <?php if ($n['is_read'] == 0): ?>
+                                    <span style="position:absolute; top:16px; right:16px; width:8px; height:8px; background:#e63946; border-radius:50%"></span>
+                                <?php endif; ?>
+                                <h4 style="margin:0 0 6px 0; color:<?= $n['is_read'] == 0 ? 'var(--gold)' : 'var(--text-primary, #fff)' ?>; font-family:var(--font-mono); font-size:16px; text-transform:uppercase; letter-spacing:0.05em;">
+                                    <?= htmlspecialchars($n['title']) ?>
+                                </h4>
+                                <p style="margin:0 0 10px 0; font-size:15px; color:var(--text-secondary, #ccc); line-height:1.5;">
+                                    <?= htmlspecialchars($n['message']) ?>
+                                </p>
+                                <div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; color:#777; font-family:var(--font-mono);">
+                                    <span><?= date('d/m/Y H:i', strtotime($n['created_at'])) ?></span>
+                                    <?php if (!empty($n['link'])): ?>
+                                        <a href="<?= BASE_URL . $n['link'] ?>" class="btn-ghost" style="padding:4px 8px; font-size:13px; text-decoration:none; color:var(--gold);">Xem chi tiết &rarr;</a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
         </main>
     </div>
 </div>
 
 <style>
-    .user-nav-btn { width: 100%; text-align: left; padding: 12px 16px; background: none; border: none; color: var(--text-secondary); cursor: pointer; font-family: var(--font-mono); font-size: 12px; transition: 0.3s; border-radius: 4px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .user-nav-btn { width: 100%; text-align: left; padding: 12px 16px; background: none; border: none; color: var(--text-secondary); cursor: pointer; font-family: var(--font-mono); font-size:14px; transition: 0.3s; border-radius: 4px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
     .user-nav-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
     .user-nav-btn.active { background: rgba(200, 168, 90, 0.1); color: var(--gold); border-left: 3px solid var(--gold); font-weight: bold; }
     .user-tab-content { display: none; }
@@ -168,10 +218,64 @@
         document.querySelectorAll('.user-tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.user-nav-btn').forEach(b => b.classList.remove('active'));
         
-        document.getElementById('tab-' + tabId).classList.add('active');
-        document.querySelector(`.user-nav-btn[data-tab="${tabId}"]`).classList.add('active');
+        const targetTab = document.getElementById('tab-' + tabId);
+        const targetBtn = document.querySelector(`.user-nav-btn[data-tab="${tabId}"]`);
         
-        window.history.replaceState({}, '', '?tab=' + tabId);
+        if (targetTab && targetBtn) {
+            targetTab.classList.add('active');
+            targetBtn.classList.add('active');
+            window.history.replaceState({}, '', '?tab=' + tabId);
+        }
+        
+        // Tự động đánh dấu đã đọc khi chuyển vào tab thông báo
+        if (tabId === 'notifications') {
+            const bellBadge = document.querySelector('.notify-badge');
+            const navBadge = document.querySelector('.user-nav-btn[data-tab="notifications"] .nav-badge');
+            
+            if (bellBadge || navBadge) {
+                fetch('<?= BASE_URL ?>/user/markNotificationsRead', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (bellBadge) bellBadge.remove();
+                        if (navBadge) navBadge.remove();
+                        
+                        document.querySelectorAll('.notification-item.unread').forEach(item => {
+                            item.classList.remove('unread');
+                            item.style.borderColor = 'var(--border, #333)';
+                            item.style.boxShadow = 'none';
+                            const dot = item.querySelector('span[style*="background:#e63946"]');
+                            if (dot) dot.remove();
+                        });
+                        
+                        const markBtn = document.querySelector('.notifications-header button');
+                        if (markBtn) markBtn.remove();
+                    }
+                })
+                .catch(err => console.error(err));
+            }
+        }
+    }
+
+    function markAllNotificationsAsRead() {
+        fetch('<?= BASE_URL ?>/user/markNotificationsRead', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            }
+        })
+        .catch(err => console.error(err));
     }
 
     // Đọc tham số `?tab=` khi vừa vào trang (từ email hoặc Header)

@@ -12,7 +12,7 @@
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
   <form method="GET" action="<?= BASE_URL ?>/admin/products" style="display:flex;gap:8px;align-items:center">
     <input type="text" name="search" value="<?=htmlspecialchars($search??'')?>"
-           placeholder="Tìm sản phẩm..." style="padding:6px 12px;font-size:11px;width:240px">
+           placeholder="Tìm sản phẩm..." style="padding:6px 12px;font-size:13px;width:240px">
     <button type="submit" class="btn btn-sm">Tìm</button>
     <?php if($search): ?><a href="<?= BASE_URL ?>/admin/products" class="btn btn-sm">Xóa lọc</a><?php endif; ?>
   </form>
@@ -58,28 +58,28 @@
                          style="width: 55px; height: 55px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border, #e2e8f0); display: block; margin: 0 auto;">
                 
                 <?php else: ?>
-                    <span style="color: var(--text-3, #999); font-size: 11px; font-style: italic; display: block; text-align: center;">
+                    <span style="color: var(--text-3, #999); font-size:13px; font-style: italic; display: block; text-align: center;">
                         Chưa có hình
                     </span>
                 <?php endif; ?>
             </td>
           <td><?= htmlspecialchars($item['name'] ?? $item['title'] ?? '') ?></td>
-          <td style="font-family:var(--font-m);color:var(--text-2);font-size:11px"><?=$item['id']?></td>
+          <td style="font-family:var(--font-m);color:var(--text-2);font-size:13px"><?=$item['id']?></td>
           <td>
-            <div style="font-size:12px;font-weight:500;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?=htmlspecialchars($item['name'])?></div>
-            <div style="font-family:var(--font-m);font-size:9px;color:var(--text-3)"><?=htmlspecialchars($item['series']??'')?></div>
+            <div style="font-size:14px;font-weight:500;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?=htmlspecialchars($item['name'])?></div>
+            <div style="font-family:var(--font-m);font-size:11px;color:var(--text-3)"><?=htmlspecialchars($item['series']??'')?></div>
           </td>
           <td>
-            <?php if($item['grade']): ?><span class="badge badge-confirmed" style="font-size:9px"><?=htmlspecialchars($item['grade'])?></span><?php endif; ?>
-            <div style="font-family:var(--font-m);font-size:10px;color:var(--text-2);margin-top:3px"><?=htmlspecialchars($item['scale']??'')?></div>
+            <?php if($item['grade']): ?><span class="badge badge-confirmed" style="font-size:11px"><?=htmlspecialchars($item['grade'])?></span><?php endif; ?>
+            <div style="font-family:var(--font-m);font-size:12px;color:var(--text-2);margin-top:3px"><?=htmlspecialchars($item['scale']??'')?></div>
           </td>
-          <td style="font-family:var(--font-d);font-size:16px;color:var(--gold)"><?=number_format($item['price'],0,',','.')?>đ</td>
+          <td style="font-family:var(--font-d);font-size:18px;color:var(--gold)"><?=number_format($item['price'],0,',','.')?>đ</td>
           <td>
             <?php
               $s=(int)$item['stock'];
               $c=$s===0?'var(--red)':($s<=5?'var(--amber)':'var(--green)');
             ?>
-            <span style="font-family:var(--font-m);font-size:12px;color:<?=$c?>">
+            <span style="font-family:var(--font-m);font-size:14px;color:<?=$c?>">
               <?=$s===0?'Hết hàng':$s.' cái'?>
             </span>
           </td>
@@ -103,7 +103,7 @@
         </tr>
       <?php endforeach; ?>
       <?php if(empty($products)): ?>
-        <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-3);font-family:var(--font-m);font-size:11px">
+        <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-3);font-family:var(--font-m);font-size:13px">
           <?=$search?'Không tìm thấy sản phẩm nào với từ khóa "'.htmlspecialchars($search).'"':'Chưa có sản phẩm nào'?>
         </td></tr>
       <?php endif; ?>

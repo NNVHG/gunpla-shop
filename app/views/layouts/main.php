@@ -26,7 +26,7 @@
     <div class="container">
       <div class="topbar-inner">
         <span class="topbar-notice">MIỄN PHÍ VẬN CHUYỂN cho đơn từ <span>500.000đ</span></span>
-        <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-hint);letter-spacing:.1em">BÌNH DƯƠNG &amp; TP.HCM</span>
+        <span style="font-family:var(--font-mono);font-size:12px;color:var(--text-hint);letter-spacing:.1em">BÌNH DƯƠNG &amp; TP.HCM</span>
       </div>
     </div>
   </div>
@@ -45,7 +45,7 @@
   <div class="cart-sidebar" id="cartSidebar">
     <div class="cart-header">
       <span class="cart-title">GIỎ HÀNG</span>
-      <button id="cartClose" style="background:none;border:none;cursor:pointer;color:var(--text-secondary);font-size:18px;line-height:1">✕</button>
+      <button id="cartClose" style="background:none;border:none;cursor:pointer;color:var(--text-secondary);font-size:20px;line-height:1">✕</button>
     </div>
     <div class="cart-body" id="cartBody"></div>
     <div class="cart-footer">
@@ -89,15 +89,15 @@
     <div class="chatbot-window" id="chatbotWindow" style="display:none;">
       <div class="chatbot-header">
         <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:20px">🤖</span>
+          <span style="font-size:22px">🤖</span>
           <div>
             <div class="chatbot-title">Gunpla AI Assistant</div>
             <div class="chatbot-status">Đang hoạt động</div>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:12px">
-          <button id="chatbotClear" class="chatbot-header-btn" title="Xóa lịch sử chat" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--text-secondary)">🗑️</button>
-          <button id="chatbotClose" class="chatbot-header-btn" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-secondary)">✕</button>
+          <button id="chatbotClear" class="chatbot-header-btn" title="Xóa lịch sử chat" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-secondary)">🗑️</button>
+          <button id="chatbotClose" class="chatbot-header-btn" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--text-secondary)">✕</button>
         </div>
       </div>
       <div class="chatbot-body" id="chatbotBody">
@@ -118,7 +118,7 @@
       <!-- Custom Chat Clear Confirmation Modal -->
       <div class="chatbot-confirm-modal" id="chatbotConfirmModal" style="display:none;">
         <div class="chatbot-confirm-content">
-          <div style="font-size:24px;margin-bottom:10px;color:var(--red-accent)">⚠️</div>
+          <div style="font-size:26px;margin-bottom:10px;color:var(--red-accent)">⚠️</div>
           <div class="chatbot-confirm-title">// XÓA LỊCH SỬ CHAT?</div>
           <div class="chatbot-confirm-text">Lịch sử trò chuyện trước đó của bạn sẽ bị xóa vĩnh viễn khỏi phiên làm việc.</div>
           <div class="chatbot-confirm-buttons">

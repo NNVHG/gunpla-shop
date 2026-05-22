@@ -24,9 +24,9 @@
             <?php foreach ($reviews ?? [] as $r): ?>
             <tr>
                 <td style="font-weight: 500; color: var(--gold);"><?= htmlspecialchars($r['user_name']) ?></td>
-                <td style="color: var(--text-2); font-size: 12px;"><?= htmlspecialchars($r['product_name']) ?></td>
-                <td style="font-size: 10px;"><?= str_repeat('⭐', $r['rating']) ?></td>
-                <td style="max-width: 250px; white-space: normal; color: var(--text-1); font-size: 12px;">
+                <td style="color: var(--text-2); font-size:14px;"><?= htmlspecialchars($r['product_name']) ?></td>
+                <td style="font-size:12px;"><?= str_repeat('⭐', $r['rating']) ?></td>
+                <td style="max-width: 250px; white-space: normal; color: var(--text-1); font-size:14px;">
                     <?= htmlspecialchars($r['comment']) ?>
                 </td>
                 <td>

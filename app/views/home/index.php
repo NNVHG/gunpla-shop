@@ -86,7 +86,7 @@ if (!empty($activeCategories)):
       <div class="section-head">
         <div>
           <h2 class="section-title">// Dành cho người mới bắt đầu</h2>
-          <p style="color:var(--text-hint);font-size:12px;margin-top:4px">Các dòng EG & SD lắp ráp cực kỳ đơn giản, không cần nhiều dụng cụ</p>
+          <p style="color:var(--text-hint);font-size:14px;margin-top:4px">Các dòng EG & SD lắp ráp cực kỳ đơn giản, không cần nhiều dụng cụ</p>
         </div>
         <a href="<?= BASE_URL ?>/products?grade=EG" class="section-link">Xem thêm &rarr;</a>
       </div>
@@ -107,7 +107,7 @@ if (!empty($activeCategories)):
       <div class="section-head">
         <div>
           <h2 class="section-title">// Mô hình HG bán chạy nhất</h2>
-          <p style="color:var(--text-hint);font-size:12px;margin-top:4px">High Grade 1/144 - Dòng sản phẩm phổ biến và đa dạng mẫu mã nhất</p>
+          <p style="color:var(--text-hint);font-size:14px;margin-top:4px">High Grade 1/144 - Dòng sản phẩm phổ biến và đa dạng mẫu mã nhất</p>
         </div>
         <a href="<?= BASE_URL ?>/products?grade=HG" class="section-link">Khám phá dòng HG &rarr;</a>
       </div>
@@ -128,7 +128,7 @@ if (!empty($activeCategories)):
       <div class="section-head">
         <div>
           <h2 class="section-title">// Dụng cụ & Phụ kiện cần thiết</h2>
-          <p style="color:var(--text-hint);font-size:12px;margin-top:4px">Kềm cắt part chuyên nghiệp, nhíp gắp decal, bút kẻ line chính hãng</p>
+          <p style="color:var(--text-hint);font-size:14px;margin-top:4px">Kềm cắt part chuyên nghiệp, nhíp gắp decal, bút kẻ line chính hãng</p>
         </div>
         <a href="<?= BASE_URL ?>/products?group=tools" class="section-link">Dụng cụ chuyên dụng &rarr;</a>
       </div>

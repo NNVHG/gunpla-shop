@@ -35,12 +35,12 @@ $statusLabels = [
   </div>
   <div class="stat-card">
     <div class="stat-card-label">Doanh thu hôm nay</div>
-    <div class="stat-card-val c-green" style="font-size:20px"><?= number_format($stats['revenue_today'], 0, ',', '.') ?>đ</div>
+    <div class="stat-card-val c-green" style="font-size:22px"><?= number_format($stats['revenue_today'], 0, ',', '.') ?>đ</div>
     <div class="stat-card-sub"><?= date('d/m/Y') ?></div>
   </div>
   <div class="stat-card">
     <div class="stat-card-label">Doanh thu tháng</div>
-    <div class="stat-card-val c-green" style="font-size:20px"><?= number_format($stats['revenue_month'], 0, ',', '.') ?>đ</div>
+    <div class="stat-card-val c-green" style="font-size:22px"><?= number_format($stats['revenue_month'], 0, ',', '.') ?>đ</div>
     <div class="stat-card-sub">Tháng <?= date('m/Y') ?></div>
   </div>
   <div class="stat-card">
@@ -74,10 +74,10 @@ $statusLabels = [
         ?>
         <div style="padding:8px 18px;border-bottom:1px solid var(--border)">
           <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <div style="font-size:11px;color:var(--text-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px">
+            <div style="font-size:13px;color:var(--text-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px">
               <?= htmlspecialchars($p['name']) ?>
             </div>
-            <div style="font-family:var(--font-m);font-size:10px;color:<?= $color ?>;flex-shrink:0;margin-left:8px">
+            <div style="font-family:var(--font-m);font-size:12px;color:<?= $color ?>;flex-shrink:0;margin-left:8px">
               <?= $p['stock'] === 0 ? 'HẾT' : $p['stock'] . ' cái' ?>
             </div>
           </div>
@@ -87,7 +87,7 @@ $statusLabels = [
         </div>
       <?php endforeach; ?>
       <?php if (empty($lowStockProducts)): ?>
-        <div style="padding:24px;text-align:center;font-family:var(--font-m);font-size:11px;color:var(--text-3)">
+        <div style="padding:24px;text-align:center;font-family:var(--font-m);font-size:13px;color:var(--text-3)">
           Tất cả sản phẩm còn đủ hàng ✓
         </div>
       <?php endif; ?>
@@ -117,15 +117,15 @@ $statusLabels = [
         <tr>
           <td style="font-family:var(--font-m);color:var(--text-2)">#<?= $order['id'] ?></td>
           <td>
-            <div style="font-size:12px"><?= htmlspecialchars($order['full_name']) ?></div>
-            <div style="font-family:var(--font-m);font-size:10px;color:var(--text-2)"><?= htmlspecialchars($order['phone']) ?></div>
+            <div style="font-size:14px"><?= htmlspecialchars($order['full_name']) ?></div>
+            <div style="font-family:var(--font-m);font-size:12px;color:var(--text-2)"><?= htmlspecialchars($order['phone']) ?></div>
           </td>
           <td style="color:var(--text-2)"><?= htmlspecialchars($order['province']) ?></td>
-          <td style="font-family:var(--font-d);font-size:16px;color:var(--gold)">
+          <td style="font-family:var(--font-d);font-size:18px;color:var(--gold)">
             <?= number_format($order['total'], 0, ',', '.') ?>đ
           </td>
           <td><span class="badge badge-<?= $order['status'] ?>"><?= $statusLabels[$order['status']] ?? $order['status'] ?></span></td>
-          <td style="font-family:var(--font-m);font-size:10px;color:var(--text-2)"><?= date('d/m H:i', strtotime($order['created_at'])) ?></td>
+          <td style="font-family:var(--font-m);font-size:12px;color:var(--text-2)"><?= date('d/m H:i', strtotime($order['created_at'])) ?></td>
           <td>
             <a href="<?= BASE_URL ?>/admin/orders/detail/<?= $order['id'] ?>" class="btn btn-sm">Chi tiết</a>
           </td>

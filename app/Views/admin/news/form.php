@@ -35,7 +35,7 @@ $errors = $errors ?? [];
         <input type="file" name="image_path" style="border: none; padding: 0; background: transparent; color: var(--text-2); cursor: pointer;">
         <?php if ($isEdit && !empty($news['image_path'])): ?>
             <div style="margin-top: 14px;">
-                <p style="font-family: var(--font-m); font-size: 11px; color: var(--text-3); margin-bottom: 6px;">Hình ảnh hiện tại:</p>
+                <p style="font-family: var(--font-m); font-size:13px; color: var(--text-3); margin-bottom: 6px;">Hình ảnh hiện tại:</p>
                 <img src="<?= BASE_URL . '/' . $news['image_path'] ?>" style="width: 160px; height: 100px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);">
             </div>
         <?php endif; ?>
@@ -47,7 +47,7 @@ $errors = $errors ?? [];
     </div>
 
     <div class="form-group" style="margin-bottom: 24px;">
-        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; text-transform: none; color: var(--text-1); font-size: 13px;">
+        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; text-transform: none; color: var(--text-1); font-size:15px;">
     
             <input type="checkbox" name="is_active" value="1" 
                 <?= ($isEdit ? (isset($news['is_active']) && $news['is_active'] == 1 ? 'checked' : '') : 'checked') ?> 

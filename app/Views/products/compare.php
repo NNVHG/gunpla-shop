@@ -6,9 +6,9 @@
 
 function compareStockBadge(int $s): string
 {
-    if ($s === 0) return '<span class="stock-badge out-stock" style="background:#e74c3c;color:#fff;padding:4px 8px;font-size:10px;border-radius:3px;font-weight:bold">HẾT HÀNG</span>';
-    if ($s <= 5)  return "<span class='stock-badge low-stock' style='background:#f39c12;color:#fff;padding:4px 8px;font-size:10px;border-radius:3px;font-weight:bold'>CÒN ÍT ($s)</span>";
-    return '<span class="stock-badge in-stock" style="background:#2ecc71;color:#fff;padding:4px 8px;font-size:10px;border-radius:3px;font-weight:bold">CÒN HÀNG</span>';
+    if ($s === 0) return '<span class="stock-badge out-stock" style="background:#e74c3c;color:#fff;padding:4px 8px;font-size:12px;border-radius:3px;font-weight:bold">HẾT HÀNG</span>';
+    if ($s <= 5)  return "<span class='stock-badge low-stock' style='background:#f39c12;color:#fff;padding:4px 8px;font-size:12px;border-radius:3px;font-weight:bold'>CÒN ÍT ($s)</span>";
+    return '<span class="stock-badge in-stock" style="background:#2ecc71;color:#fff;padding:4px 8px;font-size:12px;border-radius:3px;font-weight:bold">CÒN HÀNG</span>';
 }
 
 function getCompareImg($product) {
@@ -40,31 +40,31 @@ function getCompareImg($product) {
   </div>
 
   <div style="margin-top:28px">
-    <h1 style="font-family:var(--font-display);font-size:32px;color:var(--gold);letter-spacing:.05em;margin-bottom:10px">// BẢNG SO SÁNH SẢN PHẨM</h1>
-    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:30px">So sánh chi tiết thông số kỹ thuật, giá cả, độ khó của các mô hình Gunpla bạn quan tâm (tối đa 3 sản phẩm).</p>
+    <h1 style="font-family:var(--font-display);font-size:34px;color:var(--gold);letter-spacing:.05em;margin-bottom:10px">// BẢNG SO SÁNH SẢN PHẨM</h1>
+    <p style="color:var(--text-secondary);font-size:16px;margin-bottom:30px">So sánh chi tiết thông số kỹ thuật, giá cả, độ khó của các mô hình Gunpla bạn quan tâm (tối đa 3 sản phẩm).</p>
 
     <?php if (empty($products)): ?>
       <div style="text-align:center;padding:60px 20px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px">
-        <div style="font-size:48px;margin-bottom:16px">🔍</div>
-        <h3 style="color:var(--text-primary);font-size:18px;margin-bottom:12px">Chưa chọn sản phẩm nào để so sánh</h3>
-        <p style="color:var(--text-secondary);font-size:14px;margin-bottom:20px">Hãy quay lại danh sách sản phẩm và tick chọn các sản phẩm cần so sánh.</p>
+        <div style="font-size:50px;margin-bottom:16px">🔍</div>
+        <h3 style="color:var(--text-primary);font-size:20px;margin-bottom:12px">Chưa chọn sản phẩm nào để so sánh</h3>
+        <p style="color:var(--text-secondary);font-size:16px;margin-bottom:20px">Hãy quay lại danh sách sản phẩm và tick chọn các sản phẩm cần so sánh.</p>
         <a href="<?= BASE_URL ?>/products" class="btn btn-gold" style="padding:10px 24px">QUAY LẠI CỬA HÀNG</a>
       </div>
     <?php else: ?>
       <div class="compare-table-wrapper" style="overflow-x:auto;background:var(--bg-card);border:1px solid var(--border);border-radius:8px">
-        <table class="compare-table" style="width:100%;border-collapse:collapse;text-align:left;font-size:14px;min-width:700px">
+        <table class="compare-table" style="width:100%;border-collapse:collapse;text-align:left;font-size:16px;min-width:700px">
           <thead>
             <tr style="border-bottom:1px solid var(--border)">
-              <th style="width:20%;padding:20px;color:var(--gold);font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.1em;background:rgba(0,0,0,0.1)">Thông số</th>
+              <th style="width:20%;padding:20px;color:var(--gold);font-family:var(--font-mono);font-size:14px;text-transform:uppercase;letter-spacing:.1em;background:rgba(0,0,0,0.1)">Thông số</th>
               <?php foreach ($products as $p): ?>
                 <th style="width:<?= 80 / count($products) ?>%;padding:20px;vertical-align:top;border-left:1px solid var(--border);position:relative">
-                  <button class="remove-compare-btn" data-id="<?= $p['id'] ?>" style="position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text-hint);cursor:pointer;font-size:16px" title="Xóa khỏi danh sách so sánh">✕</button>
+                  <button class="remove-compare-btn" data-id="<?= $p['id'] ?>" style="position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text-hint);cursor:pointer;font-size:18px" title="Xóa khỏi danh sách so sánh">✕</button>
                   <div style="text-align:center;margin-bottom:15px">
                     <img src="<?= getCompareImg($p) ?>" alt="<?= htmlspecialchars($p['name']) ?>" style="width:120px;height:120px;object-fit:contain;border-radius:4px;border:1px solid var(--border);background:#fff;padding:5px">
                   </div>
                   <div style="text-align:center">
-                    <a href="<?= BASE_URL ?>/products/detail/<?= $p['id'] ?>" style="color:var(--text-primary);font-weight:bold;text-decoration:none;font-size:15px;display:block;margin-bottom:8px;line-height:1.4" class="hover-gold"><?= htmlspecialchars($p['name']) ?></a>
-                    <div style="color:var(--gold);font-family:var(--font-display);font-size:18px;font-weight:bold;letter-spacing:.05em"><?= number_format((int)$p['price'], 0, ',', '.') ?>đ</div>
+                    <a href="<?= BASE_URL ?>/products/detail/<?= $p['id'] ?>" style="color:var(--text-primary);font-weight:bold;text-decoration:none;font-size:17px;display:block;margin-bottom:8px;line-height:1.4" class="hover-gold"><?= htmlspecialchars($p['name']) ?></a>
+                    <div style="color:var(--gold);font-family:var(--font-display);font-size:20px;font-weight:bold;letter-spacing:.05em"><?= number_format((int)$p['price'], 0, ',', '.') ?>đ</div>
                   </div>
                 </th>
               <?php endforeach; ?>
@@ -136,11 +136,11 @@ function getCompareImg($product) {
                           echo $i <= $stars ? '★' : '☆';
                         }
                       ?>
-                      <span style="color:var(--text-secondary);font-size:12px;margin-left:4px">(<?= number_format((float)$p['avg_rating'], 1) ?>)</span>
+                      <span style="color:var(--text-secondary);font-size:14px;margin-left:4px">(<?= number_format((float)$p['avg_rating'], 1) ?>)</span>
                     </div>
-                    <div style="font-size:11px;color:var(--text-hint)"><?= $p['total_reviews'] ?> lượt đánh giá</div>
+                    <div style="font-size:13px;color:var(--text-hint)"><?= $p['total_reviews'] ?> lượt đánh giá</div>
                   <?php else: ?>
-                    <span style="color:var(--text-hint);font-size:12px">Chưa có đánh giá</span>
+                    <span style="color:var(--text-hint);font-size:14px">Chưa có đánh giá</span>
                   <?php endif; ?>
                 </td>
               <?php endforeach; ?>
@@ -158,11 +158,11 @@ function getCompareImg($product) {
               <?php foreach ($products as $p): ?>
                 <td style="padding:20px;border-left:1px solid var(--border);text-align:center">
                   <?php if ((int)$p['stock'] > 0): ?>
-                    <button class="btn btn-gold btn-add-cart-quick" data-id="<?= $p['id'] ?>" data-name="<?= htmlspecialchars($p['name']) ?>" data-price="<?= $p['price'] ?>" data-image="<?= getCompareImg($p) ?>" style="width:100%;font-size:12px;padding:8px 12px">
+                    <button class="btn btn-gold btn-add-cart-quick" data-id="<?= $p['id'] ?>" data-name="<?= htmlspecialchars($p['name']) ?>" data-price="<?= $p['price'] ?>" data-image="<?= getCompareImg($p) ?>" style="width:100%;font-size:14px;padding:8px 12px">
                       THÊM VÀO GIỎ
                     </button>
                   <?php else: ?>
-                    <button class="btn" style="width:100%;font-size:12px;padding:8px 12px;background:#333;color:#777;cursor:not-allowed;border:1px solid #444" disabled>
+                    <button class="btn" style="width:100%;font-size:14px;padding:8px 12px;background:#333;color:#777;cursor:not-allowed;border:1px solid #444" disabled>
                       HẾT HÀNG
                     </button>
                   <?php endif; ?>

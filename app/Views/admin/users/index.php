@@ -24,11 +24,11 @@
         <tbody>
             <?php foreach ($users as $u): ?>
                 <tr>
-                    <td style="font-family: var(--font-m); color: var(--text-2); font-size: 11px;">#<?= $u['id'] ?></td>
+                    <td style="font-family: var(--font-m); color: var(--text-2); font-size:13px;">#<?= $u['id'] ?></td>
                     <td style="font-weight: 500; color: var(--gold);"><?= htmlspecialchars($u['full_name']) ?></td>
                     <td>
-                        <div style="color: var(--text-1); font-size: 12px; margin-bottom: 2px;"><?= htmlspecialchars($u['email']) ?></div>
-                        <div style="font-family: var(--font-m); font-size: 10px; color: var(--text-3);"><?= htmlspecialchars($u['phone'] ?? 'Chưa cập nhật') ?></div>
+                        <div style="color: var(--text-1); font-size:14px; margin-bottom: 2px;"><?= htmlspecialchars($u['email']) ?></div>
+                        <div style="font-family: var(--font-m); font-size:12px; color: var(--text-3);"><?= htmlspecialchars($u['phone'] ?? 'Chưa cập nhật') ?></div>
                     </td>
                     <td>
                         <?php if ($u['role'] === 'admin'): ?>
@@ -37,7 +37,7 @@
                             <span class="badge badge-pending">Customer</span>
                         <?php endif; ?>
                     </td>
-                    <td style="font-family: var(--font-m); font-size: 11px; color: var(--text-2);">
+                    <td style="font-family: var(--font-m); font-size:13px; color: var(--text-2);">
                         <?= date('d/m/Y', strtotime($u['created_at'])) ?>
                     </td>
                     <td style="text-align: right;">

@@ -44,6 +44,9 @@
     <a href="<?= BASE_URL ?>/admin/reviews" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/admin/reviews') ? 'active' : '' ?>">
       <span class="nav-icon">★</span> Đánh giá khách hàng
     </a>
+    <a href="<?= BASE_URL ?>/admin/defects" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/admin/defects') ? 'active' : '' ?>">
+      <span class="nav-icon">⚠</span> Báo cáo sản phẩm lỗi
+    </a>
     <a href="<?= BASE_URL ?>/admin/settings" class="nav-item <?= str_contains($_SERVER['REQUEST_URI'], '/admin/settings') ? 'active' : '' ?>">
       <span class="nav-icon">⚙</span> Cấu hình AI & Chatbot
     </a>
@@ -72,10 +75,10 @@
   <div class="topbar">
     <div class="page-title"><?= htmlspecialchars($title ?? 'Dashboard') ?></div>
     <div style="display:flex; align-items:center; gap: 12px;">
-      <button class="btn-icon theme-toggle" title="Giao diện Sáng/Tối" style="display:flex; align-items:center; justify-content:center; font-size:16px; border:none; background:transparent; cursor:pointer;">
+      <button class="btn-icon theme-toggle" title="Giao diện Sáng/Tối" style="display:flex; align-items:center; justify-content:center; font-size:18px; border:none; background:transparent; cursor:pointer;">
         🌓
       </button>
-      <a href="<?= BASE_URL ?>/" target="_blank" style="font-family:var(--font-m);font-size:10px;color:var(--gold);letter-spacing:.1em;border:1px solid var(--gold-dim);padding:5px 10px;border-radius:4px;transition:all .2s">
+      <a href="<?= BASE_URL ?>/" target="_blank" style="font-family:var(--font-m);font-size:12px;color:var(--gold);letter-spacing:.1em;border:1px solid var(--gold-dim);padding:5px 10px;border-radius:4px;transition:all .2s">
         &rarr; XEM WEBSITE
       </a>
     </div>

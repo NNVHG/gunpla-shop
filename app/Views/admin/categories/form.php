@@ -44,7 +44,7 @@ $types = ['scale', 'grade', 'series', 'manufacturer', 'tool', 'accessory', 'chem
         </select>
     </div>
 
-    <button type="submit" class="btn btn-gold" style="width: 100%; padding: 12px; font-size: 16px;">
+    <button type="submit" class="btn btn-gold" style="width: 100%; padding: 12px; font-size:18px;">
         <?= $isEdit ? 'CẬP NHẬT' : 'THÊM MỚI' ?>
     </button>
 </form>

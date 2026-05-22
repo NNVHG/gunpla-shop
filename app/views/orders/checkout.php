@@ -13,7 +13,7 @@
 ?>
 <div style="max-width:1100px;margin:0 auto;padding:40px 24px">
 
-  <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-hint);letter-spacing:0.1em;margin-bottom:32px">
+  <div style="font-family:var(--font-mono);font-size:13px;color:var(--text-hint);letter-spacing:0.1em;margin-bottom:32px">
     <a href="/" style="color:var(--text-hint);text-decoration:none">Trang chủ</a>
     <span style="margin:0 8px;color:var(--border-mid)">/</span>
     <a href="/cart" style="color:var(--text-hint);text-decoration:none">Giỏ hàng</a>
@@ -21,12 +21,12 @@
     <span style="color:var(--gold)">Thanh toán</span>
   </div>
 
-  <h1 style="font-family:var(--font-display);font-size:36px;letter-spacing:0.08em;margin-bottom:32px">
+  <h1 style="font-family:var(--font-display);font-size:38px;letter-spacing:0.08em;margin-bottom:32px">
     THANH TOÁN
   </h1>
 
   <?php if (!empty($_SESSION['order_error'])): ?>
-    <div style="background:rgba(200,64,64,0.1);border:1px solid var(--red-accent);border-radius:6px;padding:14px 18px;margin-bottom:24px;color:#e87070;font-size:13px">
+    <div style="background:rgba(200,64,64,0.1);border:1px solid var(--red-accent);border-radius:6px;padding:14px 18px;margin-bottom:24px;color:#e87070;font-size:15px">
       <?= htmlspecialchars($_SESSION['order_error']) ?>
       <?php unset($_SESSION['order_error']); ?>
     </div>
@@ -37,7 +37,7 @@
 
       <div>
         <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:28px;margin-bottom:20px">
-          <h2 style="font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:0.15em;text-transform:uppercase;margin:0 0 24px">
+          <h2 style="font-family:var(--font-mono);font-size:13px;color:var(--gold);letter-spacing:0.15em;text-transform:uppercase;margin:0 0 24px">
             // Thông tin người nhận
           </h2>
 
@@ -105,7 +105,7 @@
 
           <div style="margin-bottom:16px">
             <label class="form-label">Phương thức thanh toán *</label>
-            <div style="display: flex; gap: 20px; color: var(--text-primary); font-size: 14px;">
+            <div style="display: flex; gap: 20px; color: var(--text-primary); font-size:16px;">
               <label style="cursor:pointer;"><input type="radio" name="payment_method" value="cod" checked style="accent-color:var(--gold);"> Thanh toán khi nhận hàng (COD)</label>
               <label style="cursor:pointer;"><input type="radio" name="payment_method" value="vnpay" style="accent-color:var(--gold);"> Thanh toán qua VNPAY</label>
             </div>
@@ -118,50 +118,50 @@
 
       <div style="position:sticky;top:80px">
         <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:16px">
-          <h2 style="font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:0.15em;text-transform:uppercase;margin:0 0 20px">
+          <h2 style="font-family:var(--font-mono);font-size:13px;color:var(--gold);letter-spacing:0.15em;text-transform:uppercase;margin:0 0 20px">
             // Đơn hàng của bạn
           </h2>
 
           <?php foreach ($items as $item): ?>
             <div style="display:flex;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)">
-              <div style="width:48px;height:48px;background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:12px;color:var(--gold);flex-shrink:0">
+              <div style="width:48px;height:48px;background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:14px;color:var(--gold);flex-shrink:0">
                 <?= htmlspecialchars($item['grade']) ?>
               </div>
               <div style="flex:1;min-width:0">
-                <div style="font-size:12px;color:var(--text-primary);line-height:1.4;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                <div style="font-size:14px;color:var(--text-primary);line-height:1.4;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
                   <?= htmlspecialchars($item['name']) ?>
                 </div>
-                <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-hint)">
+                <div style="font-family:var(--font-mono);font-size:12px;color:var(--text-hint)">
                   <?= htmlspecialchars($item['scale']) ?> · SL: <?= $item['qty'] ?>
                 </div>
               </div>
-              <div style="font-family:var(--font-display);font-size:16px;color:var(--gold);white-space:nowrap;flex-shrink:0">
+              <div style="font-family:var(--font-display);font-size:18px;color:var(--gold);white-space:nowrap;flex-shrink:0">
                 <?= number_format($item['price'] * $item['qty'], 0, ',', '.') ?>đ
               </div>
             </div>
           <?php endforeach; ?>
 
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:15px">
             <span style="color:var(--text-secondary)">Tạm tính</span>
             <span style="color:var(--text-primary)"><?= number_format($subtotal, 0, ',', '.') ?>đ</span>
           </div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:16px;font-size:13px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:16px;font-size:15px">
             <span style="color:var(--text-secondary)">Phí vận chuyển</span>
             <span id="shippingFeeDisplay" style="color:var(--text-primary)">— Chọn tỉnh/thành</span>
           </div>
           <div style="display:flex;justify-content:space-between;padding-top:16px;border-top:1px solid var(--border)">
-            <span style="font-family:var(--font-mono);font-size:12px;color:var(--text-primary);letter-spacing:0.08em">TỔNG CỘNG</span>
-            <span id="totalDisplay" style="font-family:var(--font-display);font-size:26px;color:var(--gold)">
+            <span style="font-family:var(--font-mono);font-size:14px;color:var(--text-primary);letter-spacing:0.08em">TỔNG CỘNG</span>
+            <span id="totalDisplay" style="font-family:var(--font-display);font-size:28px;color:var(--gold)">
               <?= number_format($subtotal, 0, ',', '.') ?>đ
             </span>
           </div>
         </div>
 
         <button type="submit" id="submitBtn"
-          style="width:100%;padding:16px;background:var(--gold);color:var(--bg-void);border:none;border-radius:4px;font-family:var(--font-display);font-size:22px;letter-spacing:0.1em;cursor:pointer;transition:background 0.2s">
+          style="width:100%;padding:16px;background:var(--gold);color:var(--bg-void);border:none;border-radius:4px;font-family:var(--font-display);font-size:24px;letter-spacing:0.1em;cursor:pointer;transition:background 0.2s">
           ĐẶT HÀNG
         </button>
-        <a href="/cart" style="display:block;text-align:center;margin-top:12px;font-family:var(--font-mono);font-size:11px;color:var(--text-hint);text-decoration:none;letter-spacing:0.08em">
+        <a href="/cart" style="display:block;text-align:center;margin-top:12px;font-family:var(--font-mono);font-size:13px;color:var(--text-hint);text-decoration:none;letter-spacing:0.08em">
           &larr; Quay lại giỏ hàng
         </a>
       </div>
@@ -174,7 +174,7 @@
   .form-label {
     display: block;
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size:12px;
     color: var(--text-hint);
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -189,7 +189,7 @@
     border-radius: 5px;
     color: var(--text-primary);
     font-family: var(--font-body);
-    font-size: 14px;
+    font-size:16px;
     outline: none;
     transition: border-color 0.2s;
     resize: vertical;
@@ -208,7 +208,7 @@
   }
 
   .form-error {
-    font-size: 11px;
+    font-size:13px;
     color: #e87070;
     margin-top: 4px;
   }
@@ -275,14 +275,14 @@
 
   .payment-title {
     font-family: var(--font-display);
-    font-size: 14px;
+    font-size:16px;
     color: var(--text-primary);
     margin-bottom: 4px;
     transition: color 0.2s ease;
   }
 
   .payment-desc {
-    font-size: 12px;
+    font-size:14px;
     color: var(--text-secondary);
   }
 </style>

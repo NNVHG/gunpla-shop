@@ -34,7 +34,7 @@
       </div>
       
       <div class="nav-actions">
-        <button class="btn-icon theme-toggle" title="Giao diện Sáng/Tối" style="display:flex; align-items:center; justify-content:center; font-size:16px;">
+        <button class="btn-icon theme-toggle" title="Giao diện Sáng/Tối" style="display:flex; align-items:center; justify-content:center; font-size:18px;">
           🌓
         </button>
         <?php if (!empty($_SESSION['user'])): ?>
@@ -42,15 +42,29 @@
             ♥
           </a>
 
-          <a href="<?= BASE_URL ?>/user/profile" class="btn-icon" title="Tài khoản" style="text-decoration:none; display:flex; align-items:center; justify-content:center; font-size:14px;">
+          <?php
+            require_once APP_PATH . '/Models/Notification.php';
+            $notifyModel = new \App\Models\Notification();
+            $unreadNotifyCount = $notifyModel->getUnreadCount((int)$_SESSION['user']['id']);
+          ?>
+          <a href="<?= BASE_URL ?>/user/profile?tab=notifications" class="btn-icon" id="notifyBellBtn" title="Thông báo" style="text-decoration:none; display:flex; align-items:center; justify-content:center; position:relative;">
+            🔔
+            <?php if ($unreadNotifyCount > 0): ?>
+              <span class="notify-badge" style="position:absolute; top:-5px; right:-5px; background:#e63946; color:#fff; border-radius:50%; width:16px; height:16px; font-size:11px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-family:var(--font-mono)">
+                <?= $unreadNotifyCount ?>
+              </span>
+            <?php endif; ?>
+          </a>
+
+          <a href="<?= BASE_URL ?>/user/profile" class="btn-icon" title="Tài khoản" style="text-decoration:none; display:flex; align-items:center; justify-content:center; font-size:16px;">
             👤
           </a>
 
-          <span style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.08em;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 10px;">
+          <span style="font-family:var(--font-mono);font-size:12px;color:var(--gold);letter-spacing:.08em;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 10px;">
             <?= htmlspecialchars($_SESSION['user']['name']) ?>
           </span>
           
-          <a href="<?= BASE_URL ?>/user/logout" class="btn-icon" title="Đăng xuất" style="font-size:14px;text-decoration:none;display:flex;align-items:center;justify-content:center">
+          <a href="<?= BASE_URL ?>/user/logout" class="btn-icon" title="Đăng xuất" style="font-size:16px;text-decoration:none;display:flex;align-items:center;justify-content:center">
             ⏏
           </a>
           

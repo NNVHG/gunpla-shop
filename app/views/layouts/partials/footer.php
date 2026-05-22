@@ -7,7 +7,7 @@
           <span class="logo-main">GUNPLA</span>
           <span class="logo-sub">SHOP</span>
         </div>
-        <p style="font-size:12px;color:var(--text-hint);line-height:1.8;max-width:260px">
+        <p style="font-size:14px;color:var(--text-hint);line-height:1.8;max-width:260px">
           Chuyên cung cấp mô hình lắp ráp Bandai chính hãng — Bình Dương &amp; TP.HCM.
         </p>
       </div>

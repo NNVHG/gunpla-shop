@@ -211,6 +211,128 @@ class ProductController
         $this->redirect($redirectUrl . '#reviews');
     }
 
+    public function reportdefect(): void
+    {
+        if (empty($_SESSION['user']['id'])) {
+            $this->redirect(BASE_URL . '/user/login');
+            return;
+        }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect(BASE_URL . '/products');
+            return;
+        }
+
+        $userId = (int) $_SESSION['user']['id'];
+        $productId = (int) ($_POST['product_id'] ?? 0);
+        $orderId = (int) ($_POST['order_id'] ?? 0);
+        $description = trim($_POST['description'] ?? '');
+
+        $errors = [];
+        if ($productId <= 0) {
+            $errors[] = 'Sản phẩm không hợp lệ.';
+        }
+        if ($orderId <= 0) {
+            $errors[] = 'Đơn hàng không hợp lệ.';
+        }
+        if (strlen($description) < 15) {
+            $errors[] = 'Mô tả chi tiết lỗi phải từ 15 ký tự trở lên.';
+        }
+
+        // Kiểm tra đơn hàng hợp lệ của user và chứa sản phẩm này
+        $db = getDB();
+        $stmt = $db->prepare("
+            SELECT 1 FROM orders o
+            JOIN order_items oi ON o.id = oi.order_id
+            WHERE o.id = ? AND o.user_id = ? AND oi.product_id = ? AND o.status = 'delivered'
+        ");
+        $stmt->execute([$orderId, $userId, $productId]);
+        if (!$stmt->fetchColumn()) {
+            $errors[] = 'Đơn hàng này không hợp lệ hoặc chưa được giao thành công.';
+        }
+
+        // Kiểm tra xem đã báo cáo lỗi cho đơn hàng/sản phẩm này chưa
+        $stmt = $db->prepare("SELECT 1 FROM defect_reports WHERE order_id = ? AND product_id = ?");
+        $stmt->execute([$orderId, $productId]);
+        if ($stmt->fetchColumn()) {
+            $errors[] = 'Bạn đã gửi báo cáo lỗi cho sản phẩm này trong đơn hàng được chọn rồi.';
+        }
+
+        $imageProofPath = '';
+        $videoProofPath = '';
+
+        // Xử lý upload hình ảnh minh chứng
+        if (!isset($_FILES['image_proof']) || $_FILES['image_proof']['error'] !== UPLOAD_ERR_OK) {
+            $errors[] = 'Vui lòng tải lên hình ảnh minh chứng lỗi.';
+        } else {
+            $imgName = $_FILES['image_proof']['name'];
+            $imgExt = strtolower(pathinfo($imgName, PATHINFO_EXTENSION));
+            if (!in_array($imgExt, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
+                $errors[] = 'Hình ảnh minh chứng phải là định dạng JPG, JPEG, PNG, WEBP hoặc GIF.';
+            } else {
+                $uploadDir = BASE_PATH . '/public/uploads/defects/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                $newImgName = 'img_' . time() . '_' . uniqid() . '.' . $imgExt;
+                if (move_uploaded_file($_FILES['image_proof']['tmp_name'], $uploadDir . $newImgName)) {
+                    $imageProofPath = 'public/uploads/defects/' . $newImgName;
+                } else {
+                    $errors[] = 'Không thể tải lên hình ảnh minh chứng.';
+                }
+            }
+        }
+
+        // Xử lý upload video minh chứng
+        if (!isset($_FILES['video_proof']) || $_FILES['video_proof']['error'] !== UPLOAD_ERR_OK) {
+            if (isset($_FILES['video_proof']) && $_FILES['video_proof']['error'] === UPLOAD_ERR_INI_SIZE) {
+                $errors[] = 'Video minh chứng vượt quá kích thước tối đa cho phép của máy chủ (dưới 50MB).';
+            } else {
+                $errors[] = 'Vui lòng tải lên video minh chứng không cắt ghép.';
+            }
+        } else {
+            $vidName = $_FILES['video_proof']['name'];
+            $vidExt = strtolower(pathinfo($vidName, PATHINFO_EXTENSION));
+            if (!in_array($vidExt, ['mp4', 'mov', 'avi', 'mkv', 'webm'])) {
+                $errors[] = 'Video minh chứng phải là định dạng MP4, MOV, AVI, MKV hoặc WEBM.';
+            } else {
+                $uploadDir = BASE_PATH . '/public/uploads/defects/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                $newVidName = 'vid_' . time() . '_' . uniqid() . '.' . $vidExt;
+                if (move_uploaded_file($_FILES['video_proof']['tmp_name'], $uploadDir . $newVidName)) {
+                    $videoProofPath = 'public/uploads/defects/' . $newVidName;
+                } else {
+                    $errors[] = 'Không thể tải lên video minh chứng.';
+                }
+            }
+        }
+
+        $redirectUrl = BASE_URL . '/orders/detail/' . $orderId;
+
+        if (!empty($errors)) {
+            // Xóa file đã upload nếu có lỗi
+            if ($imageProofPath && file_exists(BASE_PATH . '/' . $imageProofPath)) {
+                @unlink(BASE_PATH . '/' . $imageProofPath);
+            }
+            if ($videoProofPath && file_exists(BASE_PATH . '/' . $videoProofPath)) {
+                @unlink(BASE_PATH . '/' . $videoProofPath);
+            }
+
+            $_SESSION['defect_errors'] = $errors;
+            $this->redirect($redirectUrl);
+            return;
+        }
+
+        // Lưu vào CSDL
+        require_once APP_PATH . '/Models/DefectReport.php';
+        $reportModel = new \App\Models\DefectReport();
+        $reportModel->create($userId, $productId, $orderId, $description, $imageProofPath, $videoProofPath);
+
+        $_SESSION['defect_success'] = 'Báo cáo thiếu đồ / lỗi sản phẩm đã được gửi thành công! Đội ngũ Admin sẽ xem xét và phản hồi sớm.';
+        $this->redirect($redirectUrl);
+    }
+
     public function search(): void
     {
         $query  = htmlspecialchars(trim($_GET['q'] ?? ''));
