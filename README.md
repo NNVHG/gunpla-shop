@@ -1,111 +1,106 @@
-Đây là sản phẩm phục vụ cho **Đồ án Phát triển phần mềm mã nguồn mở** tại **Trường Đại học Thủ Dầu Một - Viện Chuyển Đổi Số**.
-
-### 👥 Nhóm phát triển (Sinh viên thực hiện)
-* **Nguyễn Ngô Vũ Hoàng Gia** (MSSV: 2224802010628)
-* **Nguyễn Huỳnh Dương Dũ** (MSSV: 2224802010783)
-* **Giáo viên hướng dẫn:** Nguyễn Danh Minh Trí
+# 🤖 GUNPLA SHOP — HỆ THỐNG THƯƠNG MẠI ĐIỆN TỬ MÔ HÌNH GUNDAM CAO CẤP
+> **Đồ Án Phát Triển Phần Mềm Mã Nguồn Mở**  
+> *Viện Chuyển Đổi Số — Trường Đại học Thủ Dầu Một (TDMU)*
 
 ---
 
-## ✨ Tính năng nổi bật (Features)
-
-### 👤 Giao diện Người dùng (Customer/Frontend)
-- **UI/UX Hiện đại:** Thiết kế tinh gọn, hỗ trợ tính năng chuyển đổi **Dark/Light Mode** đồng bộ toàn hệ thống bằng CSS Variables. Ưu tiên trải nghiệm hiển thị sản phẩm trực quan.
-- **Quản lý & Lọc Sản phẩm:** Hiển thị chi tiết mô hình theo cấp độ (Grade: HG, MG, RG, PG) và tỷ lệ (Scale). Hỗ trợ bộ lọc chéo đa chiều.
-- **Tích hợp Dữ liệu Thật:** Kho dữ liệu hàng trăm sản phẩm được bóc tách (crawl) từ Web/Kaggle và Import tự động qua PHP script.
-- **Chức năng Cốt lõi (E-commerce):** - Giỏ hàng (Cart) sử dụng Session.
-  - Danh sách yêu thích (Wishlist/Favorite).
-  - Thanh toán (Checkout) với tính năng nội suy tính phí vận chuyển động theo khu vực địa lý.
-  - Hỗ trợ đa dạng phương thức thanh toán: **COD** và cổng thanh toán trực tuyến **VNPAY**.
-- **Tin tức & Blog:** Chuyên trang cập nhật tin tức, kỹ thuật lắp ráp và sự kiện Gunpla.
-- **Bảo mật:** Hệ thống đăng nhập/đăng ký với mật khẩu được mã hóa an toàn (BCRYPT), phòng chống SQL Injection qua PDO.
-- **Email Tự động:** Gửi hóa đơn phản hồi tự động bằng PHPMailer ngay khi đặt hàng thành công.
-
-### ⚙️ Giao diện Quản trị (Admin Panel)
-- **Dashboard:** Thống kê tổng quan đơn hàng, doanh thu (ngày/tháng) và lượng truy cập. Trực quan hoá dữ liệu bằng Chart.js.
-- **Quản lý Kho (Inventory):** Hệ thống báo động đỏ (Low Stock Alerts) cho sản phẩm sắp hết (tồn kho ≤ 5).
-- **Quản lý Đơn hàng (Orders):** Giám sát tuyến tính vòng đời đơn hàng (Chờ xác nhận -> Đang giao -> Đã giao). Hỗ trợ xác nhận dòng tiền thanh toán (Mark Paid) cho COD.
-- **Quản lý Dữ liệu Toàn diện:** Thêm/Sửa/Xóa (Cơ chế Soft Delete) sản phẩm, danh mục đa cấp, tin tức, tài khoản người dùng và kiểm duyệt đánh giá (Reviews).
+## 👥 Nhóm Thực Hiện (Sinh Viên)
+*   **Nguyễn Ngô Vũ Hoàng Gia** (MSSV: 2224802010628)
+*   **Nguyễn Huỳnh Dương Dũ** (MSSV: 2224802010783)
+*   **Giảng viên hướng dẫn:** ThS. Nguyễn Danh Minh Trí
 
 ---
 
-## 🛠 Công nghệ sử dụng (Tech Stack)
+## 🌟 GIỚI THIỆU CHUNG (PROJECT PRESENTATION)
 
-- **Frontend:** HTML5, CSS3 (Vanilla + CSS Variables), JavaScript thuần (ES6), Chart.js (Biểu đồ).
-- **Backend:** PHP thuần (Vanilla PHP) với kiến trúc MVC tự xây dựng, hoàn toàn không phụ thuộc Framework.
-- **Cơ sở dữ liệu:** MySQL / MariaDB (Sử dụng PDO).
-- **Thư viện bên thứ 3:** PHPMailer (gửi email), Composer.
-- **Môi trường & Công cụ:** XAMPP, Git, VS Code.
+**Gunpla Shop** là một nền tảng thương mại điện tử chuyên nghiệp được thiết kế và tối ưu hóa riêng cho cộng đồng người chơi mô hình lắp ráp Gundam (Gunpla). Dự án được xây dựng từ con số 0 trên nền tảng **PHP thuần (Vanilla PHP) theo kiến trúc MVC**, kết hợp với cơ sở dữ liệu MySQL và các tính năng tương tác bất đồng bộ (AJAX/Fetch API).
+
+Không sử dụng các framework PHP cồng kềnh, Gunpla Shop tập trung tối đa vào tốc độ tải trang cực nhanh, giao diện tối giản hiện đại (Sci-fi/Gaming theme) và tính bảo mật vượt trội.
 
 ---
 
-## 📂 Cấu trúc thư mục (Directory Structure)
+## ⚡ CÁC TÍNH NĂNG ĐỘT PHÁ (PREMIUM FEATURES)
 
-Dự án được tổ chức chặt chẽ theo chuẩn mô hình MVC:
+Hệ thống được nâng cấp toàn diện với những tính năng nâng cao trải nghiệm mua sắm và quản lý bán hàng:
 
-```text
-gunpla-shop/
-│
-├── app/                  # Chứa toàn bộ Logic xử lý (Lõi MVC)
-│   ├── Controllers/      # Các Controller (Product, Cart, Order, Admin, News...)
-│   ├── Models/           # Tương tác Cơ sở dữ liệu (PDO)
-│   └── Views/            # Giao diện hiển thị (Home, Products, Admin, Layouts...)
-│
-├── config/               # Cấu hình hệ thống (app.php, database.php)
-├── database/             # Chứa tệp SQL (gunpla_shop.sql) khởi tạo CSDL
-├── public/               # Thư mục Public (Trỏ Document Root)
-│   ├── css/              # Tệp định dạng stylesheet
-│   ├── js/               # Script xử lý frontend
-│   └── index.php         # Entry point (Bộ định tuyến - Router chính)
-│
-├── vendor/               # Chứa các gói thư viện Composer
-├── .env                  # Tệp biến môi trường
-└── README.md             # Tài liệu dự án
+### 1. 🔍 So Sánh Sản Phẩm Đa Chiều (Product Compare)
+*   Cho phép người dùng lựa chọn và đối chiếu đồng thời lên đến **3 sản phẩm** mô hình cạnh nhau.
+*   Bảng so sánh thông minh hiển thị toàn bộ thông số kỹ thuật chi tiết: Tỷ lệ (Scale), Cấp độ (Grade), Dòng phim (Series), Trọng lượng (Weight), Số lượng mảnh ghép (Parts Count), Độ khó lắp ráp (Difficulty), Giá tiền và Mô tả.
 
-```
+### 2. 🛠 Báo Cáo Sản Phẩm Lỗi & Timeline Tiến Trình (Defect Reports)
+*   Giải quyết triệt để nỗi lo lắng của người chơi Gunpla về lỗi gãy part hoặc thiếu part khi mua hàng.
+*   Khách hàng gửi khiếu nại đính kèm hình ảnh/video bằng chứng trực tiếp từ lịch sử đơn hàng.
+*   **Timeline đồ họa trực quan:** Hiển thị 4 giai đoạn xử lý minh bạch: `Đã tiếp nhận` ➔ `Đang kiểm tra` ➔ `Đã duyệt` ➔ `Đã gửi part thay thế`.
+*   Tự động bắn thông báo (Notifications) về tài khoản khách hàng khi Admin cập nhật tiến độ.
+
+### 🤖 3. Trợ Lý AI Chatbot Gemini & FAQ Thông Minh
+*   Khung chat bóng bẩy (Glassmorphism UI) hỗ trợ tư vấn 24/7.
+*   Tích hợp trực tiếp API của **Google Gemini API (`gemini-1.5-flash`)** với prompt hướng dẫn chuyên môn sâu về Gunpla.
+*   **Cơ chế dự phòng (Local FAQ Fallback):** Tự động chuyển sang đối sánh từ khóa địa phương để trả lời nếu mất kết nối API hoặc Admin chưa cấu hình Key.
+*   Trang quản lý cấu hình Chatbot AI trong Admin Panel cho phép bật/tắt AI Mode và cập nhật API Key bất kỳ lúc nào.
+
+### 🎙 4. Tìm Kiếm Bằng Giọng Nói (Voice Search)
+*   Tích hợp công nghệ **Web Speech API** vào ô tìm kiếm chính.
+*   Kích hoạt micro bằng một nút bấm kèm hoạt ảnh sóng âm (pulsing wave visualizer).
+*   Nhận diện giọng nói tiếng Việt/tiếng Anh chuẩn xác, tự động điền từ khóa và thực thi truy vấn tức thì.
+
+### 📊 5. Biểu Đồ Thống Kê Doanh Thu Động (Real-time Admin Chart)
+*   Biểu đồ đường (Line Chart) mượt mà với hiệu ứng Gold Gradient bóng bẩy sử dụng **Chart.js v4**.
+*   Lọc dữ liệu theo thời gian thực tùy chỉnh bằng hai ô chọn ngày: `Từ ngày` - `Đến ngày`.
+*   **Cơ chế chia mốc tự động (Granularity):**
+    *   *Trong ngày:* Chia theo 24 giờ (`00h` - `23h`).
+    *   *Dưới 90 ngày:* Chia theo từng ngày (`ngày/tháng`).
+    *   *Trên 90 ngày:* Tự động gom nhóm theo từng tháng (`tháng/năm`) tránh rối mắt.
+*   Tooltip tích hợp dữ liệu chéo: Xem đồng thời Doanh thu (VNĐ) và Số đơn hàng trên từng mốc thời gian.
+
+### 🔔 6. Thông Báo Hàng Về Tự Động (Back-in-stock Alert)
+*   Khi mô hình hết hàng (`stock = 0`), hiển thị nút **Báo khi có hàng**.
+*   Khách hàng đăng ký theo dõi sản phẩm bằng 1-click (AJAX).
+*   Khi Admin cập nhật số lượng tồn kho (`stock > 0`), hệ thống tự động quét dữ liệu và đẩy thông báo hàng về trực tiếp vào tài khoản của những người đăng ký.
+
+---
+
+## 🛠 CÔNG NGHỆ & THƯ VIỆN SỬ DỤNG (TECH STACK)
+
+*   **Backend:** PHP 8.x thuần, kiến trúc MVC tự viết, kết nối CSDL qua thư viện an toàn **PDO**.
+*   **Frontend:** HTML5 (Semantic HTML), CSS3 (Vanilla + CSS Variables tạo Dark/Light Mode đồng bộ), Javascript (ES6+) thuần không dùng framework.
+*   **Thư viện đồ họa:** Chart.js v4 (UMD).
+*   **Thư viện hỗ trợ:**
+    *   `vlucas/phpdotenv` (Quản lý bảo mật môi trường).
+    *   `PHPMailer` (Tự động gửi email hóa đơn khi đặt hàng).
+    *   `Composer` (Quản lý autoload & thư viện).
+*   **Cổng thanh toán:** **VNPAY Sandbox** (Thanh toán trực tuyến bảo mật).
 
 ---
 
-## 🚀 Hướng dẫn cài đặt (Installation Guide)
+## 📂 HƯỚNG DẪN CÀI ĐẶT NHANH (QUICK START)
 
-Để khởi chạy dự án trên môi trường local, hãy làm theo các bước sau:
-
-**Bước 1: Chuẩn bị môi trường**
-Cài đặt phần mềm **XAMPP** (Hỗ trợ PHP 8.x trở lên).
-
-**Bước 2: Clone dự án**
-Clone toàn bộ mã nguồn vào thư mục `htdocs` của XAMPP:
-
-```bash
-cd C:\\xampp\\htdocs
-git clone <đường-dẫn-repo-của-bạn> gunpla-shop
-
-```
-
-**Bước 3: Khởi tạo Cơ sở dữ liệu (Database)**
-
-1. Mở XAMPP Control Panel, khởi động **Apache** và **MySQL**.
-2. Truy cập `http://localhost/phpmyadmin`.
-3. Tạo một Database mới mang tên: `gunpla_shop` (Mã hóa: `utf8mb4_unicode_ci`).
-4. Chọn tab **Import**, tải lên tệp `database/gunpla_shop.sql` có sẵn trong thư mục dự án và thực thi.
-
-**Bước 4: Cấu hình hệ thống kết nối DB**
-Mở tệp `config/database.php` (hoặc `.env` nếu có) và cấu hình chuẩn xác các thông số:
-
-```php
-'host' => 'localhost',
-'dbname' => 'gunpla_shop',
-'username' => 'root',
-'password' => '' // Mặc định của XAMPP là bỏ trống
-
-```
-
-*(Nếu bạn muốn thử tính năng gửi mail, hãy cập nhật cấu hình SMTP trong tệp cài đặt email).*
-
-**Bước 5: Chạy dự án**
-Mở trình duyệt web và truy cập vào đường dẫn sau:
-
-* **Trang khách hàng:** `http://localhost/gunpla-shop/public/`
-* **Trang quản trị (Admin):** `http://localhost/gunpla-shop/public/admin/login`
+1.  **Clone dự án:** Tải mã nguồn về mục `htdocs` của XAMPP:
+    ```bash
+    cd C:\xampp\htdocs
+    git clone <đường-dẫn-repo> gunpla-shop
+    ```
+2.  **Cài đặt thư viện:** Chạy lệnh tại thư mục dự án:
+    ```bash
+    composer install
+    ```
+3.  **Import Database:** Tạo CSDL `gunpla_shop` trên `phpMyAdmin` (Mã hóa: `utf8mb4_unicode_ci`), sau đó import file `database/gunpla_shop.sql`.
+4.  **Cấu hình môi trường:** Tạo file `.env` tại thư mục gốc và cấu hình:
+    ```ini
+    DB_HOST=127.0.0.1
+    DB_NAME=gunpla_shop
+    DB_USER=root
+    DB_PASS=
+    GEMINI_API_KEY=YOUR_API_KEY_HERE
+    ```
+5.  **Khởi động:**
+    *   *Trang chủ khách hàng:* `http://localhost/gunpla-shop/public/`
+    *   *Trang admin:* `http://localhost/gunpla-shop/public/admin/login` (Tài khoản: `admin@gunplashop.com` / Mật khẩu: `admin123`).
 
 ---
+
+## 📄 TÀI LIỆU HỆ THỐNG LIÊN QUAN (DOCUMENTATION LINKS)
+
+Để tìm hiểu chi tiết sâu hơn về hệ thống, bạn có thể tham khảo các tài liệu chuyên đề sau:
+*   [PROJECT_OVERVIEW.md](file:///e:/XAMPP/htdocs/gunpla-shop/PROJECT_OVERVIEW.md) — Phân tích chi tiết kiến trúc MVC, vòng đời request, cấu trúc chi tiết của 13 bảng CSDL, và các dòng nghiệp vụ thanh toán, báo lỗi.
+*   [SPECIAL_FEATURES.md](file:///e:/XAMPP/htdocs/gunpla-shop/SPECIAL_FEATURES.md) — Hướng dẫn cài đặt, cơ chế hoạt động, và giải pháp kỹ thuật của các tính năng nâng cao (AI Chatbot, So sánh, Giọng nói, Timeline lỗi, Biểu đồ động).
