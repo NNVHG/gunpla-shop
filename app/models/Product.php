@@ -257,6 +257,10 @@ class Product
 
     public function update(int $id, array $data): bool
     {
+        $stmt = $this->db->prepare("SELECT name, stock FROM products WHERE id = ?");
+        $stmt->execute([$id]);
+        $prod = $stmt->fetch(PDO::FETCH_ASSOC);
+
         $fields = [];
         $params = [':id' => $id];
 
@@ -272,7 +276,18 @@ class Product
 
         $sql = "UPDATE products SET " . implode(', ', $fields) . " WHERE id = :id";
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute($params);
+        $success = $stmt->execute($params);
+
+        if ($success && $prod && isset($data['stock'])) {
+            $oldStock = (int)$prod['stock'];
+            $newStock = (int)$data['stock'];
+            if ($oldStock == 0 && $newStock > 0) {
+                $name = $data['name'] ?? $prod['name'];
+                $this->triggerBackInStockNotifications($id, $newStock, $name);
+            }
+        }
+
+        return $success;
     }
 
     public function softDelete(int $id): bool
@@ -283,13 +298,57 @@ class Product
 
     public function adjustStock(int $id, int $delta): bool
     {
+        $stmt = $this->db->prepare("SELECT name, stock FROM products WHERE id = ?");
+        $stmt->execute([$id]);
+        $prod = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$prod) return false;
+
         $stmt = $this->db->prepare("
             UPDATE products
             SET stock = stock + :delta
             WHERE id = :id AND (stock + :delta2) >= 0
         ");
-        return $stmt->execute([':delta' => $delta, ':delta2' => $delta, ':id' => $id]);
+        $success = $stmt->execute([':delta' => $delta, ':delta2' => $delta, ':id' => $id]);
+
+        if ($success && (int)$prod['stock'] === 0 && $delta > 0) {
+            $newStock = (int)$prod['stock'] + $delta;
+            $this->triggerBackInStockNotifications($id, $newStock, $prod['name']);
+        }
+
+        return $success;
     }
+
+    /**
+     * Gửi thông báo đến những người đã đăng ký khi sản phẩm có hàng trở lại
+     */
+    public function triggerBackInStockNotifications(int $productId, int $newStock, string $productName): void
+    {
+        if ($newStock <= 0) {
+            return;
+        }
+
+        require_once APP_PATH . '/Models/StockSubscription.php';
+        $stockSubModel = new \App\Models\StockSubscription();
+        $subscribers = $stockSubModel->getSubscribers($productId);
+
+        if (empty($subscribers)) {
+            return;
+        }
+
+        require_once APP_PATH . '/Models/Notification.php';
+        $notifyModel = new \App\Models\Notification();
+
+        $title = 'Sản phẩm "' . $productName . '" đã có hàng trở lại!';
+        $message = 'Sản phẩm "' . $productName . '" bạn đăng ký nhận tin hiện đã có hàng trở lại với số lượng ' . $newStock . ' sản phẩm. Mua ngay!';
+        $link = '/products/detail/' . $productId;
+
+        foreach ($subscribers as $userId) {
+            $notifyModel->create((int)$userId, $title, $message, $link);
+        }
+
+        $stockSubModel->deleteSubscriptions($productId);
+    }
+
 
 public function uploadImage(int $productId, array $fileData, bool $isPrimary = false): string|false
     {

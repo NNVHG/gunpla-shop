@@ -80,7 +80,7 @@ class DefectReport
      */
     public function updateStatus(int $id, string $status, ?string $adminComment = null): bool
     {
-        $allowed = ['pending', 'approved', 'rejected'];
+        $allowed = ['pending', 'checking', 'approved', 'shipped', 'rejected'];
         if (!in_array($status, $allowed)) {
             return false;
         }

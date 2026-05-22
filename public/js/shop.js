@@ -660,3 +660,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// ==============================
+// BACK IN STOCK SUBSCRIPTION
+// ==============================
+async function subscribeStock(productId) {
+  try {
+    const res = await fetch(B + '/products/subscribestock', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `product_id=${productId}`
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message);
+      const btn = document.getElementById('btnSubscribeStock');
+      if (btn) {
+        btn.outerHTML = `<button class="btn-primary" disabled style="background:rgba(58,158,106,.15);color:#5cba88;border:1px solid rgba(58,158,106,.3);flex:1;cursor:default;font-size:12px;">✓ ĐÃ ĐĂNG KÝ NHẬN TIN</button>`;
+      }
+    } else {
+      showToast(data.message, true);
+    }
+  } catch(e) {
+    showToast('Lỗi kết nối', true);
+  }
+}

@@ -29,6 +29,8 @@ use App\Models\Category;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\News;
+use DateTime;
+use PDO;
 
 class AdminController
 {
@@ -1015,10 +1017,11 @@ class AdminController
         $this->requirePost();
 
         $id = (int)($_POST['id'] ?? 0);
-        $action = $_POST['action'] ?? ''; // 'approve' or 'reject'
+        $status = $_POST['status'] ?? '';
         $adminComment = trim($_POST['admin_comment'] ?? '');
 
-        if ($id <= 0 || !in_array($action, ['approve', 'reject'])) {
+        $allowed = ['pending', 'checking', 'approved', 'shipped', 'rejected'];
+        if ($id <= 0 || !in_array($status, $allowed)) {
             $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Dữ liệu yêu cầu không hợp lệ.'];
             $this->redirect('/admin/defects');
             return;
@@ -1034,7 +1037,6 @@ class AdminController
             return;
         }
 
-        $status = $action === 'approve' ? 'approved' : 'rejected';
         $success = $defectModel->updateStatus($id, $status, $adminComment);
 
         if ($success) {
@@ -1042,22 +1044,175 @@ class AdminController
             require_once APP_PATH . '/Models/Notification.php';
             $notifyModel = new \App\Models\Notification();
 
-            if ($status === 'approved') {
+            $statusLabels = [
+                'pending' => 'Chờ tiếp nhận',
+                'checking' => 'Đang kiểm tra',
+                'approved' => 'Đã duyệt (chuẩn bị gửi part thay thế)',
+                'shipped' => 'Đã gửi part thay thế',
+                'rejected' => 'Bị từ chối'
+            ];
+
+            if ($status === 'checking') {
+                $title = 'Báo cáo lỗi đang được kiểm tra';
+                $msg = "Báo cáo lỗi sản phẩm \"{$report['product_name']}\" (Đơn hàng #{$report['order_id']}) của bạn đang được chúng tôi kiểm tra. Chúng tôi sẽ cập nhật tiến trình sớm nhất.";
+            } elseif ($status === 'approved') {
                 $title = 'Báo cáo lỗi sản phẩm được xác nhận';
                 $msg = "Báo cáo lỗi sản phẩm \"{$report['product_name']}\" (Đơn hàng #{$report['order_id']}) của bạn đã được xác nhận. Chúng tôi đang chuẩn bị gửi sản phẩm mới thay thế.";
-                $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Đã xác nhận báo cáo lỗi và phê duyệt gửi hàng thay thế.'];
-            } else {
+            } elseif ($status === 'shipped') {
+                $title = 'Sản phẩm thay thế đã được gửi';
+                $msg = "Sản phẩm thay thế cho báo cáo lỗi \"{$report['product_name']}\" (Đơn hàng #{$report['order_id']}) của bạn đã được gửi đi.";
+            } elseif ($status === 'rejected') {
                 $title = 'Báo cáo lỗi sản phẩm bị từ chối';
                 $msg = "Báo cáo lỗi sản phẩm \"{$report['product_name']}\" (Đơn hàng #{$report['order_id']}) của bạn đã bị từ chối. Lý do: " . ($adminComment ?: 'Hình ảnh hoặc video không đáp ứng yêu cầu.');
-                $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Đã từ chối báo cáo lỗi sản phẩm.'];
+            } else {
+                $title = 'Báo cáo lỗi chuyển về chờ xử lý';
+                $msg = "Báo cáo lỗi sản phẩm \"{$report['product_name']}\" (Đơn hàng #{$report['order_id']}) của bạn đã được chuyển về trạng thái Chờ xử lý.";
             }
 
+        $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Đã cập nhật trạng thái báo cáo lỗi sang: ' . $statusLabels[$status]];
             $notifyModel->create((int)$report['user_id'], $title, $msg, '/orders/detail/' . $report['order_id'] . '#defect-report-' . $report['id']);
         } else {
             $_SESSION['flash'] = ['type' => 'error', 'msg' => 'Không thể cập nhật trạng thái báo cáo lỗi.'];
         }
 
         $this->redirect('/admin/defects/detail/' . $id);
+    }
+
+    public function revenueData(): void
+    {
+        $this->requireAdmin();
+        $db = getDB();
+
+        $startDate = $_GET['start_date'] ?? date('Y-m-d', strtotime('-29 days'));
+        $endDate = $_GET['end_date'] ?? date('Y-m-d');
+
+        // Parse dates
+        try {
+            $start = new DateTime($startDate);
+            $end = new DateTime($endDate);
+        } catch (\Exception $e) {
+            $start = new DateTime(date('Y-m-d', strtotime('-29 days')));
+            $end = new DateTime(date('Y-m-d'));
+        }
+
+        // Ensure start is before or equal to end
+        if ($start > $end) {
+            $temp = $start;
+            $start = $end;
+            $end = $temp;
+
+            $tempStr = $startDate;
+            $startDate = $endDate;
+            $endDate = $tempStr;
+        }
+
+        $interval = $start->diff($end);
+        $daysDiff = (int)$interval->format('%a');
+
+        $labels = [];
+        $revenueData = [];
+        $ordersData = [];
+
+        if ($daysDiff === 0) {
+            // Single day, show hourly view
+            for ($h = 0; $h < 24; $h++) {
+                $labels[] = sprintf('%02dh', $h);
+                $revenueData[$h] = 0;
+                $ordersData[$h] = 0;
+            }
+
+            $stmt = $db->prepare("
+                SELECT HOUR(created_at) AS hour_key, SUM(total) AS revenue, COUNT(id) AS orders_count
+                FROM orders
+                WHERE DATE(created_at) = :target_date AND status != 'cancelled'
+                GROUP BY HOUR(created_at)
+            ");
+            $stmt->execute([':target_date' => $start->format('Y-m-d')]);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $row) {
+                $h = (int)$row['hour_key'];
+                if (isset($revenueData[$h])) {
+                    $revenueData[$h] = (int)$row['revenue'];
+                    $ordersData[$h] = (int)$row['orders_count'];
+                }
+            }
+            $revenueDataset = array_values($revenueData);
+            $ordersDataset = array_values($ordersData);
+
+        } elseif ($daysDiff <= 90) {
+            // Under 90 days, show daily view
+            $current = clone $start;
+            while ($current <= $end) {
+                $dateStr = $current->format('Y-m-d');
+                $labels[] = $current->format('d/m');
+                $revenueData[$dateStr] = 0;
+                $ordersData[$dateStr] = 0;
+                $current->modify('+1 day');
+            }
+
+            $stmt = $db->prepare("
+                SELECT DATE(created_at) AS date_key, SUM(total) AS revenue, COUNT(id) AS orders_count
+                FROM orders
+                WHERE DATE(created_at) >= :start_date AND DATE(created_at) <= :end_date AND status != 'cancelled'
+                GROUP BY DATE(created_at)
+            ");
+            $stmt->execute([
+                ':start_date' => $start->format('Y-m-d'),
+                ':end_date'   => $end->format('Y-m-d')
+            ]);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $row) {
+                if (isset($revenueData[$row['date_key']])) {
+                    $revenueData[$row['date_key']] = (int)$row['revenue'];
+                    $ordersData[$row['date_key']] = (int)$row['orders_count'];
+                }
+            }
+            $revenueDataset = array_values($revenueData);
+            $ordersDataset = array_values($ordersData);
+
+        } else {
+            // Over 90 days, show monthly view
+            $current = clone $start;
+            $current->modify('first day of this month');
+            $endMonth = clone $end;
+            $endMonth->modify('first day of this month');
+
+            while ($current <= $endMonth) {
+                $monthKey = $current->format('Y-m');
+                $labels[] = $current->format('m/Y');
+                $revenueData[$monthKey] = 0;
+                $ordersData[$monthKey] = 0;
+                $current->modify('+1 month');
+            }
+
+            $stmt = $db->prepare("
+                SELECT DATE_FORMAT(created_at, '%Y-%m') AS month_key, SUM(total) AS revenue, COUNT(id) AS orders_count
+                FROM orders
+                WHERE DATE(created_at) >= :start_date AND DATE(created_at) <= :end_date AND status != 'cancelled'
+                GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+            ");
+            $stmt->execute([
+                ':start_date' => $start->format('Y-m-d'),
+                ':end_date'   => $end->format('Y-m-d')
+            ]);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $row) {
+                if (isset($revenueData[$row['month_key']])) {
+                    $revenueData[$row['month_key']] = (int)$row['revenue'];
+                    $ordersData[$row['month_key']] = (int)$row['orders_count'];
+                }
+            }
+            $revenueDataset = array_values($revenueData);
+            $ordersDataset = array_values($ordersData);
+        }
+
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'labels' => $labels,
+            'revenue' => $revenueDataset,
+            'orders' => $ordersDataset
+        ]);
+        exit;
     }
 }
 

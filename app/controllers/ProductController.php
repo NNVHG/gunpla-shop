@@ -137,6 +137,13 @@ class ProductController
         $hasReviewed = !empty($_SESSION['user']['id'])
             && $this->reviewModel->hasReviewed($product['id'], (int) $_SESSION['user']['id']);
 
+        $isSubscribed = false;
+        if (!empty($_SESSION['user']['id']) && (int)$product['stock'] === 0) {
+            require_once APP_PATH . '/Models/StockSubscription.php';
+            $stockSubModel = new \App\Models\StockSubscription();
+            $isSubscribed = $stockSubModel->isSubscribed((int) $_SESSION['user']['id'], (int) $product['id']);
+        }
+
         $data = [
             'title'        => $product['name'] . ' — GUNPLA SHOP',
             'product'      => $product,
@@ -145,6 +152,7 @@ class ProductController
             'avgRating'    => $ratingInfo['avg'],
             'totalReviews' => $ratingInfo['total'],
             'hasReviewed'  => $hasReviewed,
+            'isSubscribed' => $isSubscribed,
         ];
 
         $this->render('products/detail', $data);
@@ -351,6 +359,47 @@ class ProductController
             'results' => $result['items'],
             'news'    => $newsResult,
         ]);
+        exit;
+    }
+
+    public function subscribestock(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        
+        if (empty($_SESSION['user']['id'])) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Vui lòng đăng nhập để đăng ký nhận thông báo.'
+            ]);
+            exit;
+        }
+
+        $userId = (int) $_SESSION['user']['id'];
+        $productId = (int) ($_POST['product_id'] ?? 0);
+
+        if ($productId <= 0) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Sản phẩm không hợp lệ.'
+            ]);
+            exit;
+        }
+
+        require_once APP_PATH . '/Models/StockSubscription.php';
+        $stockSubModel = new \App\Models\StockSubscription();
+        
+        $success = $stockSubModel->subscribe($userId, $productId);
+        if ($success) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Đăng ký nhận thông báo khi có hàng thành công!'
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Đã xảy ra lỗi. Vui lòng thử lại.'
+            ]);
+        }
         exit;
     }
 

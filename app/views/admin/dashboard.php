@@ -53,11 +53,18 @@ $statusLabels = [
 <div class="dashboard-layout">
 
   <div class="admin-table-wrap">
-    <div class="admin-table-head">
-      <span class="admin-table-title">Doanh thu 7 ngày gần nhất</span>
+    <div class="admin-table-head" style="display:flex;justify-content:space-between;align-items:center;">
+      <span class="admin-table-title" id="revenueChartTitle">Doanh thu cửa hàng</span>
+      <div style="display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',var(--font-m);font-size:13px;flex-wrap:wrap;">
+        <label for="startDateInput" style="color:var(--text-secondary)">Từ</label>
+        <input type="date" id="startDateInput" value="<?= date('Y-m-d', strtotime('-29 days')) ?>" style="background:var(--bg-card);color:var(--gold);border:1px solid var(--border);padding:4px 8px;border-radius:4px;outline:none;cursor:pointer;font-family:inherit;">
+        
+        <label for="endDateInput" style="color:var(--text-secondary)">đến</label>
+        <input type="date" id="endDateInput" value="<?= date('Y-m-d') ?>" style="background:var(--bg-card);color:var(--gold);border:1px solid var(--border);padding:4px 8px;border-radius:4px;outline:none;cursor:pointer;font-family:inherit;">
+      </div>
     </div>
-    <div style="padding:20px">
-      <canvas id="revenueChart" height="180"></canvas>
+    <div style="padding:20px;height:240px;position:relative;">
+      <canvas id="revenueChart"></canvas>
     </div>
   </div>
 
@@ -137,69 +144,111 @@ $statusLabels = [
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
-  const chartData = <?= json_encode($revenueChart) ?>;
+  let chartInstance = null;
 
-  const days = [];
-  const revenues = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
-    days.push(d.toLocaleDateString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit'
-    }));
-    const found = chartData.find(r => r.date === key);
-    revenues.push(found ? parseInt(found.revenue) : 0);
-  }
+  function renderRevenueChart(labels, revenue, orders) {
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    
+    if (chartInstance) {
+      chartInstance.destroy();
+    }
 
-  new Chart(document.getElementById('revenueChart'), {
-    type: 'bar',
-    data: {
-      labels: days,
-      datasets: [{
-        data: revenues,
-        backgroundColor: 'rgba(200,168,90,0.25)',
-        borderColor: '#c8a85a',
-        borderWidth: 1,
-        borderRadius: 3,
-        hoverBackgroundColor: 'rgba(200,168,90,0.45)',
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: false
-        }
+    const gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.clientHeight || 200);
+    gradient.addColorStop(0, 'rgba(200, 168, 90, 0.45)');
+    gradient.addColorStop(1, 'rgba(200, 168, 90, 0.01)');
+
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Doanh thu',
+          data: revenue,
+          borderColor: '#c8a85a',
+          borderWidth: 2,
+          fill: true,
+          backgroundColor: gradient,
+          tension: 0.35,
+          pointBackgroundColor: '#c8a85a',
+          pointBorderColor: 'var(--bg-card)',
+          pointBorderWidth: 1,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+        }]
       },
-      scales: {
-        x: {
-          grid: {
-            color: 'rgba(255,255,255,0.04)'
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
           },
-          ticks: {
-            color: '#7a7874',
-            font: {
-              family: 'Share Tech Mono',
-              size: 10
+          tooltip: {
+            backgroundColor: 'rgba(20, 20, 20, 0.95)',
+            titleColor: '#c8a85a',
+            bodyColor: '#e0e0e0',
+            borderColor: 'rgba(200, 168, 90, 0.3)',
+            borderWidth: 1,
+            padding: 12,
+            displayColors: false,
+            callbacks: {
+              label: function(context) {
+                const idx = context.dataIndex;
+                const rev = context.raw;
+                const ord = orders[idx] || 0;
+                return [
+                  'Doanh thu: ' + rev.toLocaleString('vi-VN') + 'đ',
+                  'Số đơn hàng: ' + ord + ' đơn'
+                ];
+              }
             }
           }
         },
-        y: {
-          grid: {
-            color: 'rgba(255,255,255,0.04)'
-          },
-          ticks: {
-            color: '#7a7874',
-            font: {
-              family: 'Share Tech Mono',
-              size: 10
+        scales: {
+          x: {
+            grid: {
+              color: 'rgba(255,255,255,0.03)'
             },
-            callback: v => v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : (v >= 1000 ? (v / 1000).toFixed(0) + 'K' : v)
+            ticks: {
+              color: '#7a7874',
+              font: {
+                family: 'Share Tech Mono',
+                size: 11
+              }
+            }
+          },
+          y: {
+            grid: {
+              color: 'rgba(255,255,255,0.03)'
+            },
+            ticks: {
+              color: '#7a7874',
+              font: {
+                family: 'Share Tech Mono',
+                size: 11
+              },
+              callback: v => v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : (v >= 1000 ? (v / 1000).toFixed(0) + 'K' : v)
+            }
           }
         }
       }
+    });
+  }
+
+  async function loadChartData() {
+    const start = document.getElementById('startDateInput').value;
+    const end = document.getElementById('endDateInput').value;
+    try {
+      const res = await fetch(BASE_URL + '/admin/revenueData?start_date=' + start + '&end_date=' + end);
+      const data = await res.json();
+      renderRevenueChart(data.labels, data.revenue, data.orders);
+    } catch(e) {
+      console.error('Error fetching chart data:', e);
     }
-  });
+  }
+
+  document.getElementById('startDateInput').addEventListener('change', loadChartData);
+  document.getElementById('endDateInput').addEventListener('change', loadChartData);
+
+  loadChartData();
 </script>

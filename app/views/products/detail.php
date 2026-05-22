@@ -67,7 +67,14 @@ $formatImg = function ($path) {
           <button class="btn-add-large" onclick="addToCartDetail(<?= $p['id'] ?>)">+ THÊM VÀO GIỎ</button>
         </div>
       <?php else: ?>
-        <button class="btn-add-large" disabled style="opacity:.4;cursor:not-allowed">HẾT HÀNG</button>
+        <div style="display:flex;gap:12px;width:100%;margin-bottom:20px;">
+          <button class="btn-add-large" disabled style="opacity:.4;cursor:not-allowed;flex:1;">HẾT HÀNG</button>
+          <?php if (!empty($isSubscribed)): ?>
+            <button class="btn-primary" disabled style="background:rgba(58,158,106,.15);color:#5cba88;border:1px solid rgba(58,158,106,.3);flex:1;cursor:default;font-size:12px;">✓ ĐÃ ĐĂNG KÝ NHẬN TIN</button>
+          <?php else: ?>
+            <button class="btn-primary" id="btnSubscribeStock" onclick="subscribeStock(<?= $p['id'] ?>)" style="flex:1;font-size:12px;">BÁO KHI CÓ HÀNG</button>
+          <?php endif; ?>
+        </div>
       <?php endif; ?>
       <?php if (!empty($p['description'])): ?>
         <div class="detail-desc"><?= nl2br(htmlspecialchars($p['description'])) ?></div>

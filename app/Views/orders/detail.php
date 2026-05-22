@@ -196,8 +196,12 @@ $methodLabels  = ['cod' => 'Thanh toán khi nhận hàng (COD)', 'vnpay' => 'VNP
                                     $rep = $reportsByProduct[$productId];
                                     if ($rep['status'] === 'pending'): ?>
                                         <span class="badge badge-pending" style="font-size:11px; padding: 4px 8px;">Chờ duyệt</span>
+                                    <?php elseif ($rep['status'] === 'checking'): ?>
+                                        <span class="badge badge-pending" style="font-size:11px; padding: 4px 8px; background: rgba(200,138,58,0.15); color: var(--amber); border: 1px solid rgba(200,138,58,0.35);">Đang kiểm tra</span>
                                     <?php elseif ($rep['status'] === 'approved'): ?>
-                                        <span class="badge badge-delivered" style="font-size:11px; padding: 4px 8px; background: rgba(58,158,106,0.15); color: #5cba88; border: 1px solid rgba(58,158,106,0.35);">Đã duyệt (Gửi bù)</span>
+                                        <span class="badge badge-delivered" style="font-size:11px; padding: 4px 8px; background: rgba(58,158,106,0.15); color: #5cba88; border: 1px solid rgba(58,158,106,0.35);">Đã duyệt</span>
+                                    <?php elseif ($rep['status'] === 'shipped'): ?>
+                                        <span class="badge badge-delivered" style="font-size:11px; padding: 4px 8px; background: var(--green); color: #fff; border: 1px solid var(--green);">Đã gửi part</span>
                                     <?php else: ?>
                                         <span class="badge badge-cancelled" style="font-size:11px; padding: 4px 8px;">Bị từ chối</span>
                                     <?php endif; ?>
@@ -241,14 +245,82 @@ $methodLabels  = ['cod' => 'Thanh toán khi nhận hàng (COD)', 'vnpay' => 'VNP
                             </div>
                             <div>
                                 <?php if ($rep['status'] === 'pending'): ?>
-                                    <span class="badge badge-pending">ĐANG CHỜ DUYỆT</span>
+                                    <span class="badge badge-pending">ĐÃ TIẾP NHẬN</span>
+                                <?php elseif ($rep['status'] === 'checking'): ?>
+                                    <span class="badge badge-pending" style="background: rgba(200,138,58,0.15); color: var(--amber); border: 1px solid rgba(200,138,58,0.4); padding: 4px 10px; border-radius: 4px; font-size:12px; font-family: var(--font-mono);">ĐANG KIỂM TRA</span>
                                 <?php elseif ($rep['status'] === 'approved'): ?>
-                                    <span class="badge badge-delivered" style="background: rgba(58,158,106,0.15); color: #5cba88; border: 1px solid rgba(58,158,106,0.4); padding: 4px 10px; border-radius: 4px; font-size:12px; font-family: var(--font-mono);">XÁC NHẬN GỬI HÀNG THAY THẾ</span>
+                                    <span class="badge badge-delivered" style="background: rgba(58,158,106,0.15); color: #5cba88; border: 1px solid rgba(58,158,106,0.4); padding: 4px 10px; border-radius: 4px; font-size:12px; font-family: var(--font-mono);">ĐÃ DUYỆT (CHUẨN BỊ GỬI)</span>
+                                <?php elseif ($rep['status'] === 'shipped'): ?>
+                                    <span class="badge badge-delivered" style="background: var(--green); color: #fff; border: 1px solid var(--green); padding: 4px 10px; border-radius: 4px; font-size:12px; font-family: var(--font-mono);">ĐÃ GỬI PART THAY THẾ</span>
                                 <?php else: ?>
                                     <span class="badge badge-cancelled" style="background: rgba(200,64,64,0.15); color: #e07070; border: 1px solid rgba(200,64,64,0.4); padding: 4px 10px; border-radius: 4px; font-size:12px; font-family: var(--font-mono);">BỊ TỪ CHỐI</span>
                                 <?php endif; ?>
                             </div>
                         </div>
+
+                        <!-- PROGRESS TIMELINE -->
+                        <div class="defect-timeline" style="margin: 24px 0; padding: 16px; background: rgba(255,255,255,0.02); border: 1px dashed var(--border); border-radius: 6px;">
+                            <?php if ($rep['status'] !== 'rejected'): ?>
+                                <?php
+                                $steps = [
+                                    'pending' => ['label' => 'Đã tiếp nhận', 'num' => 1],
+                                    'checking' => ['label' => 'Đang kiểm tra', 'num' => 2],
+                                    'approved' => ['label' => 'Đã duyệt / Gửi bù', 'num' => 3],
+                                    'shipped' => ['label' => 'Đã gửi part', 'num' => 4],
+                                ];
+                                $currentNum = 1;
+                                if ($rep['status'] === 'checking') $currentNum = 2;
+                                if ($rep['status'] === 'approved') $currentNum = 3;
+                                if ($rep['status'] === 'shipped') $currentNum = 4;
+                                ?>
+                                <div style="display: flex; justify-content: space-between; position: relative; align-items: center; width: 100%; max-width: 500px; margin: 10px auto;">
+                                    <div style="position: absolute; left: 0; right: 0; top: 14px; height: 2px; background: var(--border-mid); z-index: 1;"></div>
+                                    <div style="position: absolute; left: 0; top: 14px; height: 2px; background: var(--gold); z-index: 2; transition: width 0.4s ease; width: <?= (($currentNum - 1) / 3) * 100 ?>%;"></div>
+                                    
+                                    <?php foreach ($steps as $sCode => $sInfo): ?>
+                                        <?php 
+                                        $isActive = $sInfo['num'] <= $currentNum;
+                                        $nodeBg = $isActive ? 'var(--gold)' : 'var(--bg-panel)';
+                                        $nodeBorder = $isActive ? 'var(--gold)' : 'var(--border-mid)';
+                                        $nodeTextColor = $isActive ? 'var(--bg-void)' : 'var(--text-3)';
+                                        $labelText = $isActive ? 'var(--text-1)' : 'var(--text-3)';
+                                        ?>
+                                        <div style="display: flex; flex-direction: column; align-items: center; z-index: 3; position: relative; width: 80px;">
+                                            <div style="width: 28px; height: 28px; border-radius: 50%; background: <?= $nodeBg ?>; border: 2px solid <?= $nodeBorder ?>; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 12px; font-weight: bold; color: <?= $nodeTextColor ?>; box-shadow: <?= $isActive ? '0 0 8px rgba(200, 168, 90, 0.3)' : 'none' ?>;">
+                                                <?= $sInfo['num'] ?>
+                                            </div>
+                                            <div style="font-size: 11px; font-family: var(--font-mono); margin-top: 6px; text-align: center; color: <?= $labelText ?>; white-space: nowrap; font-weight: <?= $isActive ? 'bold' : 'normal' ?>;">
+                                                <?= $sInfo['label'] ?>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else: ?>
+                                <div style="display: flex; justify-content: space-between; position: relative; align-items: center; width: 100%; max-width: 500px; margin: 10px auto;">
+                                    <div style="position: absolute; left: 0; right: 0; top: 14px; height: 2px; background: var(--border-mid); z-index: 1;"></div>
+                                    <div style="position: absolute; left: 0; top: 14px; height: 2px; background: var(--red); z-index: 2; width: 100%;"></div>
+                                    
+                                    <div style="display: flex; flex-direction: column; align-items: center; z-index: 3; position: relative; width: 80px;">
+                                        <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--text-2); border: 2px solid var(--text-2); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 12px; font-weight: bold; color: var(--bg-void);">
+                                            1
+                                        </div>
+                                        <div style="font-size: 11px; font-family: var(--font-mono); margin-top: 6px; text-align: center; color: var(--text-2); white-space: nowrap;">
+                                            Đã tiếp nhận
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: flex; flex-direction: column; align-items: center; z-index: 3; position: relative; width: 80px;">
+                                        <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--red); border: 2px solid var(--red); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 12px; font-weight: bold; color: #fff; box-shadow: 0 0 8px rgba(200, 64, 64, 0.3);">
+                                            ✘
+                                        </div>
+                                        <div style="font-size: 11px; font-family: var(--font-mono); margin-top: 6px; text-align: center; color: var(--red); white-space: nowrap; font-weight: bold;">
+                                            Bị từ chối
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
                         <p style="color: var(--text-secondary); font-size:15px; line-height: 1.6; margin: 0 0 16px 0;">
                             <strong>Mô tả chi tiết:</strong> <?= nl2br(htmlspecialchars($rep['description'])) ?>
                         </p>
@@ -300,6 +372,13 @@ $methodLabels  = ['cod' => 'Thanh toán khi nhận hàng (COD)', 'vnpay' => 'VNP
             <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
             <input type="hidden" name="product_id" id="modalProductId" value="">
             
+            <div style="margin-bottom: 20px;">
+                <label style="font-family: var(--font-mono); font-size:12px; color: var(--text-hint); letter-spacing: .12em; text-transform: uppercase; display: block; margin-bottom: 8px;">
+                    Mã đơn hàng
+                </label>
+                <input type="text" readonly value="#<?= $order['id'] ?>" style="width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 6px; color: var(--text-secondary); font-size:16px; outline: none; font-family: var(--font-mono);">
+            </div>
+
             <div style="margin-bottom: 20px;">
                 <label style="font-family: var(--font-mono); font-size:12px; color: var(--text-hint); letter-spacing: .12em; text-transform: uppercase; display: block; margin-bottom: 8px;">
                     Sản phẩm báo cáo
