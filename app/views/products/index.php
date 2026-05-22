@@ -41,9 +41,13 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
     return BASE_URL . '/products?' . http_build_query($merged);
 };
 ?>
+<!-- noUiSlider CSS & JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
+
 <div class="container" style="padding-top:32px;padding-bottom:48px">
   <div class="breadcrumb"><a href="<?= BASE_URL ?>/">Trang chủ</a><span>/</span>Sản phẩm</div>
-  <div style="display:grid;grid-template-columns:220px 1fr;gap:32px;margin-top:28px">
+  <div class="catalog-layout">
 
     <aside>
       <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:7px;padding:20px">
@@ -102,6 +106,27 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
             
         <?php endif; ?>
 
+        <!-- Bộ lọc tình trạng kho -->
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:24px 0 10px">// Tình trạng hàng</div>
+        <a href="<?= $buildUrl(['stock_status' => null]) ?>"
+           class="filter-link <?= empty($filters['stock_status']) ? 'active' : '' ?>">Tất cả tình trạng</a>
+        <a href="<?= $buildUrl(['stock_status' => 'in_stock']) ?>"
+           class="filter-link <?= ($filters['stock_status'] ?? '') === 'in_stock' ? 'active' : '' ?>">Còn hàng</a>
+        <a href="<?= $buildUrl(['stock_status' => 'out_stock']) ?>"
+           class="filter-link <?= ($filters['stock_status'] ?? '') === 'out_stock' ? 'active' : '' ?>">Hết hàng</a>
+
+        <!-- Bộ lọc khoảng giá -->
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin:24px 0 15px">// Khoảng giá (VNĐ)</div>
+        <div style="padding:0 10px;margin-bottom:15px">
+          <div id="price-slider" style="margin-bottom:20px;height:8px;border:none;background:var(--border);border-radius:4px"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:10px;color:var(--text-hint);margin-bottom:15px">
+            <span id="price-min-val">0đ</span>
+            <span>-</span>
+            <span id="price-max-val">5.000.000đ</span>
+          </div>
+          <button id="btn-apply-price" class="btn btn-gold" style="width:100%;padding:8px;font-size:11px;border-radius:4px;font-family:var(--font-mono);letter-spacing:0.05em">ÁP DỤNG</button>
+        </div>
+
       </div>
     </aside>
 
@@ -142,6 +167,12 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
                 }
                 $thumbUrl = $thumb ? BASE_URL . '/' . ltrim($thumb, '/') : null;
                 ?>
+
+                <!-- Compare Checkbox -->
+                <label class="compare-checkbox-wrap" onclick="event.stopPropagation();" style="position:absolute;top:10px;left:10px;z-index:5;background:rgba(0,0,0,0.7);padding:4px 8px;border-radius:4px;display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;border:1px solid rgba(255,255,255,0.1)">
+                  <input type="checkbox" class="compare-checkbox" data-id="<?= $p['id'] ?>" data-name="<?= htmlspecialchars($p['name']) ?>" data-image="<?= htmlspecialchars($thumbUrl ?? '') ?>" style="width:14px;height:14px;accent-color:var(--gold);cursor:pointer">
+                  <span style="font-size:9px;color:#fff;font-family:var(--font-mono);font-weight:bold;letter-spacing:0.05em">SO SÁNH</span>
+                </label>
 
                 <?php if ($thumbUrl): ?>
                   <img src="<?= htmlspecialchars($thumbUrl) ?>" 
@@ -196,3 +227,110 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Khởi tạo bộ lọc khoảng giá noUiSlider
+    const slider = document.getElementById('price-slider');
+    if (slider) {
+        const minVal = parseInt('<?= $filters["min_price"] ?? 0 ?>') || 0;
+        const maxVal = parseInt('<?= $filters["max_price"] ?? 5000000 ?>') || 5000000;
+        
+        noUiSlider.create(slider, {
+            start: [minVal, maxVal],
+            connect: true,
+            range: {
+                'min': 0,
+                'max': 5000000
+            },
+            step: 50000,
+            format: {
+                to: function (value) {
+                    return Math.round(value);
+                },
+                from: function (value) {
+                    return Math.round(value);
+                }
+            }
+        });
+
+        const minSpan = document.getElementById('price-min-val');
+        const maxSpan = document.getElementById('price-max-val');
+
+        const formatVND = (val) => {
+            return new Intl.NumberFormat('vi-VN').format(val) + 'đ';
+        };
+
+        slider.noUiSlider.on('update', function (values, handle) {
+            if (handle === 0) {
+                minSpan.textContent = formatVND(values[0]);
+            } else {
+                maxSpan.textContent = formatVND(values[1]);
+            }
+        });
+
+        document.getElementById('btn-apply-price').addEventListener('click', () => {
+            const values = slider.noUiSlider.get();
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('min_price', values[0]);
+            currentUrl.searchParams.set('max_price', values[1]);
+            // Reset page về 1 khi lọc
+            currentUrl.searchParams.set('page', 1);
+            window.location.href = currentUrl.toString();
+        });
+    }
+
+    // 2. Đồng bộ hóa Compare checkboxes dựa trên localStorage
+    const compareCheckboxes = document.querySelectorAll('.compare-checkbox');
+    const updateCheckboxes = () => {
+        const currentCompare = JSON.parse(localStorage.getItem('compare_products') || '[]');
+        compareCheckboxes.forEach(cb => {
+            const id = parseInt(cb.getAttribute('data-id'));
+            cb.checked = currentCompare.includes(id);
+        });
+    };
+
+    updateCheckboxes();
+
+    compareCheckboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+            const id = parseInt(cb.getAttribute('data-id'));
+            const name = cb.getAttribute('data-name');
+            const img = cb.getAttribute('data-image');
+            
+            let currentCompare = JSON.parse(localStorage.getItem('compare_products') || '[]');
+            let currentCompareNames = JSON.parse(localStorage.getItem('compare_product_names') || '{}');
+            let currentCompareImages = JSON.parse(localStorage.getItem('compare_product_images') || '{}');
+            
+            if (cb.checked) {
+                if (currentCompare.length >= 3) {
+                    alert('Bạn chỉ có thể so sánh tối đa 3 sản phẩm cùng lúc.');
+                    cb.checked = false;
+                    return;
+                }
+                if (!currentCompare.includes(id)) {
+                    currentCompare.push(id);
+                    currentCompareNames[id] = name;
+                    currentCompareImages[id] = img;
+                }
+            } else {
+                currentCompare = currentCompare.filter(item => item !== id);
+                delete currentCompareNames[id];
+                delete currentCompareImages[id];
+            }
+            
+            localStorage.setItem('compare_products', JSON.stringify(currentCompare));
+            localStorage.setItem('compare_product_names', JSON.stringify(currentCompareNames));
+            localStorage.setItem('compare_product_images', JSON.stringify(currentCompareImages));
+            
+            // Phát ra sự kiện custom để cập nhật Floating Compare Bar
+            window.dispatchEvent(new CustomEvent('compare_updated'));
+        });
+    });
+
+    // Lắng nghe sự kiện compare_updated từ bên ngoài (e.g. nếu xóa từ Compare Bar)
+    window.addEventListener('compare_updated', () => {
+        updateCheckboxes();
+    });
+});
+</script>

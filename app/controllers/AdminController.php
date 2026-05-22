@@ -194,6 +194,8 @@ class AdminController
             'series'      => trim($_POST['series']  ?? ''),
             'description' => trim($_POST['description'] ?? ''),
             'weight_gram' => !empty($_POST['weight_gram']) ? (int) $_POST['weight_gram'] : null,
+            'parts_count' => !empty($_POST['parts_count']) ? (int) $_POST['parts_count'] : null,
+            'difficulty'  => !empty($_POST['difficulty']) ? trim($_POST['difficulty']) : null,
             'is_active'   => isset($_POST['is_active']) ? 1 : 0,
         ]);
 
@@ -245,6 +247,8 @@ class AdminController
             'series'      => trim($_POST['series']  ?? ''),
             'description' => trim($_POST['description'] ?? ''),
             'weight_gram' => !empty($_POST['weight_gram']) ? (int) $_POST['weight_gram'] : null,
+            'parts_count' => !empty($_POST['parts_count']) ? (int) $_POST['parts_count'] : null,
+            'difficulty'  => !empty($_POST['difficulty']) ? trim($_POST['difficulty']) : null,
             'is_active'   => isset($_POST['is_active']) ? 1 : 0,
         ]);
 
@@ -516,6 +520,9 @@ class AdminController
         if (empty(trim($post['name']        ?? ''))) $errors['name']        = 'Vui lòng nhập tên sản phẩm';
         if (empty($post['price']) || $post['price'] < 0) $errors['price']   = 'Giá không hợp lệ';
         if (empty($post['category_id']))               $errors['category_id'] = 'Vui lòng chọn danh mục';
+        if (isset($post['parts_count']) && $post['parts_count'] !== '' && (!is_numeric($post['parts_count']) || (int)$post['parts_count'] < 0)) {
+            $errors['parts_count'] = 'Số lượng mảnh ghép phải là số nguyên dương';
+        }
         return $errors;
     }
 
@@ -907,4 +914,34 @@ class AdminController
 
         $this->render('admin/news/form', $data);
     }
+
+    public function settings(): void
+    {
+        $this->requireAdmin();
+        $settingModel = new \App\Models\Setting();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $chatbotEnabled = isset($_POST['chatbot_enabled']) ? '1' : '0';
+            $chatbotAiMode  = isset($_POST['chatbot_ai_mode']) ? '1' : '0';
+            $chatbotGeminiKey = trim($_POST['chatbot_gemini_key'] ?? '');
+
+            $settingModel->set('chatbot_enabled', $chatbotEnabled);
+            $settingModel->set('chatbot_ai_mode', $chatbotAiMode);
+            $settingModel->set('chatbot_gemini_key', $chatbotGeminiKey);
+
+            $_SESSION['flash'] = [
+                'type' => 'success',
+                'msg'  => 'Cập nhật cấu hình AI & Chatbot thành công!'
+            ];
+            $this->redirect('/admin/settings');
+        }
+
+        $settings = $settingModel->getAll();
+
+        $this->renderAdmin('admin/settings', [
+            'title'    => 'Cấu hình AI & Chatbot',
+            'settings' => $settings
+        ]);
+    }
 }
+

@@ -64,6 +64,10 @@
             <?= array_sum(array_column($_SESSION['cart'] ?? [], 'qty')) ?: '' ?>
           </span>
         </button>
+
+        <button class="btn-icon hamburger-btn" id="menuToggleBtn" style="display: none;" title="Menu">
+          ☰
+        </button>
       </div>
     </div>
   </div>

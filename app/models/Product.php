@@ -35,8 +35,25 @@ class Product
         $params = [];
 
         if (!empty($filters['grade'])) {
-            $where[]          = 'p.grade = :grade';
-            $params[':grade'] = $filters['grade'];
+            $grades = is_array($filters['grade']) ? $filters['grade'] : [$filters['grade']];
+            $mappedGrades = [];
+            foreach ($grades as $g) {
+                $mappedGrades[] = $g;
+                if ($g === 'EG') {
+                    $mappedGrades[] = 'Entry Grade';
+                } elseif ($g === 'Entry Grade') {
+                    $mappedGrades[] = 'EG';
+                }
+            }
+            $mappedGrades = array_unique($mappedGrades);
+
+            $inList = [];
+            foreach ($mappedGrades as $idx => $g) {
+                $paramKey = ":grade_" . $idx;
+                $inList[] = $paramKey;
+                $params[$paramKey] = $g;
+            }
+            $where[] = 'p.grade IN (' . implode(', ', $inList) . ')';
         }
 
         if (!empty($filters['scale'])) {
@@ -63,6 +80,24 @@ class Product
         if (!empty($filters['type'])) {
             $where[] = 'c.type = :type';
             $params[':type'] = $filters['type'];
+        }
+
+        if (isset($filters['min_price']) && $filters['min_price'] !== '') {
+            $where[] = 'p.price >= :min_price';
+            $params[':min_price'] = (int)$filters['min_price'];
+        }
+
+        if (isset($filters['max_price']) && $filters['max_price'] !== '') {
+            $where[] = 'p.price <= :max_price';
+            $params[':max_price'] = (int)$filters['max_price'];
+        }
+
+        if (isset($filters['stock_status']) && $filters['stock_status'] !== '') {
+            if ($filters['stock_status'] === 'in_stock') {
+                $where[] = 'p.stock > 0';
+            } elseif ($filters['stock_status'] === 'out_stock') {
+                $where[] = 'p.stock = 0';
+            }
         }
 
         if (!empty($filters['group'])) {
@@ -196,23 +231,25 @@ class Product
     {
         $stmt = $this->db->prepare("
             INSERT INTO products
-                (name, slug, price, stock, category_id, scale, grade, series, description, weight_gram, is_active)
+                (name, slug, price, stock, category_id, scale, grade, series, description, weight_gram, parts_count, difficulty, is_active)
             VALUES
-                (:name, :slug, :price, :stock, :category_id, :scale, :grade, :series, :description, :weight_gram, :is_active)
+                (:name, :slug, :price, :stock, :category_id, :scale, :grade, :series, :description, :weight_gram, :parts_count, :difficulty, :is_active)
         ");
 
         $stmt->execute([
-            ':name'        => $data['name'],
-            ':slug'        => $this->makeSlug($data['name']),
-            ':price'       => $data['price'],
-            ':stock'       => $data['stock']       ?? 0,
-            ':category_id' => $data['category_id'],
-            ':scale'       => $data['scale']       ?? null,
-            ':grade'       => $data['grade']       ?? null,
-            ':series'      => $data['series']      ?? null,
-            ':description' => $data['description'] ?? null,
-            ':weight_gram' => $data['weight_gram'] ?? null,
-            ':is_active'   => $data['is_active']   ?? 1,
+            ':name'         => $data['name'],
+            ':slug'         => $this->makeSlug($data['name']),
+            ':price'        => $data['price'],
+            ':stock'        => $data['stock']        ?? 0,
+            ':category_id'  => $data['category_id'],
+            ':scale'        => $data['scale']        ?? null,
+            ':grade'        => $data['grade']        ?? null,
+            ':series'       => $data['series']       ?? null,
+            ':description'  => $data['description']  ?? null,
+            ':weight_gram'  => $data['weight_gram']  ?? null,
+            ':parts_count'  => $data['parts_count']  ?? null,
+            ':difficulty'   => $data['difficulty']   ?? null,
+            ':is_active'    => $data['is_active']    ?? 1,
         ]);
 
         return (int) $this->db->lastInsertId();
@@ -223,7 +260,7 @@ class Product
         $fields = [];
         $params = [':id' => $id];
 
-        $allowed = ['name', 'price', 'stock', 'category_id', 'scale', 'grade', 'series', 'description', 'weight_gram', 'is_active'];
+        $allowed = ['name', 'price', 'stock', 'category_id', 'scale', 'grade', 'series', 'description', 'weight_gram', 'parts_count', 'difficulty', 'is_active'];
         foreach ($allowed as $field) {
             if (isset($data[$field])) {
                 $fields[]         = "$field = :$field";

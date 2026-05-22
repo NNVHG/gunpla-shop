@@ -36,11 +36,14 @@ class ProductController
     public function home(): void
     {
         $data = [
-            'title'       => 'GUNPLA SHOP — Mô Hình Lắp Ráp Chính Hãng',
-            'featured'    => $this->productModel->getFeatured(8),
-            'categories'  => $this->categoryModel->getTopLevel(),
-            'newArrivals' => $this->productModel->getAll([], 'newest', 1, 8)['items'],
-            'favoriteIds' => $this->getFavoriteIds(),
+            'title'            => 'GUNPLA SHOP — Mô Hình Lắp Ráp Chính Hãng',
+            'featured'         => $this->productModel->getFeatured(8),
+            'categories'       => $this->categoryModel->getTopLevel(),
+            'newArrivals'      => $this->productModel->getAll([], 'newest', 1, 8)['items'],
+            'beginnerChoices'  => $this->productModel->getAll(['grade' => ['SD', 'EG'], 'stock_status' => 'in_stock'], 'newest', 1, 4)['items'],
+            'hgBestSellers'    => $this->productModel->getAll(['grade' => 'HG', 'stock_status' => 'in_stock'], 'bestseller', 1, 4)['items'],
+            'essentialTools'   => $this->productModel->getAll(['group' => 'tools', 'stock_status' => 'in_stock'], 'newest', 1, 4)['items'],
+            'favoriteIds'      => $this->getFavoriteIds(),
         ];
         $this->render('home/index', $data);
     }
@@ -60,13 +63,20 @@ class ProductController
         // Gọi hàm phân tách danh mục động 
         $categories = $this->categoryModel->getByGroup($group);
 
+        $minPrice    = $_GET['min_price'] ?? null;
+        $maxPrice    = $_GET['max_price'] ?? null;
+        $stockStatus = $_GET['stock_status'] ?? null;
+
         // Đóng gói mảng tham số lọc ĐẦY ĐỦ để truyền vào Model dữ liệu
         $filters = [
-            'group'       => $group,
-            'grade'       => $grade,
-            'scale'       => $scale,
-            'series'      => $series,
-            'category_id' => $categoryId
+            'group'        => $group,
+            'grade'        => $grade,
+            'scale'        => $scale,
+            'series'       => $series,
+            'category_id'  => $categoryId,
+            'min_price'    => $minPrice,
+            'max_price'    => $maxPrice,
+            'stock_status' => $stockStatus,
         ];
 
         $sort = in_array($_GET['sort'] ?? '', ['newest', 'price_asc', 'price_desc', 'bestseller'])
@@ -136,6 +146,31 @@ class ProductController
         ];
 
         $this->render('products/detail', $data);
+    }
+
+    public function compare(): void
+    {
+        $idsStr = $_GET['ids'] ?? '';
+        $ids = array_filter(array_map('intval', explode(',', $idsStr)));
+        // Giới hạn tối đa 3 sản phẩm để so sánh
+        $ids = array_slice($ids, 0, 3);
+
+        $products = [];
+        foreach ($ids as $id) {
+            $product = $this->productModel->getById($id);
+            if ($product) {
+                // Lấy đánh giá trung bình
+                $ratingInfo = $this->reviewModel->getAvgRating($product['id']);
+                $product['avg_rating'] = $ratingInfo['avg'];
+                $product['total_reviews'] = $ratingInfo['total'];
+                $products[] = $product;
+            }
+        }
+
+        $this->render('products/compare', [
+            'title' => 'So Sánh Sản Phẩm Gunpla',
+            'products' => $products,
+        ]);
     }
 
     public function submitReview(): void

@@ -71,6 +71,20 @@ function ferr(array $e, string $k): string
               <label>Trọng lượng (gram) — tính phí ship</label>
               <input type="number" name="weight_gram" value="<?= fval($saved, 'weight_gram') ?>" min="0" placeholder="200">
             </div>
+            <div class="form-group">
+              <label>Số lượng mảnh ghép (parts count)</label>
+              <input type="number" name="parts_count" value="<?= fval($saved, 'parts_count') ?>" min="0" placeholder="e.g. 200">
+              <?= ferr($errors, 'parts_count') ?>
+            </div>
+            <div class="form-group">
+              <label>Độ khó lắp ráp</label>
+              <select name="difficulty">
+                <option value="">-- Chọn độ khó --</option>
+                <?php foreach (['Dễ', 'Trung bình', 'Khó', 'Rất khó'] as $d): ?>
+                  <option value="<?= $d ?>" <?= ($saved['difficulty'] ?? '') === $d ? ' selected' : '' ?>><?= $d ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
           </div>
           <div class="form-group">
             <label>Mô tả sản phẩm</label>

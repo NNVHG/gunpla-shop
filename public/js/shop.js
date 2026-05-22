@@ -204,3 +204,327 @@ async function toggleFavorite(productId, buttonElement) {
     }
     
 }
+
+// ==============================
+// PRODUCT COMPARISON (FLOATING COMPARE BAR)
+// ==============================
+document.addEventListener('DOMContentLoaded', () => {
+  const compareBar = document.getElementById('compareBar');
+  const compareBarItems = document.getElementById('compareBarItems');
+  const compareCount = document.getElementById('compareCount');
+  const btnClearCompare = document.getElementById('btnClearCompare');
+  const btnCompareNow = document.getElementById('btnCompareNow');
+
+  function updateCompareBar() {
+    const ids = JSON.parse(localStorage.getItem('compare_products') || '[]');
+    const names = JSON.parse(localStorage.getItem('compare_product_names') || '{}');
+    const images = JSON.parse(localStorage.getItem('compare_product_images') || '{}');
+
+    if (!compareBar) return;
+
+    if (ids.length === 0) {
+      compareBar.style.display = 'none';
+      document.body.classList.remove('compare-bar-active');
+      return;
+    }
+
+    compareBar.style.display = 'block';
+    document.body.classList.add('compare-bar-active');
+    if (compareCount) {
+      compareCount.textContent = `(${ids.length}/3)`;
+    }
+
+    if (compareBarItems) {
+      compareBarItems.innerHTML = ids.map(id => {
+        const img = images[id] || '';
+        const name = names[id] || '';
+        return `
+          <div class="compare-item-thumb" title="${escapeHTML(name)}">
+            <img src="${escapeHTML(img)}" alt="${escapeHTML(name)}">
+            <button class="compare-item-remove" data-id="${id}">✕</button>
+          </div>
+        `;
+      }).join('');
+
+      // Bind remove buttons
+      compareBarItems.querySelectorAll('.compare-item-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = parseInt(btn.getAttribute('data-id'));
+          removeProductFromComparison(id);
+        });
+      });
+    }
+
+    if (btnCompareNow) {
+      btnCompareNow.href = `${window.BASE_URL}/products/compare?ids=${ids.join(',')}`;
+    }
+  }
+
+  function removeProductFromComparison(id) {
+    let ids = JSON.parse(localStorage.getItem('compare_products') || '[]');
+    let names = JSON.parse(localStorage.getItem('compare_product_names') || '{}');
+    let images = JSON.parse(localStorage.getItem('compare_product_images') || '{}');
+
+    ids = ids.filter(item => item !== id);
+    delete names[id];
+    delete images[id];
+
+    localStorage.setItem('compare_products', JSON.stringify(ids));
+    localStorage.setItem('compare_product_names', JSON.stringify(names));
+    localStorage.setItem('compare_product_images', JSON.stringify(images));
+
+    // Dispatch custom event to sync with checkboxes on products index page
+    window.dispatchEvent(new CustomEvent('compare_updated'));
+    updateCompareBar();
+  }
+
+  if (btnClearCompare) {
+    btnClearCompare.addEventListener('click', () => {
+      localStorage.setItem('compare_products', '[]');
+      localStorage.setItem('compare_product_names', '{}');
+      localStorage.setItem('compare_product_images', '{}');
+      window.dispatchEvent(new CustomEvent('compare_updated'));
+      updateCompareBar();
+    });
+  }
+
+  // Initial update
+  updateCompareBar();
+
+  // Listen for updates from other scripts/pages
+  window.addEventListener('compare_updated', updateCompareBar);
+});
+
+// Helper function to escape HTML
+function escapeHTML(str) {
+  if (!str) return '';
+  return str.replace(/[&<>'"]/g, 
+    tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+  );
+}
+
+// ==============================
+// AI CHATBOT WIDGET
+// ==============================
+document.addEventListener('DOMContentLoaded', () => {
+  const chatbotToggle = document.getElementById('chatbotToggle');
+  const chatbotWindow = document.getElementById('chatbotWindow');
+  const chatbotClose = document.getElementById('chatbotClose');
+  const chatbotClear = document.getElementById('chatbotClear');
+  const chatbotBody = document.getElementById('chatbotBody');
+  const chatbotInput = document.getElementById('chatbotInput');
+  const chatbotSend = document.getElementById('chatbotSend');
+
+  if (!chatbotToggle || !chatbotWindow) return;
+
+  // Toggle chatbot window
+  chatbotToggle.addEventListener('click', () => {
+    if (chatbotWindow.style.display === 'none') {
+      chatbotWindow.style.display = 'flex';
+      scrollToBottom();
+      chatbotInput?.focus();
+    } else {
+      chatbotWindow.style.display = 'none';
+    }
+  });
+
+  if (chatbotClose) {
+    chatbotClose.addEventListener('click', () => {
+      chatbotWindow.style.display = 'none';
+    });
+  }
+
+  // Quick suggestions buttons
+  chatbotWindow.addEventListener('click', (e) => {
+    if (e.target.classList.contains('quick-suggest-btn')) {
+      const msg = e.target.getAttribute('data-msg');
+      if (msg) {
+        sendChatMessage(msg);
+      }
+    }
+  });
+
+  // Clear chatbot history (Custom Modal Confirmation)
+  const confirmModal = document.getElementById('chatbotConfirmModal');
+  const btnConfirmNo = document.getElementById('btnConfirmClearNo');
+  const btnConfirmYes = document.getElementById('btnConfirmClearYes');
+
+  if (chatbotClear && confirmModal && btnConfirmNo && btnConfirmYes) {
+    chatbotClear.addEventListener('click', () => {
+      confirmModal.style.display = 'flex';
+    });
+
+    btnConfirmNo.addEventListener('click', () => {
+      confirmModal.style.display = 'none';
+    });
+
+    btnConfirmYes.addEventListener('click', async () => {
+      confirmModal.style.display = 'none';
+      try {
+        const res = await fetch(window.BASE_URL + '/chatbot/clear');
+        const d = await res.json();
+        if (d.success) {
+          // Restore only initial welcome message and quick suggestions
+          if (chatbotBody) {
+            chatbotBody.innerHTML = `
+              <div class="chatbot-msg system">
+                Chào mừng bạn đến với <strong>Gunpla Shop</strong>! Mình là trợ lý AI thông minh chuyên tư vấn về các mô hình Gundam (HG, RG, MG, PG) và dụng cụ lắp ráp. Bạn cần mình trợ giúp gì hôm nay?
+              </div>
+              <div class="chatbot-quick-suggests">
+                <button class="quick-suggest-btn" data-msg="Tôi là người mới chơi thì nên lắp dòng nào?">🆕 Người mới chọn dòng nào?</button>
+                <button class="quick-suggest-btn" data-msg="Tư vấn cho tôi một số mẫu HG đẹp có sẵn">🔥 Mẫu HG nổi bật</button>
+                <button class="quick-suggest-btn" data-msg="Tôi cần mua dụng cụ lắp ráp gundam cơ bản">🛠️ Dụng cụ lắp ráp</button>
+                <button class="quick-suggest-btn" data-msg="Giới thiệu cho tôi các dòng PG đỉnh cao">👑 Mô hình PG cao cấp</button>
+              </div>
+            `;
+          }
+          showToast('Đã xóa lịch sử trò chuyện');
+        }
+      } catch (e) {
+        showToast('Lỗi khi xóa lịch sử trò chuyện', true);
+      }
+    });
+  }
+
+  // Handle enter key on input
+  if (chatbotInput) {
+    chatbotInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const msg = chatbotInput.value.trim();
+        if (msg) {
+          sendChatMessage(msg);
+        }
+      }
+    });
+  }
+
+  // Handle send button click
+  if (chatbotSend) {
+    chatbotSend.addEventListener('click', () => {
+      const msg = chatbotInput.value.trim();
+      if (msg) {
+        sendChatMessage(msg);
+      }
+    });
+  }
+
+  function scrollToBottom() {
+    if (chatbotBody) {
+      chatbotBody.scrollTop = chatbotBody.scrollHeight;
+    }
+  }
+
+  async function sendChatMessage(message) {
+    if (!message || !chatbotBody) return;
+
+    // Append user message
+    const userMsgDiv = document.createElement('div');
+    userMsgDiv.className = 'chatbot-msg user';
+    userMsgDiv.textContent = message;
+    chatbotBody.appendChild(userMsgDiv);
+
+    // Clear input
+    if (chatbotInput) {
+      chatbotInput.value = '';
+    }
+
+    scrollToBottom();
+
+    // Show loading indicator
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'chat-loading';
+    loadingDiv.id = 'chatLoading';
+    loadingDiv.innerHTML = '<span></span><span></span><span></span>';
+    chatbotBody.appendChild(loadingDiv);
+    scrollToBottom();
+
+    try {
+      const res = await fetch(window.BASE_URL + '/chatbot/message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: message })
+      });
+
+      // Remove loading indicator
+      const loader = document.getElementById('chatLoading');
+      if (loader) loader.remove();
+
+      const d = await res.json();
+      if (d.success) {
+        // Append model response (can contain HTML links)
+        const sysMsgDiv = document.createElement('div');
+        sysMsgDiv.className = 'chatbot-msg system';
+        sysMsgDiv.innerHTML = d.response;
+        chatbotBody.appendChild(sysMsgDiv);
+
+        // Extract recommended products
+        const regex = /<a\s+[^>]*href=["'](?:[^"']*\/products\/detail\/(\d+))["'][^>]*>(.*?)<\/a>/gi;
+        const matches = [...d.response.matchAll(regex)];
+        const recommendedProducts = [];
+        const seenIds = new Set();
+        for (const match of matches) {
+          const id = parseInt(match[1]);
+          const name = match[2].replace(/<\/?[^>]+(>|$)/g, "").trim(); // strip inner HTML tags if any
+          if (!seenIds.has(id)) {
+            seenIds.add(id);
+            recommendedProducts.push({ id, name });
+          }
+        }
+
+        if (recommendedProducts.length > 0) {
+          const actionsDiv = document.createElement('div');
+          actionsDiv.className = 'chatbot-recommend-actions';
+          actionsDiv.innerHTML = recommendedProducts.map(p => `
+            <button class="chat-quick-add-btn" onclick="addToCart(${p.id})">
+              <span class="icon">🛒</span> Thêm nhanh: <strong>${escapeHTML(p.name)}</strong>
+            </button>
+          `).join('');
+          chatbotBody.appendChild(actionsDiv);
+        }
+      } else {
+        const errorMsgDiv = document.createElement('div');
+        errorMsgDiv.className = 'chatbot-msg system';
+        errorMsgDiv.style.color = 'var(--red-accent)';
+        errorMsgDiv.textContent = d.message || 'Lỗi hệ thống';
+        chatbotBody.appendChild(errorMsgDiv);
+      }
+    } catch (e) {
+      // Remove loading indicator if exists
+      const loader = document.getElementById('chatLoading');
+      if (loader) loader.remove();
+
+      const errorMsgDiv = document.createElement('div');
+      errorMsgDiv.className = 'chatbot-msg system';
+      errorMsgDiv.style.color = 'var(--red-accent)';
+      errorMsgDiv.textContent = 'Lỗi kết nối mạng, vui lòng kiểm tra lại.';
+      chatbotBody.appendChild(errorMsgDiv);
+    }
+
+    scrollToBottom();
+  }
+});
+
+// ==============================
+// MOBILE MENU TOGGLE
+// ==============================
+document.addEventListener('DOMContentLoaded', () => {
+  const menuToggleBtn = document.getElementById('menuToggleBtn');
+  const navLinks = document.querySelector('.nav-links');
+  
+  if (menuToggleBtn && navLinks) {
+    menuToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navLinks.classList.toggle('active');
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!navLinks.contains(e.target) && e.target !== menuToggleBtn) {
+        navLinks.classList.remove('active');
+      }
+    });
+  }
+});

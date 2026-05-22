@@ -75,6 +75,7 @@ $routes = [
     'user'     => \App\Controllers\UserController::class,
     'favorite' => \App\Controllers\FavoriteController::class,
     'news'     => \App\Controllers\NewsController::class,
+    'chatbot'  => \App\Controllers\ChatbotController::class,
 ];
 
 if (!isset($routes[$controllerName])) {

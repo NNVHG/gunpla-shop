@@ -33,7 +33,7 @@
   <?php endif; ?>
 
   <form method="POST" action="<?= BASE_URL ?>/orders/place" id="checkoutForm">
-    <div style="display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start">
+    <div class="checkout-layout">
 
       <div>
         <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:28px;margin-bottom:20px">
@@ -41,7 +41,7 @@
             // Thông tin người nhận
           </h2>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div class="checkout-form-grid">
             <div style="grid-column:1/-1">
               <label class="form-label">Họ và tên *</label>
               <input type="text" name="full_name" class="form-input <?= isset($_SESSION['checkout_errors']['full_name']) ? 'error' : '' ?>"

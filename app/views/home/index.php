@@ -80,15 +80,61 @@ if (!empty($activeCategories)):
   </section>
 <?php endif; ?>
 
-<?php if (!empty($featured)): ?>
-  <section class="products-section" style="background: var(--bg-surface); padding: 60px 0;">
+<?php if (!empty($beginnerChoices)): ?>
+  <section class="products-section" style="background: var(--bg-surface); padding: 60px 0; border-top: 1px solid var(--border)">
     <div class="container">
       <div class="section-head">
-        <h2 class="section-title">Gợi ý cho bạn</h2>
+        <div>
+          <h2 class="section-title">// Dành cho người mới bắt đầu</h2>
+          <p style="color:var(--text-hint);font-size:12px;margin-top:4px">Các dòng EG & SD lắp ráp cực kỳ đơn giản, không cần nhiều dụng cụ</p>
+        </div>
+        <a href="<?= BASE_URL ?>/products?grade=EG" class="section-link">Xem thêm &rarr;</a>
       </div>
       <div class="product-grid">
         <?php
-        foreach ($featured as $i => $p):
+        foreach ($beginnerChoices as $i => $p):
+          include APP_PATH . '/Views/products/_card.php';
+        endforeach;
+        ?>
+      </div>
+    </div>
+  </section>
+<?php endif; ?>
+
+<?php if (!empty($hgBestSellers)): ?>
+  <section class="products-section" style="padding: 60px 0; border-top: 1px solid var(--border)">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">// Mô hình HG bán chạy nhất</h2>
+          <p style="color:var(--text-hint);font-size:12px;margin-top:4px">High Grade 1/144 - Dòng sản phẩm phổ biến và đa dạng mẫu mã nhất</p>
+        </div>
+        <a href="<?= BASE_URL ?>/products?grade=HG" class="section-link">Khám phá dòng HG &rarr;</a>
+      </div>
+      <div class="product-grid">
+        <?php
+        foreach ($hgBestSellers as $i => $p):
+          include APP_PATH . '/Views/products/_card.php';
+        endforeach;
+        ?>
+      </div>
+    </div>
+  </section>
+<?php endif; ?>
+
+<?php if (!empty($essentialTools)): ?>
+  <section class="products-section" style="background: var(--bg-surface); padding: 60px 0; border-top: 1px solid var(--border)">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">// Dụng cụ & Phụ kiện cần thiết</h2>
+          <p style="color:var(--text-hint);font-size:12px;margin-top:4px">Kềm cắt part chuyên nghiệp, nhíp gắp decal, bút kẻ line chính hãng</p>
+        </div>
+        <a href="<?= BASE_URL ?>/products?group=tools" class="section-link">Dụng cụ chuyên dụng &rarr;</a>
+      </div>
+      <div class="product-grid">
+        <?php
+        foreach ($essentialTools as $i => $p):
           include APP_PATH . '/Views/products/_card.php';
         endforeach;
         ?>
