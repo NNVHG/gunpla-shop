@@ -17,7 +17,7 @@ $statusLabels = [
 ];
 ?>
 
-<div class="stats-grid" style="grid-template-columns:repeat(6,1fr)">
+<div class="stats-grid">
   <div class="stat-card">
     <div class="stat-card-label">Sản phẩm</div>
     <div class="stat-card-val c-gold"><?= number_format($stats['total_products']) ?></div>
@@ -50,7 +50,7 @@ $statusLabels = [
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 340px;gap:20px;margin-bottom:24px">
+<div class="dashboard-layout">
 
   <div class="admin-table-wrap">
     <div class="admin-table-head">

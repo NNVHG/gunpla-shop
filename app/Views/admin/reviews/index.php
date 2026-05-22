@@ -9,6 +9,7 @@
 </div>
 
 <div class="admin-table-wrap">
+    <div class="admin-table-scroll">
     <table>
         <thead>
             <tr>
@@ -58,4 +59,5 @@
             <?php endif; ?>
         </tbody>
     </table>
+    </div>
 </div>

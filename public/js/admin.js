@@ -2,6 +2,39 @@
 // ADMIN JAVASCRIPT
 // ==============================
 
+// ==============================
+// MOBILE SIDEBAR TOGGLE
+// ==============================
+(function() {
+  const toggleBtn = document.getElementById('adminMenuToggle');
+  const sidebar   = document.getElementById('adminSidebar');
+  const overlay   = document.getElementById('sidebarOverlay');
+
+  if (toggleBtn && sidebar && overlay) {
+    toggleBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    });
+
+    overlay.addEventListener('click', function() {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+
+    // Close on nav item click (mobile UX)
+    sidebar.querySelectorAll('.nav-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        if (window.innerWidth <= 992) {
+          sidebar.classList.remove('active');
+          overlay.classList.remove('active');
+        }
+      });
+    });
+  }
+})();
+
+
 // 1. CHỨC NĂNG KHO (INVENTORY)
 let modalProductId = null;
 function filterTable(q) {

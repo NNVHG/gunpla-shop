@@ -34,7 +34,7 @@ $paymentStatusColors = [
     <a href="<?= BASE_URL ?>/admin/orders" class="btn" style="color:var(--text-2)">Quay lại</a>
 </div>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+<div class="admin-detail-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
     <div class="admin-table-wrap" style="padding: 20px;">
         <h3 style="color:var(--gold); font-family:var(--font-d); letter-spacing: 0.08em; font-size:20px; margin-top:0; border-bottom:1px solid var(--border); padding-bottom:10px">Khách hàng</h3>
         <p style="margin-top: 12px; margin-bottom: 8px;"><strong>Người nhận:</strong> <span style="color:var(--text-1)"><?= htmlspecialchars($order['full_name']) ?></span></p>
@@ -88,6 +88,7 @@ $paymentStatusColors = [
 
 <div class="admin-table-wrap">
     <div class="admin-table-head"><span class="admin-table-title">SẢN PHẨM ĐÃ ĐẶT</span></div>
+    <div class="admin-table-scroll">
     <table style="margin-bottom: 0;">
         <thead>
             <tr>
@@ -130,6 +131,7 @@ $paymentStatusColors = [
             </tr>
         </tfoot>
     </table>
+    </div>
 </div>
 
 <script>

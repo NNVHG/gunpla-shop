@@ -131,9 +131,21 @@ $buildUrl = function($newParams) use ($filters, $currentSort) {
     </aside>
 
     <div>
+      <?php if (!empty($filters['search'])): ?>
+        <div class="search-result-banner" style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 7px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+          <div>
+            <span style="font-family: var(--font-mono); font-size: 11px; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase;">KẾT QUẢ TÌM KIẾM CHO</span>
+            <h2 style="font-family: var(--font-display); font-size: 22px; color: var(--text-primary); margin: 4px 0 0 0; font-weight: normal;">"<?= htmlspecialchars($filters['search']) ?>"</h2>
+          </div>
+          <a href="<?= $buildUrl(['search' => null]) ?>" class="btn-ghost" style="text-decoration: none; font-size: 13px; font-family: var(--font-mono); display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 4px; line-height: 1;">
+            ✕ XÓA LỌC
+          </a>
+        </div>
+      <?php endif; ?>
+
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <div style="font-family:var(--font-mono);font-size:13px;color:var(--text-hint)">
-          <?= $total ?> sản phẩm<?= $currentGrade ? " · Grade: $currentGrade" : '' ?>
+          <?= $total ?> sản phẩm<?= $currentGrade ? " · Grade: $currentGrade" : '' ?><?= !empty($filters['search']) ? " · Tìm kiếm: \"" . htmlspecialchars($filters['search']) . "\"" : '' ?>
         </div>
         
         <?php

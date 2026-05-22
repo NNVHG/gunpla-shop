@@ -29,7 +29,8 @@
 
       <div class="search-wrap" style="position:relative;flex:1;max-width:340px">
         <span class="search-icon">&#9906;</span>
-        <input type="text" id="globalSearch" placeholder="Tìm HG, MG, RG..." autocomplete="off">
+        <input type="text" id="globalSearch" placeholder="Tìm HG, MG, RG..." autocomplete="off" style="padding-right:36px">
+        <button type="button" id="voiceSearchBtn" class="voice-search-btn" title="Tìm kiếm bằng giọng nói" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-hint);cursor:pointer;font-size:16px;padding:4px;display:flex;align-items:center;justify-content:center;transition:color 0.2s;">🎙️</button>
         <div id="searchDropdown" class="search-dropdown"></div>
       </div>
       

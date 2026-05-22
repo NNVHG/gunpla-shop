@@ -9,13 +9,15 @@
  * @var string $search
  */
 ?>
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+<div class="admin-action-bar">
+  <div class="admin-action-bar-left">
   <form method="GET" action="<?= BASE_URL ?>/admin/products" style="display:flex;gap:8px;align-items:center">
     <input type="text" name="search" value="<?=htmlspecialchars($search??'')?>"
            placeholder="Tìm sản phẩm..." style="padding:6px 12px;font-size:13px;width:240px">
     <button type="submit" class="btn btn-sm">Tìm</button>
     <?php if($search): ?><a href="<?= BASE_URL ?>/admin/products" class="btn btn-sm">Xóa lọc</a><?php endif; ?>
   </form>
+  </div>
   <a href="<?= BASE_URL ?>/admin/products/create" class="btn btn-gold">+ Thêm sản phẩm</a>
 </div>
 
@@ -26,6 +28,7 @@
       <span style="color:var(--t2);font-weight:normal;margin-left:8px">(<?=$total?>)</span>
     </span>
   </div>
+  <div class="admin-table-scroll">
   <table>
 <thead>
     <tr>
@@ -109,6 +112,7 @@
       <?php endif; ?>
     </tbody>
   </table>
+  </div>
 </div>
 
 <?php if (isset($totalPages) && $totalPages > 1): $curr = $currentPage ?? 1; ?>

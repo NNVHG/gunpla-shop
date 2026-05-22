@@ -28,7 +28,8 @@ $nextLabel = [
 ];
 ?>
 
-<div style="display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:20px;width:fit-content">
+<div class="admin-tab-scroll-wrap">
+<div style="display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;width:max-content">
   <a href="<?= BASE_URL ?>/admin/orders" class="tab <?= $currentStatus === '' ? 'active' : '' ?>">
     Tất cả <span class="tab-count"><?= array_sum($statusCounts) ?></span>
   </a>
@@ -38,8 +39,10 @@ $nextLabel = [
     </a>
   <?php endforeach; ?>
 </div>
+</div>
 
 <div class="admin-table-wrap">
+  <div class="admin-table-scroll">
   <table>
     <thead>
       <tr>
@@ -102,6 +105,7 @@ $nextLabel = [
       <?php endif; ?>
     </tbody>
   </table>
+  </div>
 
   <?php if ($pages > 1): ?>
     <div class="pagination">

@@ -67,10 +67,12 @@ document.getElementById('cartClose')?.addEventListener('click',closeCart);
 document.getElementById('cartOverlay')?.addEventListener('click',closeCart);
 renderCart();
 
-// Search autocomplete
+// Search autocomplete & Voice Search
 const si=document.getElementById('globalSearch');
 const sd=document.getElementById('searchDropdown');
+const voiceSearchBtn=document.getElementById('voiceSearchBtn');
 let st=null;
+
 si?.addEventListener('input',function(){
   clearTimeout(st);
   const q=this.value.trim();
@@ -79,19 +81,46 @@ si?.addEventListener('input',function(){
     try {
       const r=await fetch(B+'/products/search?q='+encodeURIComponent(q));
       const d=await r.json();
-      if(!d.results?.length){if(sd)sd.style.display='none';return;}
+      if((!d.results?.length) && (!d.news?.length)){if(sd)sd.style.display='none';return;}
       if(sd){
-        sd.innerHTML=d.results.slice(0,5).map(p=>`
-          <a href="${B}/products/detail/${p.id}" class="search-item">
-            <div class="search-item-grade">${p.grade||'?'}</div>
-            <div style="flex:1;min-width:0">
-              <div style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div>
-              <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-hint)">${p.series||''}</div>
-            </div>
-            <div style="font-family:var(--font-display);font-size:15px;color:var(--gold);flex-shrink:0;margin-left:8px">${Number(p.price).toLocaleString('vi-VN')}đ</div>
-          </a>`).join('')
-          +`<a href="${B}/products?search=${encodeURIComponent(q)}" class="search-item" style="justify-content:center;color:var(--text-hint);font-family:var(--font-mono);font-size:11px">Xem tất cả &rarr;</a>`;
-        sd.style.display='block';
+        let html = '';
+        if (d.results && d.results.length) {
+          html += `<div class="search-dropdown-section-title">SẢN PHẨM</div>`;
+          html += d.results.slice(0,5).map(p=>{
+            const imgPath = p.image_path || p.thumbnail_path || '';
+            const cleanImgPath = imgPath ? imgPath.replace(/^\/?public\//, '') : '';
+            const imgSrc = cleanImgPath ? B + '/' + cleanImgPath : '';
+            return `
+              <a href="${B}/products/detail/${p.id}" class="search-item">
+                <div class="search-item-thumb">
+                  ${imgSrc ? `<img src="${imgSrc}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">` : `<div class="search-item-grade" style="width:100%;height:100%;font-size:10px">${p.grade||'?'}</div>`}
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary);font-weight:500;">${p.name}</div>
+                  <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--text-hint)">${p.grade ? p.grade + ' · ' : ''}${p.series||''}</div>
+                </div>
+                <div style="font-family:var(--font-display);font-size:14px;color:var(--gold);flex-shrink:0;margin-left:8px">${Number(p.price).toLocaleString('vi-VN')}đ</div>
+              </a>`;
+          }).join('');
+        }
+        
+        if (d.news && d.news.length) {
+          html += `<div class="search-dropdown-section-title">TIN TỨC & BÀI VIẾT</div>`;
+          html += d.news.slice(0,3).map(n=>`
+            <a href="${B}/news/${n.slug}" class="search-item news-search-item">
+              <span style="font-size:14px;margin-right:6px">📰</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary);">${n.title}</div>
+                <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-hint)">${new Date(n.created_at).toLocaleDateString('vi-VN')}</div>
+              </div>
+            </a>`).join('');
+        }
+
+        if (d.results && d.results.length) {
+          html += `<a href="${B}/products?search=${encodeURIComponent(q)}" class="search-item" style="justify-content:center;color:var(--gold);font-family:var(--font-mono);font-size:11px;font-weight:bold;letter-spacing:0.05em;border-top:1px solid var(--border)">XEM TẤT CẢ KẾT QUẢ &rarr;</a>`;
+        }
+        sd.innerHTML = html;
+        sd.style.display = 'block';
       }
     } catch(e){}
   },280);
@@ -100,6 +129,109 @@ document.addEventListener('click',e=>{if(!si?.contains(e.target)&&!sd?.contains(
 si?.addEventListener('keydown',e=>{
   if(e.key==='Enter'){if(sd)sd.style.display='none';window.location.href=B+'/products?search='+encodeURIComponent(si.value.trim());}
   if(e.key==='Escape'&&sd)sd.style.display='none';
+});
+
+// Voice Search Implementation
+voiceSearchBtn?.addEventListener('click', function() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    showToast('Trình duyệt không hỗ trợ tìm kiếm bằng giọng nói', true);
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'vi-VN';
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  // Create overlay modal
+  const overlay = document.createElement('div');
+  overlay.className = 'voice-search-overlay';
+  overlay.innerHTML = `
+    <div class="voice-search-container">
+      <button class="voice-search-close" type="button">&times;</button>
+      <div class="voice-search-pulse-circle">
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring2"></div>
+        <div class="voice-mic-icon">🎙️</div>
+      </div>
+      <h3 class="voice-search-title">Đang lắng nghe...</h3>
+      <p class="voice-search-status">Hãy nói tên sản phẩm bạn muốn tìm kiếm</p>
+      <div class="voice-search-transcript">...</div>
+      <p class="voice-search-hint">Ví dụ: "Freedom Gundam", "Kìm cắt", "HG Aerial"</p>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  // Trigger browser visual layout
+  setTimeout(() => overlay.classList.add('show'), 50);
+
+  let finalTranscript = '';
+  recognition.start();
+
+  recognition.onresult = function(event) {
+    let interimTranscript = '';
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        finalTranscript += event.results[i][0].transcript;
+      } else {
+        interimTranscript += event.results[i][0].transcript;
+      }
+    }
+    const currentText = finalTranscript || interimTranscript;
+    const transcriptEl = overlay.querySelector('.voice-search-transcript');
+    if (transcriptEl && currentText) {
+      transcriptEl.textContent = currentText;
+      transcriptEl.style.fontStyle = 'normal';
+    }
+  };
+
+  recognition.onend = function() {
+    const finalVal = finalTranscript.trim();
+    if (finalVal) {
+      overlay.querySelector('.voice-search-title').textContent = "Đang tìm kiếm...";
+      overlay.querySelector('.voice-search-status').textContent = `Đang chuyển hướng tìm kiếm cho "${finalVal}"`;
+      setTimeout(() => {
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.remove(), 300);
+        if (si) {
+          si.value = finalVal;
+          if (sd) sd.style.display = 'none';
+          window.location.href = B + '/products?search=' + encodeURIComponent(finalVal);
+        }
+      }, 1000);
+    } else {
+      overlay.querySelector('.voice-search-title').textContent = "Không nghe rõ...";
+      overlay.querySelector('.voice-search-status').textContent = "Hãy thử nói lại hoặc nói to hơn";
+      setTimeout(() => {
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.remove(), 300);
+      }, 2000);
+    }
+  };
+
+  recognition.onerror = function(event) {
+    console.error('Speech recognition error', event);
+    overlay.querySelector('.voice-search-title').textContent = "Lỗi nhận dạng";
+    overlay.querySelector('.voice-search-status').textContent = "Vui lòng kiểm tra micro của bạn";
+    setTimeout(() => {
+      overlay.classList.remove('show');
+      setTimeout(() => overlay.remove(), 300);
+    }, 2000);
+  };
+
+  const closeFunc = () => {
+    recognition.abort();
+    overlay.classList.remove('show');
+    setTimeout(() => overlay.remove(), 300);
+  };
+
+  overlay.querySelector('.voice-search-close').addEventListener('click', closeFunc);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      closeFunc();
+    }
+  });
 });
 
 // Toast

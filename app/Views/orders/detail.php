@@ -56,7 +56,7 @@ $methodLabels  = ['cod' => 'Thanh toán khi nhận hàng (COD)', 'vnpay' => 'VNP
       </div>
     <?php endif; ?>
 
-    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
+    <div class="order-detail-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
         <div>
             <h1 style="font-family: var(--font-display); font-size:34px; letter-spacing: .08em; color: var(--gold); margin-bottom: 4px;">
                 ĐƠN HÀNG #<?= $order['id'] ?>
@@ -70,7 +70,7 @@ $methodLabels  = ['cod' => 'Thanh toán khi nhận hàng (COD)', 'vnpay' => 'VNP
         </span>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
 
         <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 24px;">
             <h3 style="font-family: var(--font-mono); font-size:13px; color: var(--gold); letter-spacing: .14em; text-transform: uppercase; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
@@ -149,7 +149,8 @@ $methodLabels  = ['cod' => 'Thanh toán khi nhận hàng (COD)', 'vnpay' => 'VNP
                 // SẢN PHẨM ĐÃ ĐẶT (<?= count($order['items']) ?> sản phẩm)
             </h3>
         </div>
-        <table style="width: 100%; border-collapse: collapse;">
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+        <table style="width: 100%; border-collapse: collapse; min-width: 540px;">
             <thead>
                 <tr style="background: var(--bg-surface);">
                     <th style="padding: 12px 20px; text-align: left; font-family: var(--font-mono); font-size:12px; color: var(--text-hint); letter-spacing: .1em; text-transform: uppercase; font-weight: normal;">Sản phẩm</th>
@@ -212,6 +213,7 @@ $methodLabels  = ['cod' => 'Thanh toán khi nhận hàng (COD)', 'vnpay' => 'VNP
                 <?php endforeach; ?>
             </tbody>
         </table>
+        </div>
     </div>
 
     <!-- LỊCH SỬ BÁO CÁO THIẾU ĐỒ / LỖI ĐƠN HÀNG -->
@@ -250,7 +252,7 @@ $methodLabels  = ['cod' => 'Thanh toán khi nhận hàng (COD)', 'vnpay' => 'VNP
                         <p style="color: var(--text-secondary); font-size:15px; line-height: 1.6; margin: 0 0 16px 0;">
                             <strong>Mô tả chi tiết:</strong> <?= nl2br(htmlspecialchars($rep['description'])) ?>
                         </p>
-                        <div style="display: flex; gap: 20px; margin-bottom: 16px;">
+                        <div class="defect-proof-row" style="display: flex; gap: 20px; margin-bottom: 16px; flex-wrap: wrap;">
                             <div>
                                 <div style="font-size:11px; color: var(--text-hint); font-family: var(--font-mono); margin-bottom: 6px;">ẢNH MINH CHỨNG</div>
                                 <a href="<?= BASE_URL . '/' . htmlspecialchars($rep['image_proof']) ?>" target="_blank">
@@ -276,7 +278,7 @@ $methodLabels  = ['cod' => 'Thanh toán khi nhận hàng (COD)', 'vnpay' => 'VNP
         </div>
     <?php endif; ?>
 
-    <div style="margin-top: 24px; display: flex; gap: 12px;">
+    <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
         <a href="<?= BASE_URL ?>/user/profile?tab=orders" class="btn-ghost" style="padding: 10px 24px;">
             &larr; Lịch sử đơn hàng
         </a>

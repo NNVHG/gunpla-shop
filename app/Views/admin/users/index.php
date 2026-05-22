@@ -5,11 +5,12 @@
  * @var array $users   List of users: id, full_name, email, phone, role, created_at
  */
 ?>
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+<div class="admin-header">
     <h1 class="admin-title">Danh sách Khách hàng</h1>
 </div>
 
 <div class="admin-table-wrap">
+    <div class="admin-table-scroll">
     <table>
         <thead>
             <tr>
@@ -53,4 +54,5 @@
             <?php endforeach; ?>
         </tbody>
     </table>
+    </div>
 </div>

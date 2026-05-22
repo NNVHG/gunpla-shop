@@ -7,12 +7,12 @@
  * @var int $page
  */
 ?>
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+<div class="admin-header">
   <div>
     <div style="font-family:var(--font-m); font-size:12px; color:var(--text-3); letter-spacing:.15em; text-transform:uppercase; margin-bottom:4px;">
       HỆ THỐNG KIỂM TRA LỖI SẢN PHẨM
     </div>
-    <h2 style="font-family:var(--font-d); font-size:30px; letter-spacing:.05em; margin:0;">
+    <h2 class="admin-title">
       DANH SÁCH BÁO CÁO LỖI
     </h2>
   </div>
@@ -22,7 +22,7 @@
   <div class="admin-table-head">
     <div class="admin-table-title">// TẤT CẢ BÁO CÁO LỖI (<?= $total ?> BẢN GHI)</div>
   </div>
-  
+  <div class="admin-table-scroll">
   <table>
     <thead>
       <tr>
@@ -74,6 +74,7 @@
       <?php endif; ?>
     </tbody>
   </table>
+  </div>
 
   <?php if ($pages > 1): ?>
     <div class="pagination">

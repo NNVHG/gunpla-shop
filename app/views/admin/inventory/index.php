@@ -6,8 +6,8 @@
  * @var bool $hasLogTable
  */
 ?>
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-  <div>
+<div class="admin-action-bar">
+  <div class="admin-action-bar-left">
     <div style="font-family:var(--font-m);font-size:12px;color:var(--text-2)">
       Quản lý tồn kho — click vào số lượng để điều chỉnh nhanh
     </div>
@@ -23,6 +23,7 @@
         style="padding:5px 10px;font-size:13px;width:200px" oninput="filterTable(this.value)">
     </div>
   </div>
+  <div class="admin-table-scroll">
   <table id="inventoryTable">
     <thead>
       <tr>
@@ -79,6 +80,7 @@
       <?php endforeach; ?>
     </tbody>
   </table>
+  </div>
 </div>
 
 <div id="adjustModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center">

@@ -59,6 +59,7 @@ class ProductController
         $scale      = $_GET['scale'] ?? null;
         $series     = $_GET['series'] ?? null;
         $categoryId = isset($_GET['category_id']) ? (int)$_GET['category_id'] : null;
+        $search     = isset($_GET['search']) ? trim($_GET['search']) : null;
 
         // Gọi hàm phân tách danh mục động 
         $categories = $this->categoryModel->getByGroup($group);
@@ -77,6 +78,7 @@ class ProductController
             'min_price'    => $minPrice,
             'max_price'    => $maxPrice,
             'stock_status' => $stockStatus,
+            'search'       => $search,
         ];
 
         $sort = in_array($_GET['sort'] ?? '', ['newest', 'price_asc', 'price_desc', 'bestseller'])
@@ -338,11 +340,16 @@ class ProductController
         $query  = htmlspecialchars(trim($_GET['q'] ?? ''));
         $result = $this->productModel->getAll(['search' => $query], 'newest', 1, 20);
 
+        require_once APP_PATH . '/Models/News.php';
+        $newsModel = new \App\Models\News();
+        $newsResult = $newsModel->search($query, 3);
+
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode([
             'query'   => $query,
             'count'   => $result['total'],
             'results' => $result['items'],
+            'news'    => $newsResult,
         ]);
         exit;
     }

@@ -107,4 +107,26 @@ class News
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Tìm kiếm tin tức theo từ khóa
+     * @param string $query
+     * @param int $limit
+     * @return array
+     */
+    public function search(string $query, int $limit = 5): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT * FROM news 
+            WHERE is_active = 1 AND (title LIKE :query OR summary LIKE :query2 OR content LIKE :query3) 
+            ORDER BY created_at DESC 
+            LIMIT :limit
+        ");
+        $stmt->bindValue(':query', '%' . $query . '%');
+        $stmt->bindValue(':query2', '%' . $query . '%');
+        $stmt->bindValue(':query3', '%' . $query . '%');
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
