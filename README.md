@@ -191,11 +191,3 @@ gunpla-shop/
 ├── composer.json                     # Định nghĩa các thư viện phụ thuộc PHP
 └── README.md                         # Tài liệu giới thiệu hiển thị trên GitHub
 ```
-
----
-
-## 📄 TÀI LIỆU HỆ THỐNG LIÊN QUAN (DOCUMENTATION LINKS)
-
-Để tìm hiểu chi tiết sâu hơn về kiến trúc và cách thức vận hành hệ thống, vui lòng tham khảo:
-*   [PROJECT_OVERVIEW.md](file:///e:/XAMPP/htdocs/gunpla-shop/PROJECT_OVERVIEW.md) — Phân tích chi tiết kiến trúc MVC, vòng đời request, cấu trúc chi tiết của 13 bảng CSDL, và các dòng nghiệp vụ thanh toán, báo lỗi.
-*   [SPECIAL_FEATURES.md](file:///e:/XAMPP/htdocs/gunpla-shop/SPECIAL_FEATURES.md) — Hướng dẫn cài đặt, cơ chế hoạt động, và giải pháp kỹ thuật của các tính năng nâng cao (AI Chatbot, So sánh, Giọng nói, Timeline lỗi, Biểu đồ động).
